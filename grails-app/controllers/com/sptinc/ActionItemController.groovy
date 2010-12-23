@@ -1,5 +1,7 @@
 package com.sptinc
 
+import grails.converters.*
+
 class ActionItemController {
 
     static scaffold = ActionItem;

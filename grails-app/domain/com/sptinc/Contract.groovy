@@ -7,9 +7,9 @@ class Contract {
     User manager
     boolean active
 
-    static hasMany = [trips: Report, users: User]
+    static hasMany = [trips: Trip, users: User]
 
-    static belongsTo = [com.sptinc.Trip, com.sptinc.User]
+    static belongsTo = [Trip, User]
 
     static constraints = {
         contractNumber(blank: false, unique: true, maxSize: 100)

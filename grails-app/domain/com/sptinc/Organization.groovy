@@ -4,8 +4,8 @@ class Organization {
 
     String name
     String url
-    SortedSet contacts
-    SortedSet contracts
+    //SortedSet contacts
+    //SortedSet contracts
 
     static hasMany = [contacts: Contact, contracts: Contract]
 

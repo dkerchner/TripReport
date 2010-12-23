@@ -10,6 +10,9 @@ class TripController {
 
     static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
+    def springSecurityService
+
+
     def index = {
         redirect(action: "list", params: params)
     }
@@ -33,8 +36,9 @@ class TripController {
         }
         def contractString = ""
         for (c in contracts) {
-            contractString += c.toString()
+            contractString += c.toString() + " "
         }
+        contractString.trim()
         def locationsString = ""
         for (l in locations) {
             locationsString += l.toString()
@@ -45,13 +49,46 @@ class TripController {
         }
 
 
-        def trip = [id:t.id, name:t.toString(), purpose:t.purpose, startDate:t.startDate, endDate:t.endDate, events:eventString, approved:t.approved, approvedBy:t.approvedBy.toString(), attendees: attendeesString, locations: locationsString, contracts: contractString]
+        def trip = [id:t.id, name:t.toString(), purpose:t.purpose, startDate:t.startDate, endDate:t.endDate, events:eventString, attendees: attendeesString, locations: locationsString, contracts: contractString]
         trips << trip
       }
 
       def listResult = [ total: trips.count(), items: trips]
       render listResult as JSON
     }
+
+    def listByAttendeeJSON = {
+      def trips = []
+      for (t in Trip.list()) {
+        def events = t.getEvents()
+        def contracts = t.getContracts()
+        def locations = t.getLocations()
+        def attendees = t.getAttendees()
+
+        def eventString = ""
+        for (e in events) {
+            eventString += e.toString()
+        }
+        def contractString = ""
+        for (c in contracts) {
+            contractString += c.toString() + " "
+        }
+        def locationsString = ""
+        for (l in locations) {
+            locationsString += l.toString()
+        }
+        for (a in attendees) {
+          println a.toString()
+          def attendeeTrip = UserTrip.get(a.id, t.id)
+          def trip = [id:t.id, name:t.toString(), purpose:t.purpose, startDate:t.startDate, endDate:t.endDate, events:eventString, attendee: a.toString(), attendeeId: a.id, approved: attendeeTrip.approved, approvedBy: attendeeTrip.approvedBy.toString(), locations: locationsString, contracts: contractString]
+          trips << trip
+        }
+      }
+
+      def listResult = [ total: trips.count(), items: trips]
+      render listResult as JSON
+    }
+
 
 
     def create = {
@@ -88,6 +125,22 @@ class TripController {
             render "0"
         }
     }
+
+  def attendJSON = {
+      def user = User.get(springSecurityService.principal.id)
+
+      UserTrip userTrip = UserTrip.get(user.id, params.int('id'))
+      if (!userTrip) {
+        Trip trip = Trip.get(params.id)
+        if (UserTrip.create(user, trip)) {
+          render "1"
+        } else {
+          render "${message(code: 'Could not update. A necessary value is missing.', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
+        }
+      } else {
+        render "${message(code: 'You have already requested to attend this trip.', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
+      }
+  }
 
     def show = {
         def tripInstance = Trip.get(params.id)

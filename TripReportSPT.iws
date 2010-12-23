@@ -81,28 +81,7 @@
       <file leaf-file-name="TripController.groovy" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grails-app/controllers/com/sptinc/TripController.groovy">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="47" column="16" selection-start="1194" selection-end="1198" vertical-scroll-proportion="-24.52174">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ReportController.groovy" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grails-app/controllers/com/sptinc/ReportController.groovy">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="11" column="173" selection-start="245" selection-end="245" vertical-scroll-proportion="-5.7391305">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Report.groovy" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grails-app/domain/com/sptinc/Report.groovy">
-          <provider editor-type-id="org.jetbrains.plugins.grails.perspectives.DomainClassesRelationsEditorProvider">
-            <state />
-          </provider>
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="5" column="7" selection-start="38" selection-end="114" vertical-scroll-proportion="-1.3333334">
+            <state line="30" column="158" selection-start="751" selection-end="751" vertical-scroll-proportion="-1.5652174">
               <folding />
             </state>
           </provider>
@@ -110,20 +89,50 @@
       </file>
       <file leaf-file-name="Trip.groovy" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/grails-app/domain/com/sptinc/Trip.groovy">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="24" column="147" selection-start="492" selection-end="492" vertical-scroll-proportion="-5.977778">
+              <folding />
+            </state>
+          </provider>
           <provider editor-type-id="org.jetbrains.plugins.grails.perspectives.DomainClassesRelationsEditorProvider">
             <state />
           </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="main.gsp" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grails-app/views/layouts/main.gsp">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="15" column="1" selection-start="159" selection-end="252" vertical-scroll-proportion="-4.0">
+            <state line="65" column="174" selection-start="1959" selection-end="1959" vertical-scroll-proportion="-20.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="EventController.groovy" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grails-app/controllers/com/sptinc/EventController.groovy">
+      <file leaf-file-name="BootStrap.groovy" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grails-app/conf/BootStrap.groovy">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="28" column="114" selection-start="814" selection-end="814" vertical-scroll-proportion="-13.130435">
+            <state line="119" column="151" selection-start="5304" selection-end="5304" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="UserTrip.groovy" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/grails-app/domain/com/sptinc/UserTrip.groovy">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="4" column="6" selection-start="82" selection-end="82" vertical-scroll-proportion="-1.0666667">
+              <folding />
+            </state>
+          </provider>
+          <provider editor-type-id="org.jetbrains.plugins.grails.perspectives.DomainClassesRelationsEditorProvider">
+            <state />
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="datasources.js" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/web-app/js/datasources.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="53" column="171" selection-start="2334" selection-end="2334" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -132,16 +141,16 @@
       <file leaf-file-name="trip.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web-app/js/trip.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="333" column="92" selection-start="10774" selection-end="10774" vertical-scroll-proportion="0.0">
+            <state line="288" column="59" selection-start="10171" selection-end="10171" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="datasources.js" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/web-app/js/datasources.js">
+      <file leaf-file-name="attendee.js" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/web-app/js/attendee.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="172" selection-start="569" selection-end="569" vertical-scroll-proportion="0.0">
+            <state line="132" column="33" selection-start="4453" selection-end="4453" vertical-scroll-proportion="0.47113165">
               <folding />
             </state>
           </provider>
@@ -150,25 +159,16 @@
       <file leaf-file-name="report.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web-app/js/report.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="23" column="149" selection-start="706" selection-end="706" vertical-scroll-proportion="0.0">
+            <state line="29" column="0" selection-start="861" selection-end="861" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="main.gsp" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/grails-app/views/layouts/main.gsp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="96" column="289" selection-start="3029" selection-end="3029" vertical-scroll-proportion="-5.3333335">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="common.js" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="common.js" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/web-app/js/common.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="30" column="162" selection-start="690" selection-end="690" vertical-scroll-proportion="0.33256352">
+            <state line="57" column="138" selection-start="1151" selection-end="1151" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -188,22 +188,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/grails-app/conf/Config.groovy" />
-        <option value="$PROJECT_DIR$/grails-app/domain/com/sptinc/Contract.groovy" />
-        <option value="$PROJECT_DIR$/grails-app/domain/com/sptinc/Report.groovy" />
-        <option value="$PROJECT_DIR$/grails-app/views/index.gsp" />
-        <option value="$PROJECT_DIR$/grails-app/conf/BootStrap.groovy" />
-        <option value="$PROJECT_DIR$/grails-app/controllers/com/sptinc/EventController.groovy" />
-        <option value="$PROJECT_DIR$/web-app/js/prototype/datasources.js" />
-        <option value="$PROJECT_DIR$/web-app/js/tripsearch.js" />
+        <option value="$PROJECT_DIR$/grails-app/controllers/com/sptinc/OrganizationController.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/controllers/com/sptinc/RoleController.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/domain/com/sptinc/User.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/controllers/com/sptinc/UserController.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/domain/com/sptinc/Location.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/controllers/com/sptinc/LocationController.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/controllers/com/sptinc/AgencyController.groovy" />
+        <option value="$PROJECT_DIR$/grails-app/controllers/com/sptinc/CompanyController.groovy" />
+        <option value="$PROJECT_DIR$/web-app/js/common.js" />
+        <option value="$PROJECT_DIR$/web-app/js/report.js" />
+        <option value="$PROJECT_DIR$/web-app/js/datasources.js" />
         <option value="$PROJECT_DIR$/grails-app/domain/com/sptinc/Trip.groovy" />
         <option value="$PROJECT_DIR$/grails-app/views/layouts/main.gsp" />
         <option value="$PROJECT_DIR$/grails-app/controllers/com/sptinc/TripController.groovy" />
-        <option value="$PROJECT_DIR$/grails-app/controllers/com/sptinc/ReportController.groovy" />
-        <option value="$PROJECT_DIR$/web-app/js/datasources.js" />
-        <option value="$PROJECT_DIR$/web-app/js/report.js" />
         <option value="$PROJECT_DIR$/web-app/js/trip.js" />
-        <option value="$PROJECT_DIR$/web-app/js/common.js" />
+        <option value="$PROJECT_DIR$/web-app/js/attendee.js" />
       </list>
     </option>
   </component>
@@ -300,24 +300,36 @@
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="recentsLimit" value="5" />
     <property name="MemberChooser.sorted" value="false" />
-    <property name="options.lastSelected" value="MavenSettings" />
+    <property name="options.lastSelected" value="preferences.editor" />
     <property name="project.structure.side.proportion" value="0.0" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="dynamic.classpath" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="dynamic.classpath" value="false" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.sptinc" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/grails-app/views/layouts" />
       <recent name="$PROJECT_DIR$/web-app/js" />
+      <recent name="$PROJECT_DIR$/grails-app/views/layouts" />
     </key>
   </component>
   <component name="RunManager" selected="Grails.Grails:TripReportSPT">
+    <configuration default="true" type="PhpRunConfigurationType" factoryName="PHP">
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="FtpUpload" enabled="false" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="ValidateXdebugSetup" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="GrailsRunConfigurationType" factoryName="Grails">
       <module name="" />
       <setting name="vmparams" value="" />
@@ -330,15 +342,6 @@
         <option name="BuildArtifacts" enabled="false" />
         <option name="Make" enabled="true" />
         <option name="Maven.BeforeRunTask" enabled="false" />
-      </method>
-    </configuration>
-    <configuration default="true" type="PhpRunConfigurationType" factoryName="PHP">
-      <method>
-        <option name="AntTarget" enabled="false" />
-        <option name="BuildArtifacts" enabled="false" />
-        <option name="FtpUpload" enabled="false" />
-        <option name="Maven.BeforeRunTask" enabled="false" />
-        <option name="ValidateXdebugSetup" enabled="true" />
       </method>
     </configuration>
     <configuration default="true" type="PHPUnitRunConfigurationType" factoryName="PHPUnit">
@@ -390,6 +393,15 @@
         <option name="Maven.BeforeRunTask" enabled="false" />
       </method>
     </configuration>
+    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server">
+      <method>
+        <option name="AntTarget" enabled="false" />
+        <option name="BuildArtifacts" enabled="false" />
+        <option name="FtpUpload" enabled="false" />
+        <option name="Maven.BeforeRunTask" enabled="false" />
+        <option name="ValidateXdebugSetup" enabled="true" />
+      </method>
+    </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
       <extension name="coverage" enabled="false" merge="false" />
       <module name="" />
@@ -414,15 +426,6 @@
         <option name="BuildArtifacts" enabled="false" />
         <option name="Make" enabled="true" />
         <option name="Maven.BeforeRunTask" enabled="false" />
-      </method>
-    </configuration>
-    <configuration default="true" type="PhpUnitRemoteRunConfigurationType" factoryName="PHPUnit on Server">
-      <method>
-        <option name="AntTarget" enabled="false" />
-        <option name="BuildArtifacts" enabled="false" />
-        <option name="FtpUpload" enabled="false" />
-        <option name="Maven.BeforeRunTask" enabled="false" />
-        <option name="ValidateXdebugSetup" enabled="true" />
       </method>
     </configuration>
     <configuration default="true" type="GroovyScriptRunConfiguration" factoryName="Groovy Script">
@@ -515,7 +518,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="166" y="94" width="1742" height="1038" extended-state="0" />
+    <frame x="139" y="28" width="1742" height="1038" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -525,7 +528,7 @@
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30163935" sideWeight="0.99940896" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32978722" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Grails View" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22340426" sideWeight="0.67103827" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Grails View" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2245863" sideWeight="0.67103827" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33005464" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
@@ -614,122 +617,126 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/grails-app/views/layouts/login.gsp">
+    <entry file="file://$PROJECT_DIR$/grails-app/domain/com/sptinc/Location.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+        <state line="8" column="6" selection-start="97" selection-end="97" vertical-scroll-proportion="-2.1333334">
+          <folding />
+        </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/conf/BootStrap.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="41" selection-start="359" selection-end="359" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/domain/com/sptinc/Event.groovy">
       <provider editor-type-id="org.jetbrains.plugins.grails.perspectives.DomainClassesRelationsEditorProvider">
         <state />
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/domain/com/sptinc/Agency.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="165" selection-start="290" selection-end="290" vertical-scroll-proportion="-4.0">
+        <state line="2" column="6" selection-start="26" selection-end="26" vertical-scroll-proportion="0.029232644">
           <folding />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web-app/js/prototype/rico.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="44" column="14" selection-start="1363" selection-end="1363" vertical-scroll-proportion="-2.52194">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/domain/com/sptinc/User.groovy">
       <provider editor-type-id="org.jetbrains.plugins.grails.perspectives.DomainClassesRelationsEditorProvider">
         <state />
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/controllers/com/sptinc/AgencyController.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="102" selection-start="156" selection-end="156" vertical-scroll-proportion="-2.6666667">
+        <state line="29" column="0" selection-start="435" selection-end="721" vertical-scroll-proportion="-14.608696">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/web-app/js/tripsearch.js">
+    <entry file="file://$PROJECT_DIR$/grails-app/controllers/com/sptinc/CompanyController.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="98" column="1" selection-start="2641" selection-end="2641" vertical-scroll-proportion="1.3579676">
+        <state line="28" column="29" selection-start="733" selection-end="733" vertical-scroll-proportion="-6.2608695">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/domain/com/sptinc/Trip.groovy">
-      <provider editor-type-id="org.jetbrains.plugins.grails.perspectives.DomainClassesRelationsEditorProvider">
-        <state />
-      </provider>
+    <entry file="file://$PROJECT_DIR$/grails-app/controllers/com/sptinc/LocationController.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="1" selection-start="159" selection-end="252" vertical-scroll-proportion="-4.0">
+        <state line="22" column="94" selection-start="622" selection-end="622" vertical-scroll-proportion="-10.956522">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/views/layouts/main.gsp">
+    <entry file="file://$PROJECT_DIR$/grails-app/controllers/com/sptinc/ContractController.groovy">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="96" column="289" selection-start="3029" selection-end="3029" vertical-scroll-proportion="-5.3333335">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/controllers/com/sptinc/EventController.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="114" selection-start="814" selection-end="814" vertical-scroll-proportion="-13.130435">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/controllers/com/sptinc/TripController.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="47" column="16" selection-start="1194" selection-end="1198" vertical-scroll-proportion="-24.52174">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/domain/com/sptinc/Report.groovy">
-      <provider editor-type-id="org.jetbrains.plugins.grails.perspectives.DomainClassesRelationsEditorProvider">
-        <state />
-      </provider>
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="7" selection-start="38" selection-end="114" vertical-scroll-proportion="-1.3333334">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/grails-app/controllers/com/sptinc/ReportController.groovy">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="173" selection-start="245" selection-end="245" vertical-scroll-proportion="-5.7391305">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web-app/js/report.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="149" selection-start="706" selection-end="706" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web-app/js/trip.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="333" column="92" selection-start="10774" selection-end="10774" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web-app/js/datasources.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="172" selection-start="569" selection-end="569" vertical-scroll-proportion="0.0">
+        <state line="26" column="16" selection-start="781" selection-end="781" vertical-scroll-proportion="-9.913043">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/web-app/js/common.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="162" selection-start="690" selection-end="690" vertical-scroll-proportion="0.33256352">
+        <state line="57" column="138" selection-start="1151" selection-end="1151" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web-app/js/report.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="29" column="0" selection-start="861" selection-end="861" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/conf/BootStrap.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="119" column="151" selection-start="5304" selection-end="5304" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/domain/com/sptinc/UserTrip.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="6" selection-start="82" selection-end="82" vertical-scroll-proportion="-1.0666667">
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="org.jetbrains.plugins.grails.perspectives.DomainClassesRelationsEditorProvider">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/domain/com/sptinc/Trip.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="147" selection-start="492" selection-end="492" vertical-scroll-proportion="-5.977778">
+          <folding />
+        </state>
+      </provider>
+      <provider editor-type-id="org.jetbrains.plugins.grails.perspectives.DomainClassesRelationsEditorProvider">
+        <state />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/views/layouts/main.gsp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="65" column="174" selection-start="1959" selection-end="1959" vertical-scroll-proportion="-20.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/grails-app/controllers/com/sptinc/TripController.groovy">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="158" selection-start="751" selection-end="751" vertical-scroll-proportion="-1.5652174">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web-app/js/datasources.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="53" column="171" selection-start="2334" selection-end="2334" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web-app/js/trip.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="288" column="59" selection-start="10171" selection-end="10171" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/web-app/js/attendee.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="132" column="33" selection-start="4453" selection-end="4453" vertical-scroll-proportion="0.47113165">
           <folding />
         </state>
       </provider>

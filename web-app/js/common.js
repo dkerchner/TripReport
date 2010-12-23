@@ -55,7 +55,7 @@ endDateField = new Ext.form.DateField({
 }); */
 
 
-eventField = new Ext.form.ComboBox({
+eventsField = {
     xtype: 'multiselect',
     fieldLabel: 'Events<br />(Required)',
     name: 'multiselect',
@@ -63,13 +63,48 @@ eventField = new Ext.form.ComboBox({
     allowBlank: false,
     valueField: 'id',
     anchor:'95%',
-    store: eventds,
-    tbar:[{
+    store: eventDS,
+    /*tbar:[{
         text: 'clear',
         handler: function(){
 
         }
-    }],
+    }], */
     ddReorder: true
+};
 
-});
+contractsField = {
+    xtype: 'multiselect',
+    fieldLabel: 'Contracts<br />(Required)',
+    name: 'multiselect',
+    displayField: 'name',
+    allowBlank: false,
+    valueField: 'id',
+    anchor:'95%',
+    store: contractDS,
+    /*tbar:[{
+        text: 'clear',
+        handler: function(){
+
+        }
+    }], */
+    ddReorder: true
+};
+
+locationsField = {
+    xtype: 'multiselect',
+    fieldLabel: 'Locations<br />(Required)',
+    name: 'multiselect',
+    displayField: 'name',
+    allowBlank: false,
+    valueField: 'id',
+    anchor:'95%',
+    store: locationDS,
+    /*tbar:[{
+        text: 'clear',
+        handler: function(){
+
+        }
+    }], */
+    ddReorder: true
+};

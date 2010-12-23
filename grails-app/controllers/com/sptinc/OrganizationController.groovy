@@ -1,5 +1,7 @@
 package com.sptinc
 
+import grails.converters.*
+
 class OrganizationController {
 
     static scaffold = true;
@@ -14,6 +16,18 @@ class OrganizationController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [organizationInstanceList: Organization.list(params), organizationInstanceTotal: Organization.count()]
     }
+
+    def listJSON = {
+      def orgs = []
+      for (o in Organization.list(params)) {
+        def org = [id:o.id, name:o.toString(), url:o.url]
+        orgs << org
+      }
+
+      def listResult = [ total: orgs.count(), items: orgs]
+      render listResult as JSON
+    }
+
 
     def create = {
         def organizationInstance = new Organization()

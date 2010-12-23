@@ -1,5 +1,7 @@
 package com.sptinc
 
+import grails.converters.*
+
 class LocationController {
 
     static scaffold = true;
@@ -13,6 +15,17 @@ class LocationController {
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [locationInstanceList: Location.list(params), locationInstanceTotal: Location.count()]
+    }
+
+    def listJSON = {
+      def locs = []
+      for (l in Location.list(params)) {
+        def loc = [id:l.id, name:l.toString(), city:l.city, state: l.state, country: l.country]
+        locs << loc
+      }
+
+      def listResult = [ total: locs.count(), items: locs]
+      render listResult as JSON
     }
 
     def create = {

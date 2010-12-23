@@ -63,12 +63,14 @@
 
   <g:javascript library="ext-3.3.1/adapter/ext/ext-base-debug"/>
   <g:javascript library="ext-3.3.1/ext-all-debug"/>
+  <g:javascript library="MultiSelect"/>
   <g:javascript library="searchfield"/>
   <g:javascript library="datasources"/>
   <g:javascript library="common"/>
 
   <g:javascript library="trip"/>
   <g:javascript library="report"/>
+  <g:javascript library="attendee"/>
 
 
   <script type="text/javascript">
@@ -179,6 +181,13 @@
                       handler: function(){
                           replace('report-grid'
                           , 'Reports');
+                      }
+                  } , {
+                      xtype:'button',
+                      text: 'Trip Attendees',
+                      handler: function(){
+                          replace('attendee-grid'
+                          , 'Attendees');
                       }
                   }
                 ]

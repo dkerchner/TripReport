@@ -1,5 +1,7 @@
 package com.sptinc
 
+import grails.converters.*
+
 class ContractController {
     static scaffold = true;
 
@@ -13,6 +15,18 @@ class ContractController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [contractInstanceList: Contract.list(params), contractInstanceTotal: Contract.count()]
     }
+
+  def listJSON = {
+    def contracts = []
+    for (c in Contract.list(params)) {
+      def contract = [id:c.id, name:c.toString(), organization:c.organization.toString(), manager:c.manager.toString(), active:c.active]
+      contracts << contract
+    }
+
+    def listResult = [ total: contracts.count(), items: contracts]
+    render listResult as JSON
+  }
+
 
     def create = {
         def contractInstance = new Contract()

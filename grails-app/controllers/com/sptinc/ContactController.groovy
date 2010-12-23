@@ -1,5 +1,7 @@
 package com.sptinc
 
+import grails.converters.*
+
 class ContactController {
 
     static scaffold = true;
@@ -14,6 +16,18 @@ class ContactController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [contactInstanceList: Contact.list(params), contactInstanceTotal: Contact.count()]
     }
+
+    def listJSON = {
+      def contacts = []
+      for (c in Contact.list(params)) {
+        def contact = [id:c.id, name:c.toString(), organization:c.organization.toString(), email:c.email, phoneNumber:c.phoneNumber]
+        contacts << contact
+      }
+
+      def listResult = [ total: contacts.count(), items: contacts]
+      render listResult as JSON
+    }
+
 
     def create = {
         def contactInstance = new Contact()

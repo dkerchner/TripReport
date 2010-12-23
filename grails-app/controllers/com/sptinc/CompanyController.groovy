@@ -1,5 +1,7 @@
 package com.sptinc
 
+import grails.converters.*
+
 class CompanyController {
 
     static scaffold = true;
@@ -14,6 +16,18 @@ class CompanyController {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [companyInstanceList: Company.list(params), companyInstanceTotal: Company.count()]
     }
+
+    def listJSON = {
+      def companies = []
+      for (c in Company.list(params)) {
+        def company = [id:c.id, name:c.toString(), url:c.url]
+        companies << company
+      }
+
+      def listResult = [ total: companies.count(), items: companies]
+      render listResult as JSON
+    }
+
 
     def create = {
         def companyInstance = new Company()

@@ -15,7 +15,7 @@ class User {
 	Date dateCreated
 	Date lastUpdated
 
-	SortedSet contracts
+	//SortedSet contracts
 
 	static hasMany = [contracts: Contract]
 
@@ -32,6 +32,10 @@ class User {
 
 	Set<Role> getAuthorities() {
 		UserRole.findAllByUser(this).collect { it.role } as Set
+	}
+
+    Set<Trip> getTrips() {
+		UserTrip.findAllByAttendee(this).collect { it.attendee } as Set
 	}
 
 	String toString() {

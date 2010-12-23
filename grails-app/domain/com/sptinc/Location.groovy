@@ -6,7 +6,7 @@ class Location {
     String state
     String country
 
-    SortedSet events
+    //SortedSet events
 
     static hasMany = [events: Event]
 

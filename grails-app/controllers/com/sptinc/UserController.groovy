@@ -1,5 +1,7 @@
 package com.sptinc
 
+import grails.converters.*
+
 class UserController {
 
     static scaffold = true;
@@ -13,6 +15,24 @@ class UserController {
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [userInstanceList: User.list(params), userInstanceTotal: User.count()]
+    }
+
+    def listJSON = {
+      def users = []
+      for (u in User.list(params)) {
+
+        def contracts = u.getContracts()
+        def contractString = ""
+        for (c in contracts) {
+            contractString += c.toString()
+        }
+
+        def user = [id:u.id, name:u.toString(), userName: u.username, email: u.email, company: u.company.toString(), fullName: u.fullName, contracts:contractString]
+        users << user
+      }
+
+      def listResult = [ total: users.count(), items: users]
+      render listResult as JSON
     }
 
     def create = {

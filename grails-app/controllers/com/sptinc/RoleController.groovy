@@ -1,5 +1,7 @@
 package com.sptinc
 
+import grails.converters.*
+
 class RoleController {
 
     static scaffold = true;
@@ -13,6 +15,17 @@ class RoleController {
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [roleInstanceList: Role.list(params), roleInstanceTotal: Role.count()]
+    }
+
+    def listJSON = {
+      def roles = []
+      for (r in Role.list(params)) {
+        def role = [id:r.id, name:r.authority]
+        roles << role
+      }
+
+      def listResult = [ total: roles.count(), items: roles]
+      render listResult as JSON
     }
 
     def create = {

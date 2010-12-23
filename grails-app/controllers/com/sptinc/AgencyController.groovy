@@ -1,5 +1,7 @@
 package com.sptinc
 
+import grails.converters.*
+
 class AgencyController {
 
     static scaffold = true
@@ -13,6 +15,17 @@ class AgencyController {
     def list = {
         params.max = Math.min(params.max ? params.int('max') : 10, 100)
         [agencyInstanceList: Agency.list(params), agencyInstanceTotal: Agency.count()]
+    }
+
+    def listJSON = {
+      def agencies = []
+      for (a in Agency.list(params)) {
+        def agency = [id:a.id, name:a.toString(), url:a.url]
+        agencies << agency
+      }
+
+      def listResult = [ total: agencies.count(), items: agencies]
+      render listResult as JSON
     }
 
     def create = {

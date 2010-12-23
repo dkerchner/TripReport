@@ -8,11 +8,9 @@ class Contact {
   String email
   String phoneNumber
 
-  List tripReports
+  //List reports
 
   static belongsTo = [com.sptinc.Report]
-
-  static hasMany = [tripReports: Report]
 
   static constraints = {
       firstName(blank: false)

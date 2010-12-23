@@ -18,7 +18,7 @@
     // create the grid
     var reportGrid = new Ext.grid.EditorGridPanel({
         id: 'report-grid',
-        ds: reportds,
+        ds: reportDS,
         cm: reportcm,
         //renderTo: 'center-div',
         //width:700,
