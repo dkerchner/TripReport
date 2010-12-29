@@ -23,7 +23,7 @@ class ContractController {
       contracts << contract
     }
 
-    def listResult = [ total: contracts.count(), items: contracts]
+    def listResult = [ total: contracts.size(), items: contracts]
     render listResult as JSON
   }
 

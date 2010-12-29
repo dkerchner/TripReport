@@ -6,6 +6,7 @@ class Trip {
     Date endDate
     String shortDescription
     String purpose
+    Float estimatedCostPerPerson
 
     //SortedSet contracts
     //SortedSet events
@@ -26,6 +27,7 @@ class Trip {
         endDate(blank: false)
         shortDescription(blank: false, maxSize: 100)
         purpose(blank: false, maxSize: 255)
+        estimatedCostPerPerson(nullable:true)
         //approvedBy(nullable: true)
     }
 

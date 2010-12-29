@@ -1,5 +1,5 @@
 // create the Data Store
-var tripDS = new Ext.data.Store({
+var tripListDS = new Ext.data.Store({
     autoLoad: true,
     proxy: new Ext.data.HttpProxy({
         url: 'http://localhost:8080/TripReportSPT/trip/listJSON'}),
@@ -26,10 +26,37 @@ var tripDS = new Ext.data.Store({
             ),
     baseParams:     {
         now:        (new Date()).getTime()
-    },
+    }/*,
     writer: new Ext.data.JsonWriter({
         encode:     true
-    })
+    }) */
+});
+
+var tripDS = new Ext.data.Store({
+    autoLoad: true,
+    proxy: new Ext.data.HttpProxy({
+        url: 'http://localhost:8080/TripReportSPT/trip/showJSON'}),
+    reader: new Ext.data.JsonReader({},
+            [
+                {name: 'version', type: 'int', mapping: 'version'},
+                {name: 'id', type: 'int', mapping: 'id'},
+                {name: 'name', type: 'string', mapping: 'name'},
+                {name: 'startDate', type: 'date', mapping: 'startDate'},
+                {name: 'endDate', type: 'date', mapping: 'endDate'},
+                {name: 'purpose', type: 'string', mapping: 'purpose'},
+                {name: 'events', type: 'array', mapping: 'events'},
+                {name: 'contracts', type: 'array', mapping: 'contracts'},
+                {name: 'attendees', type: 'array', mapping: 'attendees'},
+                {name: 'locations', type: 'array', mapping: 'locations'}
+
+            ]
+            ),
+    baseParams:     {
+        now:        (new Date()).getTime()
+    }/*,
+    writer: new Ext.data.JsonWriter({
+        encode:     true
+    }) */
 });
 
 var attendeeDS = new Ext.data.Store({
@@ -54,6 +81,7 @@ var attendeeDS = new Ext.data.Store({
                 {name: 'contracts', type: 'string', mapping: 'contracts'},
                 {name: 'attendee', type: 'string', mapping: 'attendee'},
                 {name: 'attendeeId', type: 'int', mapping: 'attendeeId'},
+                {name: 'tripId', type: 'int', mapping: 'tripId'},
                 {name: 'approved', type: 'boolean', mapping: 'approved'},
                 {name: 'approvedBy', type: 'string', mapping: 'approvedBy'},
                 {name: 'locations', type: 'string', mapping: 'locations'}
@@ -159,9 +187,10 @@ var contractDS = new Ext.data.Store({
             [
                 {name: 'version', type: 'int', mapping: 'version'},
                 {name: 'id', type: 'int', mapping: 'id'},
+                {name: 'name', type: 'string', mapping: 'name'},
                 {name: 'organization', type: 'string', mapping: 'organization'},
                 {name: 'manager', type: 'string', mapping: 'manager'},
-                {name: 'active', type: 'boolean', mapping: 'active'},
+                {name: 'active', type: 'boolean', mapping: 'active'}
             ]
             ),
     baseParams:     {

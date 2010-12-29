@@ -1,6 +1,7 @@
 package com.sptinc
 
 import grails.converters.*
+import grails.plugins.springsecurity.Secured
 
 class TripController {
 
@@ -53,7 +54,7 @@ class TripController {
         trips << trip
       }
 
-      def listResult = [ total: trips.count(), items: trips]
+      def listResult = [ total: trips.size(), items: trips]
       render listResult as JSON
     }
 
@@ -78,14 +79,13 @@ class TripController {
             locationsString += l.toString()
         }
         for (a in attendees) {
-          println a.toString()
           def attendeeTrip = UserTrip.get(a.id, t.id)
-          def trip = [id:t.id, name:t.toString(), purpose:t.purpose, startDate:t.startDate, endDate:t.endDate, events:eventString, attendee: a.toString(), attendeeId: a.id, approved: attendeeTrip.approved, approvedBy: attendeeTrip.approvedBy.toString(), locations: locationsString, contracts: contractString]
+          def trip = [id:attendeeTrip.id, name:t.toString(), purpose:t.purpose, startDate:t.startDate, endDate:t.endDate, events:eventString, attendee: a.toString(), attendeeId: a.id, tripId:t.id, approved: attendeeTrip.approved, approvedBy: attendeeTrip.approvedBy==null?"":attendeeTrip.approvedBy.toString(), locations: locationsString, contracts: contractString]
           trips << trip
         }
       }
 
-      def listResult = [ total: trips.count(), items: trips]
+      def listResult = [ total: trips.size(), items: trips]
       render listResult as JSON
     }
 
@@ -109,6 +109,7 @@ class TripController {
     }
 
     def saveJSON = {
+        println params;
         def startDate = df.parse(params.startDate)
         def endDate = df.parse(params.endDate)
         params.remove('startDate')
@@ -142,6 +143,25 @@ class TripController {
       }
   }
 
+  @Secured(['ROLE_ADMIN'])
+  def approveJSON = {
+      def mgr = User.get(springSecurityService.principal.id)
+
+      UserTrip userTrip = UserTrip.get(params.int('attendeeId'), params.int('tripId'))
+      if (userTrip && !userTrip.approved) {
+        userTrip.approved = true
+        userTrip.approvedBy = mgr
+        if (userTrip.save(flush: true)) {
+          render "1"
+        } else {
+          render "${message(code: 'Could not update. A necessary value is missing.', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
+        }
+      } else {
+        render "${message(code: 'You have already approved this trip.', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
+      }
+  }
+
+
     def show = {
         def tripInstance = Trip.get(params.id)
         if (!tripInstance) {
@@ -152,6 +172,50 @@ class TripController {
             [tripInstance: tripInstance]
         }
     }
+
+  def showJSON = {
+      def tripInstance = Trip.get(params.id)
+      if (!tripInstance) {
+          render "${message(code: 'default.not.found.message', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
+      }
+      else {
+        def eventList = []
+        def contractList = []
+        def locationList = []
+        def attendeeList = []
+
+        def events = tripInstance.getEvents()
+        for (e in events) {
+            def event = [id: e.id, name: e.toString()]
+            eventList << event
+        }
+
+        def contracts = tripInstance.getContracts()
+        for (c in contracts) {
+            def contract = [id: c.id, name: c.toString()]
+            contractList << contract
+        }
+
+        def locations = tripInstance.getLocations()
+
+        for (l in locations) {
+            def location = [id: l.id, name: l.toString()]
+            locationList << location
+        }
+
+        def attendees = tripInstance.getAttendees()
+        for (a in attendees) {
+            def attendee = [id: a.id, name: a.toString()]
+            attendeeList << attendee
+        }
+
+        //println events as JSON;
+        def trip = [id:tripInstance.id, name:tripInstance.toString(), purpose:tripInstance.purpose, startDate:tripInstance.startDate, endDate:tripInstance.endDate, events: eventList.toArray(), contracts: contractList, locations: locationList, attendees: attendeeList]
+
+        render trip as JSON
+      }
+  }
+
 
     def edit = {
         def tripInstance = Trip.get(params.id)
@@ -202,7 +266,7 @@ class TripController {
                   return
               }
           }
-
+          println params
           tripInstance.setProperty('startDate', df.parse(params.startDate))
           tripInstance.setProperty('endDate', df.parse(params.endDate))
           params.remove('startDate')

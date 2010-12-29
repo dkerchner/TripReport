@@ -68,6 +68,7 @@
   <g:javascript library="datasources"/>
   <g:javascript library="common"/>
 
+  <g:javascript library="main"/>
   <g:javascript library="trip"/>
   <g:javascript library="report"/>
   <g:javascript library="attendee"/>
@@ -83,19 +84,6 @@
       Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
 
       var currentName;
-      var replace = function(id, t) {
-        var tabPanel = Ext.getCmp('center-tab-panel')
-        var tab = tabPanel.items.find(function(i){return i.title === t;});
-        if(!tab) {
-            var item = Ext.getCmp(id)
-            tab = tabPanel.add({
-                 title:t
-                ,layout:'fit',
-                items: [item]
-            });
-        }
-        tabPanel.setActiveTab(tab);
-      }
 
       var contentPanel = {
 		id: 'content-panel',
@@ -113,6 +101,7 @@
               activeTab: 0, // second tab initially active
               tabPosition: 'top',
               items: [
+                      mainPanel
                   //tripGrid, reportGrid
                   ]
           })

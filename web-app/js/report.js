@@ -16,13 +16,14 @@
     reportcm.defaultSortable = true;
 
     // create the grid
-    var reportGrid = new Ext.grid.EditorGridPanel({
+    var reportGrid = new Ext.grid.GridPanel({
         id: 'report-grid',
         ds: reportDS,
         cm: reportcm,
         //renderTo: 'center-div',
         //width:700,
         //height:350,
+        closable: true,
         enableColLock:false,
         clicksToEdit:1,
         selModel: new Ext.grid.RowSelectionModel({singleSelect:false})

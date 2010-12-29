@@ -14,10 +14,10 @@ var attendeecm = new Ext.grid.ColumnModel([
         cell.css = "readonlycell";
         return value;
     }, hidden: true},
-    {header: '#', readOnly: true, dataIndex: 'id', width: 40, renderer: function(value, cell) {
+    {header: '#', readOnly: true, dataIndex: 'tripId', width: 40, renderer: function(value, cell) {
         cell.css = "readonlycell";
         return value;
-    }, hidden: false},
+    }, hidden: true},
     {header: '#', readOnly: true, dataIndex: 'attendeeId', width: 40, renderer: function(value, cell) {
         cell.css = "readonlycell";
         return value;
@@ -68,7 +68,7 @@ var attendeecm = new Ext.grid.ColumnModel([
 attendeecm.defaultSortable = true;
 
 // create the grid
-var attendeeGrid = new Ext.grid.EditorGridPanel({
+var attendeeGrid = new Ext.grid.GridPanel({
     title: 'Attendees',
     id: 'attendee-grid',
     ds: attendeeDS,
@@ -76,8 +76,8 @@ var attendeeGrid = new Ext.grid.EditorGridPanel({
     //renderTo: 'center-div',
     //width:700,
     //height:350,
-    enableColLock:false,
-    clicksToEdit:1,
+    //enableColLock:false,
+    //clicksToEdit:1,
     selModel: new Ext.grid.RowSelectionModel({singleSelect:true}),
     bbar: new Ext.PagingToolbar({
         pageSize: 15,
@@ -130,12 +130,13 @@ function confirmApproveTrips() {
 // This was added in Tutorial 6
 function approveTrips(btn) {
     if (btn == 'yes') {
-        var selections = attendeeGrid.selModel.getSelections();
+        var selections = attendeeGrid.selModel.getSelections(); alert(selections[0]);
         Ext.Ajax.request({
             waitMsg: 'Please Wait',
             url: 'http://localhost:8080/TripReportSPT/trip/approveJSON',
             params: {
-                id:selections[0].id
+                tripId:selections[0].json.tripId,
+                attendeeId:selections[0].json.attendeeId
             },
             success:
             function(response) {
@@ -143,7 +144,7 @@ function approveTrips(btn) {
                 switch (result) {
                     case 1:  // Success : simply reload
                         Ext.MessageBox.alert('Success','You have successfully approved this person\'s trip!');
-                        tripds.reload();
+                        attendeeDS.reload();
                         break;
                     default:
                         Ext.MessageBox.alert('Fail','You have already approved this person\'s trip.');

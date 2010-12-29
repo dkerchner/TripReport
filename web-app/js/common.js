@@ -42,6 +42,54 @@ endDateField = new Ext.form.DateField({
     anchor:'95%'
 });
 
+shortDescriptionDisplayField = new Ext.form.DisplayField({
+    id: 'shortDescriptionDisplayField',
+    fieldLabel: '<b>Short Description</b>',
+    anchor:'95%'
+});
+
+purposeDisplayField = new Ext.form.DisplayField({
+    id: 'purposeField',
+    fieldLabel: '<b>Purpose</b>',
+    anchor:'95%'
+});
+
+startDateDisplayField = new Ext.form.DisplayField({
+    id:'startDateDisplayField',
+    fieldLabel: '<b>Start Date</b>',
+    anchor:'95%'
+});
+
+endDateDisplayField = new Ext.form.DisplayField({
+    id:'EndDateDisplayField',
+    fieldLabel: '<b>End Date</b>',
+    anchor:'95%'
+});
+
+eventsDisplayField = new Ext.form.DisplayField({
+    id: 'eventsDisplayField',
+    fieldLabel: '<b>Events</b>',
+    anchor:'95%'
+});
+
+locationsDisplayField = new Ext.form.DisplayField({
+    id: 'locationsDisplayField',
+    fieldLabel: '<b>Locations</b>',
+    anchor:'95%'
+});
+
+contractsDisplayField = new Ext.form.DisplayField({
+    id: 'contractsDisplayField',
+    fieldLabel: '<b>Contracts</b>',
+    anchor:'95%'
+});
+
+idField = new Ext.form.Hidden({
+    id: 'idField',
+    anchor:'95%'
+});
+
+
 /*eventField = new Ext.form.ComboBox({
  id:'EventField',
  fieldLabel: 'Event',
@@ -55,10 +103,10 @@ endDateField = new Ext.form.DateField({
 }); */
 
 
-eventsField = {
+var eventsField = {
     xtype: 'multiselect',
     fieldLabel: 'Events<br />(Required)',
-    name: 'multiselect',
+    name: 'eventsField',
     displayField: 'name',
     allowBlank: false,
     valueField: 'id',
@@ -73,10 +121,10 @@ eventsField = {
     ddReorder: true
 };
 
-contractsField = {
+var contractsField = {
     xtype: 'multiselect',
     fieldLabel: 'Contracts<br />(Required)',
-    name: 'multiselect',
+    name: 'contractsField',
     displayField: 'name',
     allowBlank: false,
     valueField: 'id',
@@ -91,10 +139,10 @@ contractsField = {
     ddReorder: true
 };
 
-locationsField = {
+var locationsField = {
     xtype: 'multiselect',
     fieldLabel: 'Locations<br />(Required)',
-    name: 'multiselect',
+    name: 'locationsField',
     displayField: 'name',
     allowBlank: false,
     valueField: 'id',
@@ -108,3 +156,17 @@ locationsField = {
     }], */
     ddReorder: true
 };
+
+var replace = function(id, t) {
+  var tabPanel = Ext.getCmp('center-tab-panel')
+  var tab = tabPanel.items.find(function(i){return i.title === t;});
+  if(!tab) {
+      var item = Ext.getCmp(id)
+      tab = tabPanel.add({
+           title:t
+          ,layout:'fit',
+          items: [item]
+      });
+  }
+  tabPanel.setActiveTab(tab);
+}
