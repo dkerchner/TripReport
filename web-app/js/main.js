@@ -24,11 +24,13 @@ var mainPanel = new Ext.Panel({
             border: false, // already wrapped so don't add another border
             layout: 'hbox',
             align: 'stretch',
+            padding: '5',
             /*layoutConfig: {
               type: 'vbox',
               padding: '5',
               align: 'stretch'
             },*/
+            defaults:{margins:'0 0 5 0'},
             items: [
                 {
                     xtype:'button',

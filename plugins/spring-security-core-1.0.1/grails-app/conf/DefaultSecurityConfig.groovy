@@ -123,7 +123,7 @@ security {
 	/** authenticationEntryPoint */
 	auth.loginFormUrl = '/login/auth'
 	auth.forceHttps = 'false'
-	auth.ajaxLoginFormUrl = '/login/authAjax'
+	auth.ajaxLoginFormUrl = '/login/auth'
 	auth.useForward = false
 
 	/** logoutFilter */

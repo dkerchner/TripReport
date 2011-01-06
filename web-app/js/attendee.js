@@ -34,8 +34,12 @@ var attendeecm = new Ext.grid.ColumnModel([
             maxLength: 100,
             maskRe: /([a-zA-Z0-9\s]+)$/
         })},
-    {header: "Events", width: 115, dataIndex: 'events', sortable: true},
-    {header: "Locations", width: 115, dataIndex: 'locations', sortable: true},
+    {header: "Events", width: 115, dataIndex: 'events', sortable: true, renderer: function(value, cell) {
+        return buildStringFromArray(value, 'name', ', ');
+    }},
+    {header: "Locations", width: 115, dataIndex: 'locations', sortable: true, renderer: function(value, cell) {
+        return buildStringFromArray(value, 'name', ', ');
+    }},
     {header: "Start Date", width: 115, dataIndex: 'startDate', renderer: Ext.util.Format.dateRenderer('m/d/Y'), sortable: true,
         editor: new Ext.form.DateField({
             format: 'm/d/Y'
@@ -62,7 +66,9 @@ var attendeecm = new Ext.grid.ColumnModel([
         }, editor: new Ext.form.Checkbox({
         })},
     {header: "Approved By", width: 115, dataIndex: 'approvedBy', sortable: true},
-    {header: "Contracts", width: 115, dataIndex: 'contracts', sortable: true}
+    {header: "Contracts", width: 115, dataIndex: 'contracts', sortable: true, renderer: function(value, cell) {
+        return buildStringFromArray(value, 'name', ', ');
+    }}
 ]);
 
 attendeecm.defaultSortable = true;
@@ -71,7 +77,7 @@ attendeecm.defaultSortable = true;
 var attendeeGrid = new Ext.grid.GridPanel({
     title: 'Attendees',
     id: 'attendee-grid',
-    ds: attendeeDS,
+    ds: attendeeListDS,
     cm: attendeecm,
     //renderTo: 'center-div',
     //width:700,
@@ -81,39 +87,23 @@ var attendeeGrid = new Ext.grid.GridPanel({
     selModel: new Ext.grid.RowSelectionModel({singleSelect:true}),
     bbar: new Ext.PagingToolbar({
         pageSize: 15,
-        store: attendeeDS,
+        store: attendeeListDS,
         displayInfo: true
     }),
     tbar: [
-        /*{
-            text: 'Add',
-            tooltip: 'Submit a trip',
-            iconCls:'add',                      // reference to our css
-            handler: displayFormWindow
-        },
-        '-',
-        {
-            text: 'Delete',
-            tooltip: 'Delete the selected trip.',
-            handler: confirmDeleteTrips,   // Confirm before deleting
-            iconCls:'remove'
-        },
-        '-',
-        { // Added in Tutorial 8
-            text: 'Search',
-            tooltip: 'Advanced Search',
-            handler: startAdvancedSearch,
-            iconCls:'search'
-        },
-        '-',
-        new Ext.app.SearchField({
-            store: tripds,
-            params: {start: 0, limit: 15},
-            width: 120
-        }) */
     ]
 });
 
+// display or bring forth the form
+function displayAttendeeViewWindow() {
+    if (attendeeGrid.selModel.getCount()) {
+        if (!AttendeeViewWindow.isVisible()) {
+            AttendeeViewWindow.show();
+        } else {
+            AttendeeViewWindow.toFront();
+        }
+    }
+}
 
 // This was added in Tutorial 6
 function confirmApproveTrips() {
@@ -130,10 +120,10 @@ function confirmApproveTrips() {
 // This was added in Tutorial 6
 function approveTrips(btn) {
     if (btn == 'yes') {
-        var selections = attendeeGrid.selModel.getSelections(); alert(selections[0]);
+        var selections = attendeeGrid.selModel.getSelections();
         Ext.Ajax.request({
             waitMsg: 'Please Wait',
-            url: 'http://localhost:8080/TripReportSPT/trip/approveJSON',
+            url: 'http://localhost:8080/TripReportSPT/userTrip/approveJSON',
             params: {
                 tripId:selections[0].json.tripId,
                 attendeeId:selections[0].json.attendeeId
@@ -168,14 +158,98 @@ function onAttendeeListingEditorGridContextMenu(grid, rowIndex, e) {
     AttendeeListingContextMenu.showAt([coords[0], coords[1]]);
 }
 
+function onAttendeeListingEditorGridDoubleClick(grid, rowIndex, e) {
+    e.stopEvent();
+    var coords = e.getXY();
+    //alert(grid.store.getAt(rowIndex).json.id);
+    attendeeDS.on('load', attendeeDSOnLoad);
+    attendeeDS.load({params: {'tripId': grid.store.getAt(rowIndex).json.tripId, 'attendeeId': grid.store.getAt(rowIndex).json.attendeeId}});
+    displayAttendeeViewWindow();
+}
+
+
 attendeeGrid.addListener('rowcontextmenu', onAttendeeListingEditorGridContextMenu);
+attendeeGrid.addListener('rowdblclick', onAttendeeListingEditorGridDoubleClick);
+
 
 AttendeeListingContextMenu = new Ext.menu.Menu({
-    id: 'TripListingEditorGridContextMenu',
+    id: 'AttendeeListingEditorGridContextMenu',
     items: [
         { text: 'Approve this Trip', handler: confirmApproveTrips }
     ]
 });
 
-attendeeDS.load({params: {start: 0, limit: 15}});
+attendeeListDS.load({params: {start: 0, limit: 15}});
 //attendeeGrid.on('afteredit', saveTheTrip);
+
+function attendeeDSOnLoad() {
+    var form = AttendeeViewForm.getForm();
+    form.findField('shortDescriptionDisplayField').setValue(attendeeDS.getAt(0).data.name);
+    form.findField('purposeDisplayField').setValue(attendeeDS.getAt(0).data.purpose);
+    form.findField('startDateDisplayField').setValue(attendeeDS.getAt(0).data.startDate.format('m/d/Y'));
+    form.findField('endDateDisplayField').setValue(attendeeDS.getAt(0).data.endDate.format('m/d/Y'));
+    form.findField('attendeeDisplayField').setValue(attendeeDS.getAt(0).data.attendee);
+    form.findField('idField').setValue(attendeeDS.getAt(0).data.tripId);
+    form.findField('idField2').setValue(attendeeDS.getAt(0).data.attendeeId);
+    var events = attendeeDS.getAt(0).data.events;
+    var contracts = attendeeDS.getAt(0).data.contracts;
+    var locations = attendeeDS.getAt(0).data.locations;
+    form.findField('eventsDisplayField').setValue(buildStringFromArray(events, "name", "<br/>"));
+    form.findField('contractsDisplayField').setValue(buildStringFromArray(contracts, "name", "<br/>"));
+    form.findField('locationsDisplayField').setValue(buildStringFromArray(locations, "name", "<br/>"));
+
+}
+
+
+var AttendeeViewForm = new Ext.FormPanel({
+    labelAlign: 'top',
+    bodyStyle:'padding:5px',
+    width: 600,
+    //store: attendeeDS,
+    items: [
+        {
+            layout:'column',
+            border:false,
+            items:[
+                {
+                    columnWidth:0.5,
+                    layout: 'form',
+                    border:false,
+                    items: [attendeeDisplayField, shortDescriptionDisplayField, purposeDisplayField, eventsDisplayField, locationsDisplayField]
+                },
+                {
+                    columnWidth:0.5,
+                    layout: 'form',
+                    border:false,
+                    items: [startDateDisplayField, endDateDisplayField, contractsDisplayField, idField, idField2]
+                }
+            ]
+        }
+    ],
+    buttons: [
+        {
+             id: 'approveButton',
+             text: 'Approve',
+             handler: confirmApproveTrips,
+             iconCls: 'approve'
+         },
+        {
+            text: 'Close',
+            handler: function() {
+                // because of the global vars, we can only instantiate one window... so let's just hide it.
+                AttendeeViewWindow.hide();
+            }
+        }
+    ]
+});
+
+var AttendeeViewWindow = new Ext.Window({
+    id: 'AttendeeViewWindow',
+    title: 'Trip Details',
+    closable:true,
+    width: 610,
+    height: 450,
+    plain:false,
+    layout: 'fit',
+    items: AttendeeViewForm
+});

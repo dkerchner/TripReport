@@ -21,6 +21,6 @@ class Location {
     }
 
     String toString() {
-        return city + "," + country
+        return city + ", " + country
     }
 }

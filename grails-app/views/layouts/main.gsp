@@ -36,6 +36,10 @@
   .add {
     background-image:url(${resource(dir: 'images', file: 'add.gif')}) !important;
   }
+  .edit {
+    background-image:url(${resource(dir: 'images', file: 'cog_edit.png')}) !important;
+  }
+
   .remove {
       background-image:url(${resource(dir: 'images', file: 'delete.gif')}) !important;
   }
@@ -45,6 +49,10 @@
   .print{
       background-image:url(${resource(dir: 'images', file: 'print.png')}) !important;
   }
+  .approve {
+      background-image:url(${resource(dir: 'images', file: 'accept.png')}) !important;
+  }
+
   /* styles used for the cells */
   .readonlycell {
     background-color:#CCCCCC !important;
@@ -65,6 +73,7 @@
   <g:javascript library="ext-3.3.1/ext-all-debug"/>
   <g:javascript library="MultiSelect"/>
   <g:javascript library="searchfield"/>
+
   <g:javascript library="datasources"/>
   <g:javascript library="common"/>
 
@@ -73,6 +82,7 @@
   <g:javascript library="report"/>
   <g:javascript library="attendee"/>
 
+  <sec:ifAllGranted roles="ROLE_ADMIN"><script type="text/javascript">admin_user = true; </script></sec:ifAllGranted>
 
   <script type="text/javascript">
     Ext.onReady(function() {

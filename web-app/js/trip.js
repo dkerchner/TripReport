@@ -5,7 +5,7 @@
  *
  * http://extjs.com/license
  */
-var TripViewWindow;
+var mode;
 
 
 var tripcm = new Ext.grid.ColumnModel([
@@ -16,15 +16,19 @@ var tripcm = new Ext.grid.ColumnModel([
     {header: '#', readOnly: true, dataIndex: 'id', width: 40, renderer: function(value, cell) {
         cell.css = "readonlycell";
         return value;
-    }, hidden: false},
+    }, hidden: true},
     {header: "Name", width: 100, dataIndex: 'name', sortable: true,
         editor: new Ext.form.TextField({
             allowBlank: false,
             maxLength: 100,
             maskRe: /([a-zA-Z0-9\s]+)$/
         })},
-    {header: "Events", width: 115, dataIndex: 'events', sortable: true},
-    {header: "Locations", width: 115, dataIndex: 'locations', sortable: true},
+    {header: "Events", width: 115, dataIndex: 'events', sortable: true, renderer: function(value, cell) {
+        return buildStringFromArray(value, 'name', ', ');
+    }},
+    {header: "Locations", width: 115, dataIndex: 'locations', sortable: true, renderer: function(value, cell) {
+        return buildStringFromArray(value, 'name', ', ');
+    }},
     {header: "Start Date", width: 115, dataIndex: 'startDate', renderer: Ext.util.Format.dateRenderer('m/d/Y'), sortable: true,
         editor: new Ext.form.DateField({
             format: 'm/d/Y'
@@ -51,15 +55,19 @@ var tripcm = new Ext.grid.ColumnModel([
      }, editor: new Ext.form.Checkbox({
      })},
      {header: "Approved By", width: 115, dataIndex: 'approvedBy', sortable: true},   */
-    {header: "Contracts", width: 115, dataIndex: 'contracts', sortable: true},
-    {header: "Attendees", width: 115, dataIndex: 'attendees', sortable: true}
+    {header: "Contracts", width: 115, dataIndex: 'contracts', sortable: true, renderer: function(value, cell) {
+        return buildStringFromArray(value, 'name', ', ');
+    }},
+    {header: "Attendees", width: 115, dataIndex: 'attendees', sortable: true, renderer: function(value, cell) {
+        return buildStringFromArray(value, 'name', ', ');
+    }}
 ]);
 
 tripcm.defaultSortable = true;
 
 // create the grid
 var tripGrid = new Ext.grid.GridPanel({
-    title: 'Trips',
+    //title: 'Trips',
     id: 'trip-grid',
     ds: tripListDS,
     cm: tripcm,
@@ -69,7 +77,6 @@ var tripGrid = new Ext.grid.GridPanel({
     enableColLock:false,
     //clicksToEdit:1,
     selModel: new Ext.grid.RowSelectionModel({singleSelect:true}),
-    closable: true,
     bbar: new Ext.PagingToolbar({
         pageSize: 15,
         store: tripListDS,
@@ -84,7 +91,7 @@ var tripGrid = new Ext.grid.GridPanel({
         },
         '-',
         {
-            text: 'Add',
+            text: 'Submit',
             tooltip: 'Submit a trip',
             iconCls:'add',                      // reference to our css
             handler: displayFormWindow
@@ -121,19 +128,22 @@ var tripGrid = new Ext.grid.GridPanel({
 
 
 // This saves the president after a cell has been edited
-function saveTheTrip(oGrid_event) {
+function saveTheTrip() {
+    var form = TripEditForm.getForm();
     Ext.Ajax.request({
         waitMsg: 'Please wait...',
-        url: 'http://localhost:8080/TripReportSPT/trip/updateJSON',
+        url: 'http://localhost:8080/TripReportSPT/trip/saveJSON',
         params: {
             //version: oGrid_event.record.data.version,
-            id: idField.getValue(),
-            shortDescription:      shortDescriptionField.getValue(),
-            purpose:       purposeField.getValue(),
-            startDate: startDateField.getValue().format('m/d/Y'),
-            endDate:  endDateField.getValue().format('m/d/Y'),
-            events: TripEditForm.getForm().findField('eventsField').getValue()
-                    //TripEditForm.getForm().findField('eventsField')
+            task: mode.toString(),
+            id: form.findField('idField').getValue(),
+            shortDescription:      form.findField('shortDescriptionField').getValue(),
+            purpose:       form.findField('purposeField').getValue(),
+            startDate: form.findField('startDateField').getValue().format('m/d/Y'),
+            endDate:  form.findField('endDateField').getValue().format('m/d/Y'),
+            events: form.findField('eventsField').getValue(),
+            locations: form.findField('locationsField').getValue(),
+            contracts: form.findField('contractsField').getValue()
         },
         success: function(response) {
             var result = eval(response.responseText);
@@ -156,7 +166,7 @@ function saveTheTrip(oGrid_event) {
 }
 
 // this creates a new president
-function createTheTrip() {
+/*function createTheTrip() {
     if (isTripFormValid()) {
         Ext.Ajax.request({
             waitMsg: 'Please wait...',
@@ -166,8 +176,10 @@ function createTheTrip() {
                 shortDescription:      shortDescriptionField.getValue(),
                 purpose:       purposeField.getValue(),
                 startDate: startDateField.getValue().format('m/d/Y'),
-                endDate:  endDateField.getValue().format('m/d/Y')
-
+                endDate:  endDateField.getValue().format('m/d/Y'),
+                events: TripEditForm.getForm().findField('eventsField').getValue(),
+                locations: TripEditForm.getForm().findField('locationsField').getValue(),
+                contracts: TripEditForm.getForm().findField('contractsField').getValue()
             },
             success: function(response) {
                 var result = eval(response.responseText);
@@ -191,28 +203,36 @@ function createTheTrip() {
     } else {
         Ext.MessageBox.alert('Warning', 'Your Form is not valid!');
     }
-}
+}*/
 
 // reset the Form before opening it
 function resetTripForm() {
-    shortDescriptionField.setValue('');
-    purposeField.setValue('');
-    startDateField.setValue('');
-    endDateField.setValue('');
+    var form = TripEditForm.getForm();
+    form.findField('shortDescriptionField').setValue('');
+    form.findField('purposeField').setValue('');
+    form.findField('startDateField').setValue('');
+    form.findField('endDateField').setValue('');
+    form.findField('eventsField').setValue('');
+    //eventsField.reset();
+    form.findField('contractsField').setValue('');
+    form.findField('locationsField').setValue('');
+
 }
 
 // check if the form is valid
 function isTripFormValid() {
-    return(shortDescriptionField.isValid() && purposeField.isValid() && startDateField.isValid() && endDateField.isValid());
+    var form = TripEditForm.getForm();
+    return(form.findField('shortDescriptionField').isValid() && form.findField('purposeField').isValid() && form.findField('startDateField').isValid() && form.findField('endDateField').isValid());
 }
 
 // display or bring forth the form
 function displayFormWindow() {
-    if (!TripCreateWindow.isVisible()) {
+    mode = "Create";
+    if (!TripEditWindow.isVisible()) {
+        TripEditWindow.show();
         resetTripForm();
-        TripCreateWindow.show();
     } else {
-        TripCreateWindow.toFront();
+        TripEditWindow.toFront();
     }
 }
 
@@ -220,7 +240,6 @@ function displayFormWindow() {
 function displayTripViewWindow() {
     if (tripGrid.selModel.getCount()) {
         if (!TripViewWindow.isVisible()) {
-            resetTripForm();
             TripViewWindow.show();
         } else {
             TripViewWindow.toFront();
@@ -231,17 +250,18 @@ function displayTripViewWindow() {
 // display or bring forth the form
 function displayTripEditWindow() {
     if (tripGrid.selModel.getCount()) {
-
+        mode = "Edit";
         var selections = tripGrid.selModel.getSelections();
         tripDS.on('load', tripDSEditOnLoad);
         tripDS.load({params: {'id': selections[0].json.id}});
 
         if (!TripEditWindow.isVisible()) {
-            resetTripForm();
             TripEditWindow.show();
+            //resetTripForm();
         } else {
             TripEditWindow.toFront();
         }
+
     }
 }
 
@@ -300,13 +320,12 @@ function deleteTrips(btn) {
     }
 }
 
-// This was added in Tutorial 6
 function attendTrips(btn) {
     if (btn == 'yes') {
         var selections = tripGrid.selModel.getSelections();
         Ext.Ajax.request({
             waitMsg: 'Please Wait',
-            url: 'http://localhost:8080/TripReportSPT/trip/attendJSON',
+            url: 'http://localhost:8080/TripReportSPT/userTrip/attendJSON',
             params: {
                 id:selections[0].json.id
             },
@@ -350,31 +369,33 @@ function onTripListingEditorGridDoubleClick(grid, rowIndex, e) {
 }
 
 function tripDSOnLoad() {
-    shortDescriptionDisplayField.setValue(tripDS.getAt(0).data.name);
-    purposeDisplayField.setValue(tripDS.getAt(0).data.purpose);
-    startDateDisplayField.setValue(tripDS.getAt(0).data.startDate.format('m/d/Y'));
-    endDateDisplayField.setValue(tripDS.getAt(0).data.endDate.format('m/d/Y'));
+    var form = TripViewForm.getForm();
+    form.findField('shortDescriptionDisplayField').setValue(tripDS.getAt(0).data.name);
+    form.findField('purposeDisplayField').setValue(tripDS.getAt(0).data.purpose);
+    form.findField('startDateDisplayField').setValue(tripDS.getAt(0).data.startDate.format('m/d/Y'));
+    form.findField('endDateDisplayField').setValue(tripDS.getAt(0).data.endDate.format('m/d/Y'));
     var events = tripDS.getAt(0).data.events;
     var contracts = tripDS.getAt(0).data.contracts;
     var locations = tripDS.getAt(0).data.locations;
-    eventsDisplayField.setValue(buildStringFromArray(events, "name"));
-    contractsDisplayField.setValue(buildStringFromArray(contracts, "name"));
-    locationsDisplayField.setValue(buildStringFromArray(locations, "name"));
+    form.findField('eventsDisplayField').setValue(buildStringFromArray(events, "name", "<br/>"));
+    form.findField('contractsDisplayField').setValue(buildStringFromArray(contracts, "name", "<br/>"));
+    form.findField('locationsDisplayField').setValue(buildStringFromArray(locations, "name", "<br/>"));
 
 }
 
 function tripDSEditOnLoad() {
-    shortDescriptionField.setValue(tripDS.getAt(0).data.name);
-    purposeField.setValue(tripDS.getAt(0).data.purpose);
-    startDateField.setValue(tripDS.getAt(0).data.startDate.format('m/d/Y'));
-    endDateField.setValue(tripDS.getAt(0).data.endDate.format('m/d/Y'));
-    idField.setValue(tripDS.getAt(0).data.id);
+    var form = TripEditForm.getForm();
+    form.findField('shortDescriptionField').setValue(tripDS.getAt(0).data.name);
+    form.findField('purposeField').setValue(tripDS.getAt(0).data.purpose);
+    form.findField('startDateField').setValue(tripDS.getAt(0).data.startDate.format('m/d/Y'));
+    form.findField('endDateField').setValue(tripDS.getAt(0).data.endDate.format('m/d/Y'));
+    form.findField('idField').setValue(tripDS.getAt(0).data.id);
     var events = tripDS.getAt(0).data.events;
     var contracts = tripDS.getAt(0).data.contracts;
     var locations = tripDS.getAt(0).data.locations;
-    TripEditForm.getForm().findField('eventsField').setValue(buildStringFromArray(events, "id"));
-    TripEditForm.getForm().findField('contractsField').setValue(buildStringFromArray(contracts, "id"));
-    TripEditForm.getForm().findField('locationsField').setValue(buildStringFromArray(locations, "id"));
+    form.findField('eventsField').setValue(buildStringFromArray(events, "id", ','));
+    form.findField('contractsField').setValue(buildStringFromArray(contracts, "id", ','));
+    form.findField('locationsField').setValue(buildStringFromArray(locations, "id", ','));
 }
 
 
@@ -400,13 +421,13 @@ TripListingContextMenu = new Ext.menu.Menu({
 });
 
 tripListDS.load({params: {start: 0, limit: 15}});
-tripGrid.on('afteredit', saveTheTrip);
+//tripGrid.on('afteredit', saveTheTrip);
 
-TripViewForm = new Ext.FormPanel({
+var TripViewForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
     width: 600,
-    store: tripDS,
+    //store: tripDS,
     items: [
         {
             layout:'column',
@@ -422,15 +443,18 @@ TripViewForm = new Ext.FormPanel({
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [startDateDisplayField, endDateDisplayField, contractsDisplayField]
+                    items: [startDateDisplayField, endDateDisplayField, contractsDisplayField, idField]
                 }
             ]
         }
     ],
     buttons: [
         /*{
-         text: 'Save and Close',
-         handler: createTheTrip
+             id: 'approveButton',
+             text: 'Approve',
+             handler: confirmApproveTrips,
+             class: 'approved',
+             iconCls: 'approve'
          },*/
         {
             text: 'Close',
@@ -442,7 +466,7 @@ TripViewForm = new Ext.FormPanel({
     ]
 });
 
-TripViewWindow = new Ext.Window({
+var TripViewWindow = new Ext.Window({
     id: 'TripViewWindow',
     title: 'Trip Details',
     closable:true,
@@ -453,7 +477,7 @@ TripViewWindow = new Ext.Window({
     items: TripViewForm
 });
 
-TripCreateForm = new Ext.FormPanel({
+/*var TripCreateForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
     width: 600,
@@ -472,7 +496,7 @@ TripCreateForm = new Ext.FormPanel({
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [startDateField, endDateField, contractsField]
+                    items: [startDateField, endDateField, contractsField, idField]
                 }
             ]
         }
@@ -480,7 +504,7 @@ TripCreateForm = new Ext.FormPanel({
     buttons: [
         {
             text: 'Save and Close',
-            handler: createTheTrip
+            handler: saveTheTrip
         },
         {
             text: 'Cancel',
@@ -492,7 +516,7 @@ TripCreateForm = new Ext.FormPanel({
     ]
 });
 
-TripCreateWindow = new Ext.Window({
+var TripCreateWindow = new Ext.Window({
     id: 'TripCreateWindow',
     title: 'Submitting a New Trip',
     closable:true,
@@ -501,9 +525,9 @@ TripCreateWindow = new Ext.Window({
     plain:false,
     layout: 'fit',
     items: TripCreateForm
-});
+}); */
 
-TripEditForm = new Ext.FormPanel({
+var TripEditForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
     width: 600,
@@ -542,29 +566,13 @@ TripEditForm = new Ext.FormPanel({
     ]
 });
 
-TripEditWindow = new Ext.Window({
+var TripEditWindow = new Ext.Window({
     id: 'TripEditWindow',
     title: 'Edit a Trip',
-    closable:true,
+    closable:false,
     width: 610,
     height: 450,
     plain:false,
     layout: 'fit',
     items: TripEditForm
 });
-
-function buildStringFromArray(array, column) {
-    arrayString = "";
-    for(var arr = array, len = arr.length, i = 0; i < len; i++){
-        switch (column) {
-            case "id":
-                arrayString += array[i]['id'] + ",";
-                break;
-            default:
-                arrayString += array[i][column] + "<br/>";
-                break;
-        }
-
-    }
-    return arrayString;
-}
