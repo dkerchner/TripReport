@@ -130,39 +130,44 @@ var tripGrid = new Ext.grid.GridPanel({
 // This saves the president after a cell has been edited
 function saveTheTrip() {
     var form = TripEditForm.getForm();
-    Ext.Ajax.request({
-        waitMsg: 'Please wait...',
-        url: 'http://localhost:8080/TripReportSPT/trip/saveJSON',
-        params: {
-            //version: oGrid_event.record.data.version,
-            task: mode.toString(),
-            id: form.findField('idField').getValue(),
-            shortDescription:      form.findField('shortDescriptionField').getValue(),
-            purpose:       form.findField('purposeField').getValue(),
-            startDate: form.findField('startDateField').getValue().format('m/d/Y'),
-            endDate:  form.findField('endDateField').getValue().format('m/d/Y'),
-            events: form.findField('eventsField').getValue(),
-            locations: form.findField('locationsField').getValue(),
-            contracts: form.findField('contractsField').getValue()
-        },
-        success: function(response) {
-            var result = eval(response.responseText);
-            switch (result) {
-                case 1:
-                    tripListDS.commitChanges();
-                    tripListDS.reload();
-                    TripEditWindow.hide();
-                    break;
-                default:
-                    Ext.MessageBox.alert('Error', response.responseText);
-                    break;
+    if (isTripFormValid(form)) {
+        Ext.Ajax.request({
+            waitMsg: 'Please wait...',
+            url: 'http://localhost:8080/TripReportSPT/trip/saveJSON',
+            params: {
+                //version: oGrid_event.record.data.version,
+                task: mode.toString(),
+                id: form.findField('idField').getValue(),
+                shortDescription:      form.findField('shortDescriptionField').getValue(),
+                purpose:       form.findField('purposeField').getValue(),
+                startDate: form.findField('startDateField').getValue().format('m/d/Y'),
+                endDate:  form.findField('endDateField').getValue().format('m/d/Y'),
+                events: form.findField('eventsField').getValue(),
+                locations: form.findField('locationsField').getValue(),
+                contracts: form.findField('contractsField').getValue()
+            },
+            success: function(response) {
+                var result = eval(response.responseText);
+                switch (result) {
+                    case 1:
+                        tripListDS.commitChanges();
+                        tripListDS.reload();
+                        TripEditWindow.hide();
+                        break;
+                    default:
+                        Ext.MessageBox.alert('Error', response.responseText);
+                        break;
+                }
+            },
+            failure: function(response) {
+                var result = response.responseText;
+                Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
             }
-        },
-        failure: function(response) {
-            var result = response.responseText;
-            Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
-        }
-    });
+        });
+    } else {
+        Ext.MessageBox.alert('Warning', 'Your Form is not valid!');
+    }
+
 }
 
 // this creates a new president
@@ -205,24 +210,9 @@ function saveTheTrip() {
     }
 }*/
 
-// reset the Form before opening it
-function resetTripForm() {
-    var form = TripEditForm.getForm();
-    form.findField('shortDescriptionField').setValue('');
-    form.findField('purposeField').setValue('');
-    form.findField('startDateField').setValue('');
-    form.findField('endDateField').setValue('');
-    form.findField('eventsField').setValue('');
-    //eventsField.reset();
-    form.findField('contractsField').setValue('');
-    form.findField('locationsField').setValue('');
-
-}
-
 // check if the form is valid
-function isTripFormValid() {
-    var form = TripEditForm.getForm();
-    return(form.findField('shortDescriptionField').isValid() && form.findField('purposeField').isValid() && form.findField('startDateField').isValid() && form.findField('endDateField').isValid());
+function isTripFormValid(form) {
+    return(formIsValid(form));
 }
 
 // display or bring forth the form
@@ -230,7 +220,7 @@ function displayFormWindow() {
     mode = "Create";
     if (!TripEditWindow.isVisible()) {
         TripEditWindow.show();
-        resetTripForm();
+        resetForm(TripEditForm.getForm());
     } else {
         TripEditWindow.toFront();
     }
@@ -257,7 +247,6 @@ function displayTripEditWindow() {
 
         if (!TripEditWindow.isVisible()) {
             TripEditWindow.show();
-            //resetTripForm();
         } else {
             TripEditWindow.toFront();
         }
@@ -370,10 +359,11 @@ function onTripListingEditorGridDoubleClick(grid, rowIndex, e) {
 
 function tripDSOnLoad() {
     var form = TripViewForm.getForm();
-    form.findField('shortDescriptionDisplayField').setValue(tripDS.getAt(0).data.name);
+    form.setValues(tripDS.getAt(0).data);
+    /*form.findField('shortDescriptionDisplayField').setValue(tripDS.getAt(0).data.name);
     form.findField('purposeDisplayField').setValue(tripDS.getAt(0).data.purpose);
     form.findField('startDateDisplayField').setValue(tripDS.getAt(0).data.startDate.format('m/d/Y'));
-    form.findField('endDateDisplayField').setValue(tripDS.getAt(0).data.endDate.format('m/d/Y'));
+    form.findField('endDateDisplayField').setValue(tripDS.getAt(0).data.endDate.format('m/d/Y'));*/
     var events = tripDS.getAt(0).data.events;
     var contracts = tripDS.getAt(0).data.contracts;
     var locations = tripDS.getAt(0).data.locations;
@@ -385,17 +375,20 @@ function tripDSOnLoad() {
 
 function tripDSEditOnLoad() {
     var form = TripEditForm.getForm();
-    form.findField('shortDescriptionField').setValue(tripDS.getAt(0).data.name);
+    form.setValues(tripDS.getAt(0).data);
+    /*form.findField('shortDescriptionField').setValue(tripDS.getAt(0).data.name);
     form.findField('purposeField').setValue(tripDS.getAt(0).data.purpose);
     form.findField('startDateField').setValue(tripDS.getAt(0).data.startDate.format('m/d/Y'));
     form.findField('endDateField').setValue(tripDS.getAt(0).data.endDate.format('m/d/Y'));
-    form.findField('idField').setValue(tripDS.getAt(0).data.id);
-    var events = tripDS.getAt(0).data.events;
-    var contracts = tripDS.getAt(0).data.contracts;
-    var locations = tripDS.getAt(0).data.locations;
-    form.findField('eventsField').setValue(buildStringFromArray(events, "id", ','));
-    form.findField('contractsField').setValue(buildStringFromArray(contracts, "id", ','));
-    form.findField('locationsField').setValue(buildStringFromArray(locations, "id", ','));
+    form.findField('idField').setValue(tripDS.getAt(0).data.id); */
+    if (mode != "Create") {
+        var events = tripDS.getAt(0).data.events;
+        var contracts = tripDS.getAt(0).data.contracts;
+        var locations = tripDS.getAt(0).data.locations;
+        form.findField('eventsField').setValue(buildStringFromArray(events, "id", ','));
+        form.findField('contractsField').setValue(buildStringFromArray(contracts, "id", ','));
+        form.findField('locationsField').setValue(buildStringFromArray(locations, "id", ','));
+    }
 }
 
 

@@ -19,21 +19,8 @@ class BootStrap {
             def adminRole = Role.findByAuthority('ROLE_ADMIN') ?: new Role(authority: 'ROLE_ADMIN').save(failOnError: true)
 
             def sptCompany = new Company(name: "SPT", url:"http://www.inc.spt.com").save(failOnError: true)
+            def aCompany = new Company(name: "ACo", url:"http://www.a.com").save(failOnError: true)
             def abcAgency = new Agency(name: "ABC", url: "http://www.abc.gov").save(failOnError: true)
-
-            def dkerchnerUser = new User(username:"dkerchner",
-                fullName: "Dominic K.",
-                password: springSecurityService.encodePassword('password'),
-                email: "dominic.kerchner@spt-inc.com",
-                enabled: true,
-                company: sptCompany).save(failOnError: true)
-
-            def edullUser = new User(username:"edull",
-                fullName: "Eric Dull",
-                password: springSecurityService.encodePassword('password'),
-                email: "edull@spt-inc.com",
-                enabled: true,
-                company: sptCompany).save(failOnError: true)
 
             def mgrUser = new User(username:"mgr",
                 fullName: "The Manager",
@@ -50,10 +37,27 @@ class BootStrap {
                 enabled: true,
                 company: sptCompany).save(failOnError: true)
 
+            def abcContract = new Contract(contractNumber: "123456", organization: abcAgency).save(failOnError: true)
+            def xyzContract = new Contract(contractNumber: "8675309", organization: abcAgency).save(failOnError: true)
+
+            def dkerchnerUser = new User(username:"dkerchner",
+                fullName: "Dominic K.",
+                password: springSecurityService.encodePassword('password'),
+                email: "dominic.kerchner@spt-inc.com",
+                enabled: true,
+                company: sptCompany).save(failOnError: true)
+
+            dkerchnerUser.addToContracts(abcContract).save(failOnError: true, flush:true)
+
+            def edullUser = new User(username:"edull",
+                fullName: "Eric Dull",
+                password: springSecurityService.encodePassword('password'),
+                email: "edull@spt-inc.com",
+                enabled: true,
+                company: sptCompany).save(failOnError: true)
+
             def laLoc = new Location(city: "Los Angeles", state:"CA", country:"USA").save(failOnError: true)
             def hanoverLoc = new Location(city: "Hanover", state:"MD", country:"USA").save(failOnError: true)
-            def abcContract = new Contract(contractNumber: "123456", organization: abcAgency, manager: edullUser).save(failOnError: true)
-            def xyzContract = new Contract(contractNumber: "8675309", organization: abcAgency, manager: edullUser).save(failOnError: true)
             def adobeMAXEvent = new Event(name: "AdobeMAX",
                 location:laLoc,
                 startDate: df.parse("10/25/2010"),

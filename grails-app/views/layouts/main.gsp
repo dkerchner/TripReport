@@ -81,6 +81,8 @@
   <g:javascript library="trip"/>
   <g:javascript library="report"/>
   <g:javascript library="attendee"/>
+  <g:javascript library="user"/>
+
 
   <sec:ifAllGranted roles="ROLE_ADMIN"><script type="text/javascript">admin_user = true; </script></sec:ifAllGranted>
 
@@ -193,9 +195,24 @@
               },
               {
                 title: 'Settings',
-                html: '<p>Some settings in here.</p>',
                 border: false,
-                iconCls: 'settings'
+                align:'stretch',
+                layout: 'vbox',
+                layoutConfig: {
+                  padding: '5',
+                  align: 'stretch'
+                },
+                iconCls: 'settings',
+                items: [{
+                      xtype:'button',
+                      text: 'Users',
+                      handler: function(){
+                          replace('user-grid'
+                          , 'Users');
+                      }
+                  }
+                ]
+
               }
             ]
           },

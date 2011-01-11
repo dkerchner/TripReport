@@ -4,10 +4,10 @@ class Contract {
 
     String contractNumber
     Organization organization
-    User manager
+    //User manager
     boolean active
 
-    static hasMany = [trips: Trip, users: User]
+    static hasMany = [trips: Trip]
 
     static belongsTo = [Trip, User]
 

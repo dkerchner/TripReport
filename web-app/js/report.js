@@ -86,7 +86,7 @@ function displayFormWindow() {
     mode = "Create";
     if (!ReportEditWindow.isVisible()) {
         ReportEditWindow.show();
-        resetReportForm();
+        resetForm(ReportViewForm.getForm());
     } else {
         ReportEditWindow.toFront();
     }
@@ -196,37 +196,6 @@ function deleteReports(btn) {
     }
 }
 
-// This was added in Tutorial 6
-function attendReports(btn) {
-    if (btn == 'yes') {
-        var selections = reportGrid.selModel.getSelections();
-        Ext.Ajax.request({
-            waitMsg: 'Please Wait',
-            url: 'http://localhost:8080/ReportReportSPT/report/attendJSON',
-            params: {
-                id:selections[0].json.id
-            },
-            success:
-            function(response) {
-                var result = eval(response.responseText);
-                switch (result) {
-                    case 1:  // Success : simply reload
-                        Ext.MessageBox.alert('Success', 'You have successfully requested approval to attend this report!');
-                        reportListDS.reload();
-                        break;
-                    default:
-                        Ext.MessageBox.alert('Fail', 'You have already requested to attend this report.');
-                        break;
-                }
-            },
-            failure: function(response) {
-                var result = response.responseText;
-                Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
-            }
-        });
-    }
-}
-
 function onReportListingEditorGridContextMenu(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -247,11 +216,12 @@ function onReportListingEditorGridDoubleClick(grid, rowIndex, e) {
 
 function reportDSOnLoad() {
     var form = ReportViewForm.getForm();
-    form.findField('tripDisplayField').setValue(reportDS.getAt(0).data.trip);
+    form.setValues(reportDS.getAt(0).data);
+    /*form.findField('tripDisplayField').setValue(reportDS.getAt(0).data.trip);
     form.findField('authorDisplayField').setValue(reportDS.getAt(0).data.author);
     form.findField('usefulnessDisplayField').setValue(reportDS.getAt(0).data.usefulness);
     form.findField('issuesDisplayField').setValue(reportDS.getAt(0).data.issues);
-    form.findField('topicsDisplayField').setValue(reportDS.getAt(0).data.topics);
+    form.findField('topicsDisplayField').setValue(reportDS.getAt(0).data.topics); */
     var contacts = reportDS.getAt(0).data.contacts;
     var actionItems = reportDS.getAt(0).data.actionItems;
     form.findField('contactsDisplayField').setValue(buildStringFromArray(contacts, "name", "<br/>"));
@@ -261,12 +231,13 @@ function reportDSOnLoad() {
 
 function reportDSEditOnLoad() {
     var form = ReportEditForm.getForm();
-    form.findField('tripField').setValue(reportDS.getAt(0).data.trip);
+    form.setValues(reportDS.getAt(0).data);
+    /*form.findField('tripField').setValue(reportDS.getAt(0).data.trip);
     form.findField('authorField').setValue(reportDS.getAt(0).data.author);
     form.findField('usefulnessField').setValue(reportDS.getAt(0).data.usefulness);
     form.findField('issuesField').setValue(reportDS.getAt(0).data.issues);
     form.findField('topicsField').setValue(reportDS.getAt(0).data.topics);
-    form.findField('idField').setValue(reportDS.getAt(0).data.id);
+    form.findField('idField').setValue(reportDS.getAt(0).data.id); */
     if (mode != "Create") {
         var contacts = reportDS.getAt(0).data.contacts;
         var actionItems = reportDS.getAt(0).data.actionItems;
@@ -281,59 +252,49 @@ reportGrid.on('afteredit', saveTheReport);
 // This saves the president after a cell has been edited
 function saveTheReport() {
     var form = ReportEditForm.getForm();
-    Ext.Ajax.request({
-        waitMsg: 'Please wait...',
-        url: 'http://localhost:8080/ReportReportSPT/report/saveJSON',
-        params: {
-            //version: oGrid_event.record.data.version,
-            task: mode.toString(),
-            id: form.findField('idField').getValue(),
-            trip:      form.findField('tripField').getValue(),
-            author:       form.findField('authorField').getValue(),
-            issues: form.findField('issuesField').getValue(),
-            topics:  form.findField('topicsField').getValue(),
-            usefulness:  form.findField('usefulnessField').getValue(),
-            actionItems: form.findField('actionItemsField').getValue(),
-            contacts: form.findField('contactsField').getValue()
-        },
-        success: function(response) {
-            var result = eval(response.responseText);
-            switch (result) {
-                case 1:
-                    reportListDS.commitChanges();
-                    reportListDS.reload();
-                    ReportEditWindow.hide();
-                    break;
-                default:
-                    Ext.MessageBox.alert('Error', response.responseText);
-                    break;
+    if (isReportFormValid(form)) {
+        Ext.Ajax.request({
+            waitMsg: 'Please wait...',
+            url: 'http://localhost:8080/ReportReportSPT/report/saveJSON',
+            params: {
+                //version: oGrid_event.record.data.version,
+                task: mode.toString(),
+                id: form.findField('idField').getValue(),
+                trip:      form.findField('tripField').getValue(),
+                author:       form.findField('authorField').getValue(),
+                issues: form.findField('issuesField').getValue(),
+                topics:  form.findField('topicsField').getValue(),
+                usefulness:  form.findField('usefulnessField').getValue(),
+                actionItems: form.findField('actionItemsField').getValue(),
+                contacts: form.findField('contactsField').getValue()
+            },
+            success: function(response) {
+                var result = eval(response.responseText);
+                switch (result) {
+                    case 1:
+                        reportListDS.commitChanges();
+                        reportListDS.reload();
+                        ReportEditWindow.hide();
+                        break;
+                    default:
+                        Ext.MessageBox.alert('Error', response.responseText);
+                        break;
+                }
+            },
+            failure: function(response) {
+                var result = response.responseText;
+                Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
             }
-        },
-        failure: function(response) {
-            var result = response.responseText;
-            Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
-        }
-    });
-}
-
-// reset the Form before opening it
-function resetReportForm() {
-    var form = ReportEditForm.getForm();
-    form.findField('tripField').setValue('');
-    form.findField('authorField').setValue('');
-    form.findField('usefulnessField').setValue('');
-    form.findField('issuesField').setValue('');
-    form.findField('topicsField').setValue('');
-    //eventsField.reset();
-    form.findField('contactsField').setValue('');
-    form.findField('actionItemsField').setValue('');
+        });
+    } else {
+        Ext.MessageBox.alert('Warning', 'Your Form is not valid!');
+    }
 
 }
 
 // check if the form is valid
-function isReportFormValid() {
-    var form = ReportEditForm.getForm();
-    return(form.findField('tripField').isValid() && form.findField('authorField').isValid() && form.findField('usefulnessField').isValid() && form.findField('issuesField').isValid() && form.findField('topicsField').isValid());
+function isReportFormValid(form) {
+    return(formIsValid(form));
 }
 
 var ReportViewForm = new Ext.FormPanel({

@@ -8,6 +8,8 @@ class UserController {
 
   static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
+  def springSecurityService
+
   def index = {
     redirect(action: "list", params: params)
   }
@@ -20,18 +22,19 @@ class UserController {
   def listJSON = {
     def users = []
     for (u in User.list(params)) {
+      def contractList = []
 
       def contracts = u.getContracts()
-      def contractString = ""
       for (c in contracts) {
-        contractString += c.toString()
+        def contract = [id: c.id, name: c.toString()]
+        contractList << contract
       }
 
-      def user = [id: u.id, name: u.toString(), userName: u.username, email: u.email, company: u.company.toString(), fullName: u.fullName, contracts: contractString]
+      def user = [id: u.id, name: u.toString(), userName: u.username, email: u.email, company: u.company.toString(), fullName: u.fullName, contracts: contractList]
       users << user
     }
 
-    def listResult = [total: users.count(), items: users]
+    def listResult = [total: users.size(), items: users]
     render listResult as JSON
   }
 
@@ -61,7 +64,7 @@ class UserController {
       userInstance = User.get(params.id)
     }
 
-    if (userInstance) {
+    if (userInstance) {   println params
       if (params.version) {
         def version = params.version.toLong()
         if (userInstance.version > version) {
@@ -79,12 +82,19 @@ class UserController {
         userInstance.addToContracts(contract);
       }
 
+      // The front end handles the comparison of password1 and password2
+      if (params.password1 != null && !params.password1.equals('')) {
+         def password = springSecurityService.encodePassword(params.password1);
+         userInstance.password = password
+      }
+
       userInstance.properties = params
 
       if (!userInstance.hasErrors() && userInstance.save(flush: true)) {
         render 1
       }
       else {
+        println userInstance.errors
         render "${message(code: 'Could not update. A necessary value is missing.', args: [message(code: 'user.label', default: 'User'), params.id])}"
       }
     }
@@ -111,6 +121,7 @@ class UserController {
     }
     else {
       def contractList = []
+      def roleList =[]
 
       def contracts = userInstance.getContracts()
       for (c in contracts) {
@@ -118,9 +129,17 @@ class UserController {
         contractList << contract
       }
 
-      def user = [id: userInstance.id, name: userInstance.toString(), userName: userInstance.username, email: userInstance.email, company: userInstance.company.toString(), fullName: userInstance.fullName, contracts: contracts]
+      def roles = userInstance.getAuthorities()
+      for (r in roles) {
+        def role = [id: r.id, name: r.authority]
+        roleList << role
+      }
 
-      render user as JSON
+
+      def user = [id: userInstance.id, fullName: userInstance.fullName, name: userInstance.toString(), userName: userInstance.username, email: userInstance.email, company: userInstance.company.toString(), companyId: userInstance.company.id, contracts: contractList, roles: roleList]
+      def result = [success: true, data: user]
+
+      render result as JSON
     }
   }
 

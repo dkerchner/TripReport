@@ -19,7 +19,7 @@ class ContractController {
   def listJSON = {
     def contracts = []
     for (c in Contract.list(params)) {
-      def contract = [id: c.id, name: c.toString(), organization: c.organization.toString(), manager: c.manager.toString(), active: c.active]
+      def contract = [id: c.id, name: c.toString(), organization: c.organization.toString(), active: c.active]
       contracts << contract
     }
 
@@ -95,7 +95,7 @@ class ContractController {
     }
     else {
 
-      def contract = [id: contractInstance.id, name: contractInstance.toString(), organization: contractInstance.organization.toString(), manager: contractInstance.manager.toString(), active: contractInstance.active]
+      def contract = [id: contractInstance.id, name: contractInstance.toString(), organization: contractInstance.organization.toString(), active: contractInstance.active]
 
       render contract as JSON
     }

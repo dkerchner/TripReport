@@ -24,7 +24,7 @@ class ActionItemController {
       actionItems << actionItem
     }
 
-    def listResult = [total: actionItems.count(), items: actionItems]
+    def listResult = [total: actionItems.size(), items: actionItems]
     render listResult as JSON
   }
 

@@ -194,7 +194,7 @@ class TripController {
       }
 
       //println events as JSON;
-      def trip = [id: tripInstance.id, name: tripInstance.toString(), purpose: tripInstance.purpose, startDate: tripInstance.startDate, endDate: tripInstance.endDate, events: eventList.toArray(), contracts: contractList, locations: locationList, attendees: attendeeList]
+      def trip = [id: tripInstance.id, name: tripInstance.toString(), shortDescription: tripInstance.shortDescription, purpose: tripInstance.purpose, startDate: tripInstance.startDate, endDate: tripInstance.endDate, events: eventList.toArray(), contracts: contractList, locations: locationList, attendees: attendeeList]
 
       render trip as JSON
     }

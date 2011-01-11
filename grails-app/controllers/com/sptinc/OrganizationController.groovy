@@ -24,7 +24,7 @@ class OrganizationController {
       orgs << org
     }
 
-    def listResult = [total: orgs.count(), items: orgs]
+    def listResult = [total: orgs.size(), items: orgs]
     render listResult as JSON
   }
 

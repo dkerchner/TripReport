@@ -24,7 +24,7 @@ class LocationController {
       locs << loc
     }
 
-    def listResult = [total: locs.count(), items: locs]
+    def listResult = [total: locs.size(), items: locs]
     render listResult as JSON
   }
 

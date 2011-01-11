@@ -28,7 +28,7 @@ class EventController {
       events << event
     }
 
-    def listResult = [total: events.count(), items: events]
+    def listResult = [total: events.size(), items: events]
     render listResult as JSON
   }
 
@@ -99,8 +99,10 @@ class EventController {
       render "${message(code: 'default.not.found.message', args: [message(code: 'event.label', default: 'Event'), params.id])}"
     }
     else {
+      def loc = eventInstance.getLocation()
+      def location = [id: loc.id, name: loc.toString()]
 
-      def event = [id: eventInstance.id, name: eventInstance.authority]
+      def event = [id: eventInstance.id, name: eventInstance.toString(), startDate: eventInstance.startDate, endDate: eventInstance.endDate, location: location]
 
       render event as JSON
     }

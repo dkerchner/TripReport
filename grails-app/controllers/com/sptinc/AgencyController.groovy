@@ -24,7 +24,7 @@ class AgencyController {
       agencies << agency
     }
 
-    def listResult = [total: agencies.count(), items: agencies]
+    def listResult = [total: agencies.size(), items: agencies]
     render listResult as JSON
   }
 

@@ -197,7 +197,7 @@ function attendeeDSOnLoad() {
     form.findField('eventsDisplayField').setValue(buildStringFromArray(events, "name", "<br/>"));
     form.findField('contractsDisplayField').setValue(buildStringFromArray(contracts, "name", "<br/>"));
     form.findField('locationsDisplayField').setValue(buildStringFromArray(locations, "name", "<br/>"));
-
+    if (admin_user){form.findField('approveButton').disabled = false; }
 }
 
 
@@ -231,7 +231,8 @@ var AttendeeViewForm = new Ext.FormPanel({
              id: 'approveButton',
              text: 'Approve',
              handler: confirmApproveTrips,
-             iconCls: 'approve'
+             iconCls: 'approve',
+             disabled: true
          },
         {
             text: 'Close',

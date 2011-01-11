@@ -24,7 +24,7 @@ class ContactController {
       contacts << contact
     }
 
-    def listResult = [total: contacts.count(), items: contacts]
+    def listResult = [total: contacts.size(), items: contacts]
     render listResult as JSON
   }
 

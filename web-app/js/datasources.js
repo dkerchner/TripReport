@@ -1,34 +1,4 @@
 // create the Data Store
-
-var tripDS = new Ext.data.Store({
-    autoLoad: false,
-    proxy: new Ext.data.HttpProxy({
-        url: 'http://localhost:8080/TripReportSPT/trip/showJSON'}),
-    reader: new Ext.data.JsonReader({},
-            [
-                {name: 'version', type: 'int', mapping: 'version'},
-                {name: 'id', type: 'int', mapping: 'id'},
-                {name: 'name', type: 'string', mapping: 'name'},
-                {name: 'startDate', type: 'date', mapping: 'startDate'},
-                {name: 'endDate', type: 'date', mapping: 'endDate'},
-                {name: 'purpose', type: 'string', mapping: 'purpose'},
-                {name: 'estimatedCost', type: 'float', mapping: 'estimatedCost'},
-                {name: 'events', type: 'array', mapping: 'events'},
-                {name: 'contracts', type: 'array', mapping: 'contracts'},
-                {name: 'attendees', type: 'array', mapping: 'attendees'},
-                {name: 'locations', type: 'array', mapping: 'locations'}
-
-            ]
-            ),
-    baseParams:     {
-        now:        (new Date()).getTime()
-    }/*,
-    writer: new Ext.data.JsonWriter({
-        encode:     true
-    }) */
-});
-
-
 var attendeeDS = new Ext.data.Store({
     autoLoad: false,
     proxy: new Ext.data.HttpProxy({
@@ -60,7 +30,137 @@ var attendeeDS = new Ext.data.Store({
     }
 });
 
-// create the Data Store
+var actionItemDS = new Ext.data.Store({
+    autoLoad: true,
+    proxy: new Ext.data.HttpProxy({
+        url: 'http://localhost:8080/TripReportSPT/actionItem/showJSON'}),
+    reader: new Ext.data.JsonReader({},
+            [
+                {name: 'version', type: 'int', mapping: 'version'},
+                {name: 'id', type: 'int', mapping: 'id'},
+                {name: 'name', type: 'string', mapping: 'name'},
+                {name: 'description', type: 'string', mapping: 'description'},
+                {name: 'report', type: 'string', mapping: 'report'},
+                {name: 'dueDate', type: 'date', mapping: 'dueDate'}
+            ]
+            ),
+    baseParams:     {
+        now:        (new Date()).getTime()
+    },
+    writer: new Ext.data.JsonWriter({
+        encode:     true
+    })
+});
+
+var contactDS = new Ext.data.Store({
+    autoLoad: true,
+    proxy: new Ext.data.HttpProxy({
+        url: 'http://localhost:8080/TripReportSPT/contact/showJSON'}),
+    reader: new Ext.data.JsonReader({},
+            [
+                {name: 'version', type: 'int', mapping: 'version'},
+                {name: 'id', type: 'int', mapping: 'id'},
+                {name: 'firstName', type: 'string', mapping: 'firstName'},
+                {name: 'lastName', type: 'string', mapping: 'lastName'},
+                {name: 'organization', type: 'string', mapping: 'organization'},
+                {name: 'email', type: 'string', mapping: 'email'},
+                {name: 'phoneNumber', type: 'string', mapping: 'phoneNumber'}
+            ]
+            ),
+    baseParams:     {
+        now:        (new Date()).getTime()
+    },
+    writer: new Ext.data.JsonWriter({
+        encode:     true
+    })
+});
+
+var contractDS = new Ext.data.Store({
+    autoLoad: true,
+    proxy: new Ext.data.HttpProxy({
+        url: 'http://localhost:8080/TripReportSPT/contract/showJSON'}),
+    reader: new Ext.data.JsonReader({},
+            [
+                {name: 'version', type: 'int', mapping: 'version'},
+                {name: 'id', type: 'int', mapping: 'id'},
+                {name: 'name', type: 'string', mapping: 'name'},
+                {name: 'organization', type: 'string', mapping: 'organization'},
+                //{name: 'manager', type: 'string', mapping: 'manager'},
+                {name: 'active', type: 'boolean', mapping: 'active'}
+            ]
+            ),
+    baseParams:     {
+        now:        (new Date()).getTime()
+    },
+    writer: new Ext.data.JsonWriter({
+        encode:     true
+    })
+});
+
+var eventDS = new Ext.data.Store({
+    autoLoad: true,
+    proxy: new Ext.data.HttpProxy({
+        url: 'http://localhost:8080/TripReportSPT/event/showJSON'}),
+    reader: new Ext.data.JsonReader({},
+            [
+                {name: 'version', type: 'int', mapping: 'version'},
+                {name: 'id', type: 'int', mapping: 'id'},
+                {name: 'name', type: 'string', mapping: 'name'},
+                {name: 'startDate', type: 'date', mapping: 'startDate'},
+                {name: 'endDate', type: 'date', mapping: 'endDate'},
+                {name: 'description', type: 'string', mapping: 'description'},
+                {name: 'location', type: 'string', mapping: 'location.name'}
+            ]
+            ),
+    baseParams:     {
+        now:        (new Date()).getTime()
+    },
+    writer: new Ext.data.JsonWriter({
+        encode:     true
+    })
+});
+
+var locationDS = new Ext.data.Store({
+    autoLoad: true,
+    proxy: new Ext.data.HttpProxy({
+        url: 'http://localhost:8080/TripReportSPT/location/showJSON'}),
+    reader: new Ext.data.JsonReader({},
+            [
+                {name: 'version', type: 'int', mapping: 'version'},
+                {name: 'id', type: 'int', mapping: 'id'},
+                {name: 'name', type: 'string', mapping: 'name'},
+                {name: 'city', type: 'string', mapping: 'city'},
+                {name: 'state', type: 'string', mapping: 'state'},
+                {name: 'country', type: 'string', mapping: 'country'}
+            ]
+            ),
+    baseParams:     {
+        now:        (new Date()).getTime()
+    },
+    writer: new Ext.data.JsonWriter({
+        encode:     true
+    })
+});
+
+var organizationDS = new Ext.data.Store({
+    autoLoad: true,
+    proxy: new Ext.data.HttpProxy({
+        url: 'http://localhost:8080/TripReportSPT/organization/showJSON'}),
+    reader: new Ext.data.JsonReader({},
+            [
+                {name: 'version', type: 'int', mapping: 'version'},
+                {name: 'id', type: 'int', mapping: 'id'},
+                {name: 'name', type: 'string', mapping: 'name'},
+                {name: 'url', type: 'string', mapping: 'url'}
+            ]
+            ),
+    baseParams:     {
+        now:        (new Date()).getTime()
+    },
+    writer: new Ext.data.JsonWriter({
+        encode:     true
+    })
+});
 
 var reportDS = new Ext.data.Store({
     autoLoad: false,
@@ -83,6 +183,83 @@ var reportDS = new Ext.data.Store({
     baseParams:     {
         now:        (new Date()).getTime()
     }
+});
+
+var roleDS = new Ext.data.Store({
+    autoLoad: true,
+    proxy: new Ext.data.HttpProxy({
+        url: 'http://localhost:8080/TripReportSPT/role/showJSON'}),
+    reader: new Ext.data.JsonReader({},
+            [
+                {name: 'version', type: 'int', mapping: 'version'},
+                {name: 'id', type: 'int', mapping: 'id'},
+                {name: 'name', type: 'string', mapping: 'name'},
+                {name: 'description', type: 'string', mapping: 'description'}
+            ]
+            ),
+    baseParams:     {
+        now:        (new Date()).getTime()
+    },
+    writer: new Ext.data.JsonWriter({
+        encode:     true
+    })
+});
+
+var tripDS = new Ext.data.Store({
+    autoLoad: false,
+    proxy: new Ext.data.HttpProxy({
+        url: 'http://localhost:8080/TripReportSPT/trip/showJSON'}),
+    reader: new Ext.data.JsonReader({},
+            [
+                {name: 'version', type: 'int', mapping: 'version'},
+                {name: 'id', type: 'int', mapping: 'id'},
+                {name: 'name', type: 'string', mapping: 'name'},
+                {name: 'shortDescription', type: 'string', mapping: 'shortDescription'},
+                {name: 'startDate', type: 'date', mapping: 'startDate'},
+                {name: 'endDate', type: 'date', mapping: 'endDate'},
+                {name: 'purpose', type: 'string', mapping: 'purpose'},
+                {name: 'estimatedCost', type: 'float', mapping: 'estimatedCost'},
+                {name: 'events', type: 'array', mapping: 'events'},
+                {name: 'contracts', type: 'array', mapping: 'contracts'},
+                {name: 'attendees', type: 'array', mapping: 'attendees'},
+                {name: 'locations', type: 'array', mapping: 'locations'}
+
+            ]
+            ),
+    baseParams:     {
+        now:        (new Date()).getTime()
+    }/*,
+    writer: new Ext.data.JsonWriter({
+        encode:     true
+    }) */
+});
+
+var userDS = new Ext.data.JsonStore({
+    autoLoad: true,
+        url: 'user/showJSON',
+            idProperty: 'id',
+            root: 'data' ,
+        successProperty: 'success',
+        fields:             [
+                {name: 'version', type: 'int', mapping: 'version'},
+                {name: 'id', type: 'int', mapping: 'id'},
+                {name: 'displayName', type: 'string', mapping: 'name'},
+                {name: 'name', type: 'string', mapping: 'fullName'},
+                {name: 'userName', type: 'string', mapping: 'userName'},
+                {name: 'email', type: 'string', mapping: 'email'},
+                {name: 'company', type: 'string', mapping: 'company'},
+                {name: 'companyId', type: 'id', mapping: 'companyId'},
+                {name: 'contracts', type: 'array', mapping: 'contracts'},
+                {name: 'roles', type: 'array', mapping: 'roles'}
+            ]
+
+       ,
+    baseParams:     {
+        now:        (new Date()).getTime()
+    }
+    /*writer: new Ext.data.JsonWriter({
+        encode:     true
+    }) */
 });
 
 // List data sources (more than one row)
@@ -150,6 +327,29 @@ var actionItemListDS = new Ext.data.Store({
     })
 });
 
+var companyListDS = new Ext.data.Store({
+    autoLoad: true,
+    proxy: new Ext.data.HttpProxy({
+        url: 'http://localhost:8080/TripReportSPT/company/listJSON'}),
+    reader: new Ext.data.JsonReader({
+        results: 'total',
+        root:'items',
+        id:'id'
+    },
+            [
+                {name: 'version', type: 'int'},
+                {name: 'id', type: 'int'},
+                {name: 'name', type: 'string'}/*,
+                {name: 'url', type: 'string'} */
+            ]
+            ),
+    baseParams:     {
+        now:        (new Date()).getTime()
+    }
+});
+
+
+
 var contactListDS = new Ext.data.Store({
     autoLoad: true,
     proxy: new Ext.data.HttpProxy({
@@ -191,7 +391,7 @@ var contractListDS = new Ext.data.Store({
                 {name: 'id', type: 'int', mapping: 'id'},
                 {name: 'name', type: 'string', mapping: 'name'},
                 {name: 'organization', type: 'string', mapping: 'organization'},
-                {name: 'manager', type: 'string', mapping: 'manager'},
+                //{name: 'manager', type: 'string', mapping: 'manager'},
                 {name: 'active', type: 'boolean', mapping: 'active'}
             ]
             ),
@@ -381,7 +581,6 @@ var userListDS = new Ext.data.Store({
                 {name: 'name', type: 'string', mapping: 'name'},
                 {name: 'fullName', type: 'string', mapping: 'fullName'},
                 {name: 'userName', type: 'string', mapping: 'userName'},
-                {name: 'organization', type: 'string', mapping: 'organization'},
                 {name: 'email', type: 'string', mapping: 'email'},
                 {name: 'company', type: 'string', mapping: 'company'},
                 {name: 'contracts', type: 'array', mapping: 'contracts'}

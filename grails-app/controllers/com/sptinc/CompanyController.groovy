@@ -20,11 +20,11 @@ class CompanyController {
   def listJSON = {
     def companies = []
     for (c in Company.list(params)) {
-      def company = [id: c.id, name: c.toString(), url: c.url]
+      def company = [id: c.id, name: c.toString()]//, url: c.url]
       companies << company
     }
 
-    def listResult = [total: companies.count(), items: companies]
+    def listResult = [total: companies.size(), items: companies]
     render listResult as JSON
   }
 
@@ -97,7 +97,7 @@ class CompanyController {
     }
     else {
 
-      def company = [id: companyInstance.id, name: companyInstance.toString(), url: companyInstance.url]
+      def company = [id: companyInstance.id, name: companyInstance.toString()]//, url: companyInstance.url]
 
       render company as JSON
     }

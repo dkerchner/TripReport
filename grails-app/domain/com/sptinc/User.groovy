@@ -18,6 +18,7 @@ class User {
 	//SortedSet contracts
 
 	static hasMany = [contracts: Contract]
+    //static mappedBy = [managedContracts:"manager"]
 
 	static constraints = {
 		username(blank: false, unique: true, maxSize: 10)

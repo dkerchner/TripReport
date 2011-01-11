@@ -24,7 +24,7 @@ class RoleController {
       roles << role
     }
 
-    def listResult = [total: roles.count(), items: roles]
+    def listResult = [total: roles.size(), items: roles]
     render listResult as JSON
   }
 

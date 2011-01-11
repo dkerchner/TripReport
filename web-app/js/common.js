@@ -8,9 +8,65 @@
 
 
 // ExtJS common form elements
+var nameField = {
+    xtype: 'textfield',
+    //ref: '../nameField',
+    name: 'name',
+    id: 'nameField',
+    fieldLabel: 'Name',
+    maxLength: 100,
+    allowBlank: false,
+    anchor : '95%',
+    maskRe: /([a-zA-Z0-9\s]+)$/
+};
+
+var userNameField = {
+    xtype: 'textfield',
+    id: 'userNameField',
+    name: 'userName',
+    fieldLabel: 'User Name',
+    maxLength: 10,
+    allowBlank: false,
+    anchor : '95%',
+    maskRe: /([a-zA-Z0-9\s]+)$/
+};
+
+var passwordField1 = {
+    xtype: 'textfield',
+    id: 'passwordField1',
+    name: 'password1',
+    fieldLabel: 'Password',
+    maxLength: 100,
+    allowBlank: true,
+    anchor : '95%',
+    inputType: 'password'
+};
+
+var passwordField2 = {
+    xtype: 'textfield',
+    id: 'passwordField2',
+    name: 'password2',
+    fieldLabel: 'Confirm Password',
+    maxLength: 100,
+    allowBlank: true,
+    anchor : '95%',
+    inputType: 'password'
+};
+
+var emailField = {
+    xtype: 'textfield',
+    id: 'emailField',
+    name: 'email',
+    fieldLabel: 'Email',
+    maxLength: 100,
+    allowBlank: false,
+    anchor : '95%'
+};
+
 var shortDescriptionField = {
     xtype: 'textfield',
     id: 'shortDescriptionField',
+    name: 'shortDescription',
     fieldLabel: 'Short Description',
     maxLength: 100,
     allowBlank: false,
@@ -19,8 +75,9 @@ var shortDescriptionField = {
 };
 
 var purposeField = {
-    xtype: 'textfield',
+    xtype: 'textarea',
     id: 'purposeField',
+    name: 'purpose',
     fieldLabel: 'Purpose',
     maxLength: 255,
     allowBlank: false,
@@ -31,6 +88,7 @@ var purposeField = {
 var startDateField = {
     xtype: 'datefield',
     id:'startDateField',
+    name: 'startDate',
     fieldLabel: 'Start Date',
     format : 'm/d/Y',
     allowBlank: false,
@@ -40,6 +98,7 @@ var startDateField = {
 var endDateField = {
     xtype: 'datefield',
     id:'endDateField',
+    name: 'endDate',
     fieldLabel: 'End Date',
     format : 'm/d/Y',
     allowBlank: false,
@@ -49,7 +108,8 @@ var endDateField = {
 var eventsField = {
     xtype: 'multiselect',
     fieldLabel: 'Events<br />(Required)',
-    name: 'eventsField',
+    id: 'eventsField',
+    name: 'events',
     displayField: 'name',
     allowBlank: false,
     valueField: 'id',
@@ -67,7 +127,8 @@ var eventsField = {
 var contractsField = {
     xtype: 'multiselect',
     fieldLabel: 'Contracts<br />(Required)',
-    name: 'contractsField',
+    id: 'contractsField',
+    name: 'contracts',
     displayField: 'name',
     allowBlank: false,
     valueField: 'id',
@@ -85,7 +146,8 @@ var contractsField = {
 var locationsField = {
     xtype: 'multiselect',
     fieldLabel: 'Locations<br />(Required)',
-    name: 'locationsField',
+    id: 'locationsField',
+    name: 'locations',
     displayField: 'name',
     allowBlank: false,
     valueField: 'id',
@@ -103,17 +165,35 @@ var locationsField = {
 var tripField = {
     xtype: 'combo',
     id: 'tripField',
+    name: 'trip',
     fieldLabel: 'Trip',
     allowBlank: false,
-    store: tripDS,
+    store: tripListDS,
+    valueField: 'id',
+    displayField: 'name',
+    anchor : '95%'
+};
+
+var companyField = {
+    xtype: 'combo',
+    id: 'companyField',
+    name: 'company',
+    fieldLabel: 'Company',
+    allowBlank: false,
+    store: companyListDS,
+    valueField: 'id',
+    displayField: 'name',
     anchor : '95%'
 };
 
 var authorField = {
     xtype: 'combo',
     id: 'authorField',
+    name: 'author',
     fieldLabel: 'Author',
     allowBlank: false,
+    valueField: 'id',
+    displayField: "name",
     store: userListDS,
     anchor : '95%'
 };
@@ -121,6 +201,7 @@ var authorField = {
 var topicsField = {
     xtype: 'textarea',
     id: 'topicsField',
+    name: 'topics',
     fieldLabel: 'Topics <br /> (comma separated)',
     maxLength: 2500,
     autoScroll: true,
@@ -132,6 +213,7 @@ var topicsField = {
 var usefulnessField = {
     xtype: 'numberfield',
     id: 'usefulnessField',
+    name: 'usefulness',
     fieldLabel: 'Usefulness <br /> (1 - 10)',
     minValue: 1,
     maxValue: 10,
@@ -144,7 +226,8 @@ var usefulnessField = {
 var issuesField = {
     xtype: 'textarea',
     id: 'issuesField',
-    fieldLabel: 'Issues <br />',
+    name: 'issues',
+    fieldLabel: 'Issues',
     maxLength: 2500,
     autoScroll: true,
     allowBlank: false,
@@ -155,7 +238,8 @@ var issuesField = {
 var contactsField = {
     xtype: 'multiselect',
     fieldLabel: 'Contacts<br />(Required)',
-    name: 'contactsField',
+    id: 'contactsField',
+    name: 'contacts',
     displayField: 'name',
     allowBlank: false,
     valueField: 'id',
@@ -170,10 +254,31 @@ var contactsField = {
     ddReorder: true
 };
 
+var rolesField = {
+    xtype: 'multiselect',
+    fieldLabel: 'Roles<br />(Required)',
+    id: 'rolesField',
+    name: 'roles',
+    displayField: 'name',
+    allowBlank: false,
+    valueField: 'id',
+    anchor:'95%',
+    store: roleListDS,
+    /*tbar:[{
+        text: 'clear',
+        handler: function(){
+
+        }
+    }], */
+    ddReorder: true
+};
+
+
 var actionItemsField = {
     xtype: 'multiselect',
     fieldLabel: 'Action Items<br />(Required)',
-    name: 'actionItemsField',
+    id: 'actionItemsField',
+    name: 'actionItems',
     displayField: 'name',
     allowBlank: false,
     valueField: 'id',
@@ -190,7 +295,49 @@ var actionItemsField = {
 
 // Display fields
 
+var nameDisplayField = {
+    xtype: 'displayfield',
+    name: 'name',
+    id: 'nameDisplayField',
+    ref: '../nameDisplayField',
+    fieldLabel: '<b>Name</b>',
+    anchor:'95%'
+};
+
+var userNameDisplayField = {
+    xtype: 'displayfield',
+    name: 'userName',
+    id: 'userNameDisplayField',
+    fieldLabel: '<b>User Name</b>',
+    anchor:'95%'
+};
+
+var organizationDisplayField = {
+    xtype: 'displayfield',
+    id: 'organizationDisplayField',
+    name: 'organization',
+    fieldLabel: '<b>Organization</b>',
+    anchor:'95%'
+};
+
+var emailDisplayField = {
+    xtype: 'displayfield',
+    name: 'email',
+    id: 'emailDisplayField',
+    fieldLabel: '<b>Email</b>',
+    anchor:'95%'
+};
+
+var companyDisplayField = {
+    xtype: 'displayfield',
+    name: 'company',
+    id: 'companyDisplayField',
+    fieldLabel: '<b>Company</b>',
+    anchor:'95%'
+};
+
 var attendeeDisplayField = {
+    xtype: 'displayfield',
     id: 'attendeeDisplayField',
     fieldLabel: '<b>Attendee</b>',
     anchor:'95%'
@@ -199,6 +346,7 @@ var attendeeDisplayField = {
 var shortDescriptionDisplayField = {
     xtype: 'displayfield',
     id: 'shortDescriptionDisplayField',
+    name: 'shortDescription',
     fieldLabel: '<b>Short Description</b>',
     anchor:'95%'
 };
@@ -206,6 +354,7 @@ var shortDescriptionDisplayField = {
 var purposeDisplayField = {
     xtype: 'displayfield',
     id: 'purposeDisplayField',
+    name: 'purpose',
     fieldLabel: '<b>Purpose</b>',
     anchor:'95%'
 };
@@ -213,6 +362,7 @@ var purposeDisplayField = {
 var startDateDisplayField = {
     xtype: 'displayfield',
     id:'startDateDisplayField',
+    name: 'startDate',
     fieldLabel: '<b>Start Date</b>',
     anchor:'95%'
 };
@@ -220,6 +370,7 @@ var startDateDisplayField = {
 var endDateDisplayField = {
     xtype: 'displayfield',
     id:'endDateDisplayField',
+    name: 'endDate',
     fieldLabel: '<b>End Date</b>',
     anchor:'95%'
 };
@@ -227,20 +378,36 @@ var endDateDisplayField = {
 var eventsDisplayField = {
     xtype: 'displayfield',
     id: 'eventsDisplayField',
+    ref: 'eventsDisplayField',
+    name: 'events',
     fieldLabel: '<b>Events</b>',
     anchor:'95%'
 };
 
+var rolesDisplayField = {
+    xtype: 'displayfield',
+    id: 'rolesDisplayField',
+    ref: 'rolesDisplayField',
+    name: 'roles',
+    fieldLabel: '<b>Roles</b>',
+    anchor:'95%'
+};
+
+
 var locationsDisplayField = {
     xtype: 'displayfield',
     id: 'locationsDisplayField',
+    name: 'locations',
+    ref: 'locationsDisplayField',
     fieldLabel: '<b>Locations</b>',
     anchor:'95%'
 };
 
 var contractsDisplayField = {
     xtype: 'displayfield',
+    name: 'contracts',
     id: 'contractsDisplayField',
+    ref: 'contractsDisplayField',
     fieldLabel: '<b>Contracts</b>',
     anchor:'95%'
 };
@@ -248,6 +415,8 @@ var contractsDisplayField = {
 var tripDisplayField = {
     xtype: 'displayfield',
     id: 'tripDisplayField',
+    ref: 'tripDisplayField',
+    name: 'trip',
     fieldLabel: '<b>Trip</b>',
     anchor:'95%'
 };
@@ -255,6 +424,8 @@ var tripDisplayField = {
 var authorDisplayField = {
     xtype: 'displayfield',
     id: 'authorDisplayField',
+    name: 'author',
+    ref: 'authorDisplayField',
     fieldLabel: '<b>Author</b>',
     anchor:'95%'
 };
@@ -262,6 +433,7 @@ var authorDisplayField = {
 var usefulnessDisplayField = {
     xtype: 'displayfield',
     id: 'usefulnessDisplayField',
+    name: 'usefulness',
     fieldLabel: '<b>Usefulness</b>',
     anchor:'95%'
 };
@@ -269,6 +441,7 @@ var usefulnessDisplayField = {
 var issuesDisplayField = {
     xtype: 'displayfield',
     id: 'issuesDisplayField',
+    name: 'issues',
     fieldLabel: '<b>Issues</b>',
     anchor:'95%'
 };
@@ -276,6 +449,7 @@ var issuesDisplayField = {
 var topicsDisplayField = {
     xtype: 'displayfield',
     id: 'topicsDisplayField',
+    name: 'topics',
     fieldLabel: '<b>Topics</b>',
     anchor:'95%'
 };
@@ -283,6 +457,8 @@ var topicsDisplayField = {
 var contactsDisplayField = {
     xtype: 'displayfield',
     id: 'contactsDisplayField',
+    name: 'contacts',
+    ref: 'contactsDisplayField',
     fieldLabel: '<b>Contacts</b>',
     anchor:'95%'
 };
@@ -290,6 +466,8 @@ var contactsDisplayField = {
 var actionItemsDisplayField = {
     xtype: 'displayfield',
     id: 'actionItemsDisplayField',
+    name: 'actionItems',
+    ref: 'actionItemsDisplayField',
     fieldLabel: '<b>Action Items</b>',
     anchor:'95%'
 };
@@ -297,12 +475,14 @@ var actionItemsDisplayField = {
 var idField = {
     xtype: "hidden",
     id: 'idField',
+    name: 'id',
     anchor:'95%'
 };
 
 var idField2 = {
     xtype: "hidden",
     id: 'idField2',
+    name: 'id2',
     anchor:'95%'
 };
 
@@ -344,5 +524,22 @@ function buildStringFromArray(array, column, separator) {
 
     return arrayString.substr(0,arrayString.lastIndexOf(separator));
 }
+
+function resetForm(form) {
+    form.items.each(function(field){
+        field.setValue('');
+    });
+}
+
+function formIsValid(form) {
+    form.items.each(function(field){
+        if (!field.isValid()) {
+            return false;
+        }
+    });
+    return true;
+}
+
+
 
 var admin_user = false;
