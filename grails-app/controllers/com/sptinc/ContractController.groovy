@@ -19,7 +19,7 @@ class ContractController {
   def listJSON = {
     def contracts = []
     for (c in Contract.list(params)) {
-      def contract = [id: c.id, name: c.toString(), organization: c.organization.toString(), active: c.active]
+      def contract = [id: c.id, name: c.toString(), contractNumber: c.contractNumber, organization: c.organization.toString(), organizationId: c.organization.id, active: c.active]
       contracts << contract
     }
 
@@ -47,6 +47,7 @@ class ContractController {
 
   def saveJSON = {
     def contractInstance
+    println params
     if (params.task.equals("Create")) {
       contractInstance = new Contract()
       params.remove('id')
@@ -68,7 +69,7 @@ class ContractController {
       if (!contractInstance.hasErrors() && contractInstance.save(flush: true)) {
         render 1
       }
-      else {
+      else {        println(contractInstance.errors)
         render "${message(code: 'Could not update. A necessary value is missing.', args: [message(code: 'contract.label', default: 'Contract'), params.id])}"
       }
     }
@@ -95,7 +96,7 @@ class ContractController {
     }
     else {
 
-      def contract = [id: contractInstance.id, name: contractInstance.toString(), organization: contractInstance.organization.toString(), active: contractInstance.active]
+      def contract = [id: contractInstance.id, name: contractInstance.toString(), contractNumber: contractInstance.contractNumber, organization: contractInstance.organization.toString(), organizationId: contractInstance.organization.id, active: contractInstance.active]
 
       render contract as JSON
     }

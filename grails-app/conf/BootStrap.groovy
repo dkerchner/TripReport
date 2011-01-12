@@ -37,8 +37,8 @@ class BootStrap {
                 enabled: true,
                 company: sptCompany).save(failOnError: true)
 
-            def abcContract = new Contract(contractNumber: "123456", organization: abcAgency).save(failOnError: true)
-            def xyzContract = new Contract(contractNumber: "8675309", organization: abcAgency).save(failOnError: true)
+            def abcContract = new Contract(contractNumber: "123456", organization: abcAgency, active: true).save(failOnError: true)
+            def xyzContract = new Contract(contractNumber: "8675309", organization: abcAgency, active: true).save(failOnError: true)
 
             def dkerchnerUser = new User(username:"dkerchner",
                 fullName: "Dominic K.",

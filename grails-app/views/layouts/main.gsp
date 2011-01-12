@@ -82,6 +82,8 @@
   <g:javascript library="report"/>
   <g:javascript library="attendee"/>
   <g:javascript library="user"/>
+  <g:javascript library="contract"/>
+
 
 
   <sec:ifAllGranted roles="ROLE_ADMIN"><script type="text/javascript">admin_user = true; </script></sec:ifAllGranted>
@@ -190,6 +192,13 @@
                           replace('attendee-grid'
                           , 'Attendees');
                       }
+                  } , {
+                      xtype:'button',
+                      text: 'Contracts',
+                      handler: function(){
+                          replace('contract-grid'
+                          , 'Contracts');
+                      }
                   }
                 ]
               },
@@ -209,6 +218,13 @@
                       handler: function(){
                           replace('user-grid'
                           , 'Users');
+                      }
+                  } , {
+                      xtype:'button',
+                      text: 'Contracts',
+                      handler: function(){
+                          replace('contract-grid'
+                          , 'Contracts');
                       }
                   }
                 ]

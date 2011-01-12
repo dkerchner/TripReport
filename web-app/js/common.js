@@ -127,7 +127,7 @@ var eventsField = {
 var contractsField = {
     xtype: 'multiselect',
     fieldLabel: 'Contracts<br />(Required)',
-    id: 'contractsField',
+    //id: 'contractsField',
     name: 'contracts',
     displayField: 'name',
     allowBlank: false,
@@ -170,19 +170,23 @@ var tripField = {
     allowBlank: false,
     store: tripListDS,
     valueField: 'id',
+    hiddenValue: 'id',
+    hiddenName: 'trip',
     displayField: 'name',
     anchor : '95%'
 };
 
 var companyField = {
     xtype: 'combo',
-    id: 'companyField',
+    id: 'company_id',
     name: 'company',
+    hiddenName: 'company',
     fieldLabel: 'Company',
     allowBlank: false,
     store: companyListDS,
     valueField: 'id',
     displayField: 'name',
+    hiddenValue: 'id',
     anchor : '95%'
 };
 
@@ -194,9 +198,26 @@ var authorField = {
     allowBlank: false,
     valueField: 'id',
     displayField: "name",
+    hiddenValue: 'id',
+    hiddenName: 'author',
     store: userListDS,
     anchor : '95%'
 };
+
+var organizationField = {
+    xtype: 'combo',
+    id: 'organizationField',
+    name: 'organization',
+    fieldLabel: 'Organization',
+    allowBlank: false,
+    valueField: 'id',
+    displayField: "name",
+    hiddenValue: 'id',
+    hiddenName: 'organization',
+    store: organizationListDS,
+    anchor : '95%'
+};
+
 
 var topicsField = {
     xtype: 'textarea',
@@ -237,11 +258,11 @@ var issuesField = {
 
 var contactsField = {
     xtype: 'multiselect',
-    fieldLabel: 'Contacts<br />(Required)',
+    fieldLabel: 'Contacts',
     id: 'contactsField',
     name: 'contacts',
     displayField: 'name',
-    allowBlank: false,
+    allowBlank: true,
     valueField: 'id',
     anchor:'95%',
     store: contactListDS,
@@ -280,7 +301,7 @@ var actionItemsField = {
     id: 'actionItemsField',
     name: 'actionItems',
     displayField: 'name',
-    allowBlank: false,
+    allowBlank: true,
     valueField: 'id',
     anchor:'95%',
     store: actionItemListDS,
@@ -330,7 +351,7 @@ var emailDisplayField = {
 
 var companyDisplayField = {
     xtype: 'displayfield',
-    name: 'company',
+    name: 'companyName',
     id: 'companyDisplayField',
     fieldLabel: '<b>Company</b>',
     anchor:'95%'
@@ -338,6 +359,7 @@ var companyDisplayField = {
 
 var attendeeDisplayField = {
     xtype: 'displayfield',
+    name: 'attendee',
     id: 'attendeeDisplayField',
     fieldLabel: '<b>Attendee</b>',
     anchor:'95%'
@@ -363,6 +385,7 @@ var startDateDisplayField = {
     xtype: 'displayfield',
     id:'startDateDisplayField',
     name: 'startDate',
+    format : 'm/d/Y',
     fieldLabel: '<b>Start Date</b>',
     anchor:'95%'
 };
@@ -371,6 +394,7 @@ var endDateDisplayField = {
     xtype: 'displayfield',
     id:'endDateDisplayField',
     name: 'endDate',
+    format : 'm/d/Y',
     fieldLabel: '<b>End Date</b>',
     anchor:'95%'
 };
@@ -406,8 +430,7 @@ var locationsDisplayField = {
 var contractsDisplayField = {
     xtype: 'displayfield',
     name: 'contracts',
-    id: 'contractsDisplayField',
-    ref: 'contractsDisplayField',
+    //id: 'contractsDisplayField',
     fieldLabel: '<b>Contracts</b>',
     anchor:'95%'
 };
@@ -530,6 +553,13 @@ function resetForm(form) {
         field.setValue('');
     });
 }
+
+function destroyFormFields(form) {
+    form.items.each(function(field){
+        field.reset();
+    });
+}
+
 
 function formIsValid(form) {
     form.items.each(function(field){

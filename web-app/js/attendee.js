@@ -97,6 +97,9 @@ var attendeeGrid = new Ext.grid.GridPanel({
 // display or bring forth the form
 function displayAttendeeViewWindow() {
     if (attendeeGrid.selModel.getCount()) {
+        var selections = attendeeGrid.selModel.getSelections();
+        attendeeDS.on('load', attendeeDSOnLoad);
+        attendeeDS.load({params: {'tripId': selections[0].json.tripId, 'attendeeId': selections[0].json.attendeeId}});
         if (!AttendeeViewWindow.isVisible()) {
             AttendeeViewWindow.show();
         } else {
@@ -123,7 +126,7 @@ function approveTrips(btn) {
         var selections = attendeeGrid.selModel.getSelections();
         Ext.Ajax.request({
             waitMsg: 'Please Wait',
-            url: 'http://localhost:8080/TripReportSPT/userTrip/approveJSON',
+            url: 'userTrip/approveJSON',
             params: {
                 tripId:selections[0].json.tripId,
                 attendeeId:selections[0].json.attendeeId
@@ -162,8 +165,6 @@ function onAttendeeListingEditorGridDoubleClick(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
     //alert(grid.store.getAt(rowIndex).json.id);
-    attendeeDS.on('load', attendeeDSOnLoad);
-    attendeeDS.load({params: {'tripId': grid.store.getAt(rowIndex).json.tripId, 'attendeeId': grid.store.getAt(rowIndex).json.attendeeId}});
     displayAttendeeViewWindow();
 }
 
@@ -184,19 +185,17 @@ attendeeListDS.load({params: {start: 0, limit: 15}});
 
 function attendeeDSOnLoad() {
     var form = AttendeeViewForm.getForm();
-    form.findField('shortDescriptionDisplayField').setValue(attendeeDS.getAt(0).data.name);
+    form.setValues(attendeeDS.getAt(0).data);
+    /*form.findField('shortDescriptionDisplayField').setValue(attendeeDS.getAt(0).data.name);
     form.findField('purposeDisplayField').setValue(attendeeDS.getAt(0).data.purpose);
     form.findField('startDateDisplayField').setValue(attendeeDS.getAt(0).data.startDate.format('m/d/Y'));
     form.findField('endDateDisplayField').setValue(attendeeDS.getAt(0).data.endDate.format('m/d/Y'));
-    form.findField('attendeeDisplayField').setValue(attendeeDS.getAt(0).data.attendee);
-    form.findField('idField').setValue(attendeeDS.getAt(0).data.tripId);
-    form.findField('idField2').setValue(attendeeDS.getAt(0).data.attendeeId);
-    var events = attendeeDS.getAt(0).data.events;
-    var contracts = attendeeDS.getAt(0).data.contracts;
-    var locations = attendeeDS.getAt(0).data.locations;
-    form.findField('eventsDisplayField').setValue(buildStringFromArray(events, "name", "<br/>"));
-    form.findField('contractsDisplayField').setValue(buildStringFromArray(contracts, "name", "<br/>"));
-    form.findField('locationsDisplayField').setValue(buildStringFromArray(locations, "name", "<br/>"));
+    form.findField('attendeeDisplayField').setValue(attendeeDS.getAt(0).data.attendee);*/
+    //form.findField('idField').setValue(attendeeDS.getAt(0).data.tripId);
+    //form.findField('idField2').setValue(attendeeDS.getAt(0).data.attendeeId);
+    form.findField('eventsDisplayFieldAttendee').setValue(buildStringFromArray(attendeeDS.getAt(0).data.events, "name", "<br/>"));
+    form.findField('contractsDisplayFieldAttendee').setValue(buildStringFromArray(attendeeDS.getAt(0).data.contracts, "name", "<br/>"));
+    form.findField('locationsDisplayFieldAttendee').setValue(buildStringFromArray(attendeeDS.getAt(0).data.locations, "name", "<br/>"));
     if (admin_user){form.findField('approveButton').disabled = false; }
 }
 
@@ -205,7 +204,7 @@ var AttendeeViewForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
     width: 600,
-    //store: attendeeDS,
+    store: attendeeDS,
     items: [
         {
             layout:'column',
@@ -215,13 +214,13 @@ var AttendeeViewForm = new Ext.FormPanel({
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [attendeeDisplayField, shortDescriptionDisplayField, purposeDisplayField, eventsDisplayField, locationsDisplayField]
+                    items: [Ext.applyIf({id:'attendeeDisplayFieldAttendee'}, attendeeDisplayField), Ext.applyIf({id:'shortDescriptionDisplayFieldAttendee'}, shortDescriptionDisplayField), Ext.applyIf({id:'purposeDisplayFieldAttendee'}, purposeDisplayField), Ext.applyIf({id:'eventsDisplayFieldAttendee'}, eventsDisplayField), Ext.applyIf({id:'locationsDisplayFieldAttendee'}, locationsDisplayField)]
                 },
                 {
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [startDateDisplayField, endDateDisplayField, contractsDisplayField, idField, idField2]
+                    items: [Ext.applyIf({id:'startDateDisplayFieldAttendee'}, startDateDisplayField), Ext.applyIf({id:'endDateDisplayFieldAttendee'}, endDateDisplayField), Ext.applyIf({id:'contractsDisplayFieldAttendee'}, contractsDisplayField), Ext.applyIf({id:'idFieldAttendee', name:'tripId'}, idField), Ext.applyIf({id:'idField2Attendee', name: 'attendeeId'}, idField2)]
                 }
             ]
         }

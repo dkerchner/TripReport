@@ -14,6 +14,7 @@ class Contract {
     static constraints = {
         contractNumber(blank: false, unique: true, maxSize: 100)
         organization(blank: false)
+        active(default: true)
     }
 
     int compareTo(obj) {

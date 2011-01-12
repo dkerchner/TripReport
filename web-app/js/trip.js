@@ -130,11 +130,13 @@ var tripGrid = new Ext.grid.GridPanel({
 // This saves the president after a cell has been edited
 function saveTheTrip() {
     var form = TripEditForm.getForm();
+    var params = form.getValues();
+    params['task'] = mode.toString();
     if (isTripFormValid(form)) {
         Ext.Ajax.request({
             waitMsg: 'Please wait...',
-            url: 'http://localhost:8080/TripReportSPT/trip/saveJSON',
-            params: {
+            url: 'trip/saveJSON',
+            params: params/*{
                 //version: oGrid_event.record.data.version,
                 task: mode.toString(),
                 id: form.findField('idField').getValue(),
@@ -145,7 +147,7 @@ function saveTheTrip() {
                 events: form.findField('eventsField').getValue(),
                 locations: form.findField('locationsField').getValue(),
                 contracts: form.findField('contractsField').getValue()
-            },
+            }*/,
             success: function(response) {
                 var result = eval(response.responseText);
                 switch (result) {
@@ -175,7 +177,7 @@ function saveTheTrip() {
     if (isTripFormValid()) {
         Ext.Ajax.request({
             waitMsg: 'Please wait...',
-            url: 'http://localhost:8080/TripReportSPT/trip/saveJSON',
+            url: 'trip/saveJSON',
             params: {
                 task: "CREATETRIP",
                 shortDescription:      shortDescriptionField.getValue(),
@@ -229,6 +231,9 @@ function displayFormWindow() {
 // display or bring forth the form
 function displayTripViewWindow() {
     if (tripGrid.selModel.getCount()) {
+        var selections = tripGrid.selModel.getSelections();
+        tripDS.on('load', tripDSOnLoad);
+        tripDS.load({params: {'id': selections[0].json.id}});
         if (!TripViewWindow.isVisible()) {
             TripViewWindow.show();
         } else {
@@ -285,7 +290,7 @@ function deleteTrips(btn) {
         var selections = tripGrid.selModel.getSelections();
         Ext.Ajax.request({
             waitMsg: 'Please Wait',
-            url: 'http://localhost:8080/TripReportSPT/trip/deleteJSON',
+            url: 'trip/deleteJSON',
             params: {
                 id:  selections[0].json.id
             },
@@ -314,7 +319,7 @@ function attendTrips(btn) {
         var selections = tripGrid.selModel.getSelections();
         Ext.Ajax.request({
             waitMsg: 'Please Wait',
-            url: 'http://localhost:8080/TripReportSPT/userTrip/attendJSON',
+            url: 'userTrip/attendJSON',
             params: {
                 id:selections[0].json.id
             },
@@ -352,42 +357,25 @@ function onTripListingEditorGridDoubleClick(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
     //alert(grid.store.getAt(rowIndex).json.id);
-    tripDS.on('load', tripDSOnLoad);
-    tripDS.load({params: {'id': grid.store.getAt(rowIndex).json.id}});
     displayTripViewWindow();
 }
 
 function tripDSOnLoad() {
     var form = TripViewForm.getForm();
     form.setValues(tripDS.getAt(0).data);
-    /*form.findField('shortDescriptionDisplayField').setValue(tripDS.getAt(0).data.name);
-    form.findField('purposeDisplayField').setValue(tripDS.getAt(0).data.purpose);
-    form.findField('startDateDisplayField').setValue(tripDS.getAt(0).data.startDate.format('m/d/Y'));
-    form.findField('endDateDisplayField').setValue(tripDS.getAt(0).data.endDate.format('m/d/Y'));*/
-    var events = tripDS.getAt(0).data.events;
-    var contracts = tripDS.getAt(0).data.contracts;
-    var locations = tripDS.getAt(0).data.locations;
-    form.findField('eventsDisplayField').setValue(buildStringFromArray(events, "name", "<br/>"));
-    form.findField('contractsDisplayField').setValue(buildStringFromArray(contracts, "name", "<br/>"));
-    form.findField('locationsDisplayField').setValue(buildStringFromArray(locations, "name", "<br/>"));
+    form.findField('eventsDisplayField').setValue(buildStringFromArray(tripDS.getAt(0).data.events, "name", "<br/>"));
+    form.findField('contractsDisplayFieldTrip').setValue(buildStringFromArray(tripDS.getAt(0).data.contracts, "name", "<br/>"));
+    form.findField('locationsDisplayField').setValue(buildStringFromArray(tripDS.getAt(0).data.locations, "name", "<br/>"));
 
 }
 
 function tripDSEditOnLoad() {
     var form = TripEditForm.getForm();
     form.setValues(tripDS.getAt(0).data);
-    /*form.findField('shortDescriptionField').setValue(tripDS.getAt(0).data.name);
-    form.findField('purposeField').setValue(tripDS.getAt(0).data.purpose);
-    form.findField('startDateField').setValue(tripDS.getAt(0).data.startDate.format('m/d/Y'));
-    form.findField('endDateField').setValue(tripDS.getAt(0).data.endDate.format('m/d/Y'));
-    form.findField('idField').setValue(tripDS.getAt(0).data.id); */
     if (mode != "Create") {
-        var events = tripDS.getAt(0).data.events;
-        var contracts = tripDS.getAt(0).data.contracts;
-        var locations = tripDS.getAt(0).data.locations;
-        form.findField('eventsField').setValue(buildStringFromArray(events, "id", ','));
-        form.findField('contractsField').setValue(buildStringFromArray(contracts, "id", ','));
-        form.findField('locationsField').setValue(buildStringFromArray(locations, "id", ','));
+        form.findField('eventsField').setValue(buildStringFromArray(tripDS.getAt(0).data.events, "id", ','));
+        form.findField('contractsFieldTrip').setValue(buildStringFromArray(tripDS.getAt(0).data.contracts, "id", ','));
+        form.findField('locationsField').setValue(buildStringFromArray(tripDS.getAt(0).data.locations, "id", ','));
     }
 }
 
@@ -436,7 +424,7 @@ var TripViewForm = new Ext.FormPanel({
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [startDateDisplayField, endDateDisplayField, contractsDisplayField, idField]
+                    items: [startDateDisplayField, endDateDisplayField, Ext.applyIf({id:'contractsDisplayFieldTrip'}, contractsDisplayField), idField]
                 }
             ]
         }
@@ -539,7 +527,7 @@ var TripEditForm = new Ext.FormPanel({
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [startDateField, endDateField, contractsField, idField]
+                    items: [startDateField, endDateField, Ext.applyIf({id:'contractsFieldTrip'}, contractsField), idField]
                 }
             ]
         }

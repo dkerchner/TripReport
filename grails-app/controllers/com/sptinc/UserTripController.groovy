@@ -128,7 +128,7 @@ class UserTripController {
         locationList << location
       }
 
-      def trip = [id: attendeeTrip.id, name: t.toString(), purpose: t.purpose, startDate: t.startDate, endDate: t.endDate, estimatedCost: t.estimatedCost, events: eventList, attendee: a.toString(), attendeeId: a.id, tripId: t.id, approved: attendeeTrip.approved, approvedBy: attendeeTrip.approvedBy == null ? "" : attendeeTrip.approvedBy.toString(), locations: locationList, contracts: contractList]
+      def trip = [id: t.id, name: t.toString(), purpose: t.purpose, startDate: t.startDate, endDate: t.endDate, estimatedCost: t.estimatedCost, events: eventList, attendee: a.toString(), attendeeId: a.id, tripId: t.id, approved: attendeeTrip.approved, approvedBy: attendeeTrip.approvedBy == null ? "" : attendeeTrip.approvedBy.toString(), locations: locationList, contracts: contractList]
 
       render trip as JSON
     }

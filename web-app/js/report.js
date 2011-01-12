@@ -86,7 +86,7 @@ function displayFormWindow() {
     mode = "Create";
     if (!ReportEditWindow.isVisible()) {
         ReportEditWindow.show();
-        resetForm(ReportViewForm.getForm());
+        resetForm(ReportEditForm.getForm());
     } else {
         ReportEditWindow.toFront();
     }
@@ -95,6 +95,9 @@ function displayFormWindow() {
 // display or bring forth the form
 function displayReportViewWindow() {
     if (reportGrid.selModel.getCount()) {
+        var selections = reportGrid.selModel.getSelections();
+        reportDS.on('load', reportDSOnLoad);
+        reportDS.load({params: {'id': selections[0].json.id}});
         if (!ReportViewWindow.isVisible()) {
             ReportViewWindow.show();
         } else {
@@ -172,7 +175,7 @@ function deleteReports(btn) {
         var selections = reportGrid.selModel.getSelections();
         Ext.Ajax.request({
             waitMsg: 'Please Wait',
-            url: 'http://localhost:8080/ReportReportSPT/report/deleteJSON',
+            url: 'report/deleteJSON',
             params: {
                 id:  selections[0].json.id
             },
@@ -209,40 +212,22 @@ function onReportListingEditorGridDoubleClick(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
     //alert(grid.store.getAt(rowIndex).json.id);
-    reportDS.on('load', reportDSOnLoad);
-    reportDS.load({params: {'id': grid.store.getAt(rowIndex).json.id}});
     displayReportViewWindow();
 }
 
 function reportDSOnLoad() {
     var form = ReportViewForm.getForm();
     form.setValues(reportDS.getAt(0).data);
-    /*form.findField('tripDisplayField').setValue(reportDS.getAt(0).data.trip);
-    form.findField('authorDisplayField').setValue(reportDS.getAt(0).data.author);
-    form.findField('usefulnessDisplayField').setValue(reportDS.getAt(0).data.usefulness);
-    form.findField('issuesDisplayField').setValue(reportDS.getAt(0).data.issues);
-    form.findField('topicsDisplayField').setValue(reportDS.getAt(0).data.topics); */
-    var contacts = reportDS.getAt(0).data.contacts;
-    var actionItems = reportDS.getAt(0).data.actionItems;
-    form.findField('contactsDisplayField').setValue(buildStringFromArray(contacts, "name", "<br/>"));
-    form.findField('actionItemsDisplayField').setValue(buildStringFromArray(actionItems, "name", "<br/>"));
-
+    form.findField('contactsDisplayField').setValue(buildStringFromArray(reportDS.getAt(0).data.contacts, "name", "<br/>"));
+    form.findField('actionItemsDisplayField').setValue(buildStringFromArray(reportDS.getAt(0).data.actionItems, "name", "<br/>"));
 }
 
 function reportDSEditOnLoad() {
     var form = ReportEditForm.getForm();
     form.setValues(reportDS.getAt(0).data);
-    /*form.findField('tripField').setValue(reportDS.getAt(0).data.trip);
-    form.findField('authorField').setValue(reportDS.getAt(0).data.author);
-    form.findField('usefulnessField').setValue(reportDS.getAt(0).data.usefulness);
-    form.findField('issuesField').setValue(reportDS.getAt(0).data.issues);
-    form.findField('topicsField').setValue(reportDS.getAt(0).data.topics);
-    form.findField('idField').setValue(reportDS.getAt(0).data.id); */
     if (mode != "Create") {
-        var contacts = reportDS.getAt(0).data.contacts;
-        var actionItems = reportDS.getAt(0).data.actionItems;
-        form.findField('contactsField').setValue(buildStringFromArray(contacts, "id", ','));
-        form.findField('actionItemsField').setValue(buildStringFromArray(actionItems, "id", ','));
+        form.findField('contactsField').setValue(buildStringFromArray(reportDS.getAt(0).data.contacts, "id", ','));
+        form.findField('actionItemsField').setValue(buildStringFromArray(reportDS.getAt(0).data.actionItems, "id", ','));
     }
 }
 
@@ -252,11 +237,13 @@ reportGrid.on('afteredit', saveTheReport);
 // This saves the president after a cell has been edited
 function saveTheReport() {
     var form = ReportEditForm.getForm();
+    var params = form.getValues();
+    params['task'] = mode.toString();
     if (isReportFormValid(form)) {
         Ext.Ajax.request({
             waitMsg: 'Please wait...',
-            url: 'http://localhost:8080/ReportReportSPT/report/saveJSON',
-            params: {
+            url: 'report/saveJSON',
+            params: params/*{
                 //version: oGrid_event.record.data.version,
                 task: mode.toString(),
                 id: form.findField('idField').getValue(),
@@ -267,7 +254,7 @@ function saveTheReport() {
                 usefulness:  form.findField('usefulnessField').getValue(),
                 actionItems: form.findField('actionItemsField').getValue(),
                 contacts: form.findField('contactsField').getValue()
-            },
+            }*/,
             success: function(response) {
                 var result = eval(response.responseText);
                 switch (result) {

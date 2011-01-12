@@ -72,7 +72,7 @@ class ReportController {
       reportInstance = Report.get(params.id)
     }
 
-    if (reportInstance) {
+    if (reportInstance) {         println params
       if (params.version) {
         def version = params.version.toLong()
         if (reportInstance.version > version) {
@@ -81,15 +81,18 @@ class ReportController {
         }
       }
 
-      def actionItems = params.actionItems.split('[,]')
-      def contacts = params.contacts.split('[,]')
+      def actionItems = []
+      if (!params.actionItems.equals("")) {actionItems = params.actionItems.split('[,]')}
+      def contacts = []
+      if (!params.contacts.equals("")) {contacts = params.contacts.split('[,]')}
+
 
       params.remove('actionItems')
       params.remove('contacts')
 
       reportInstance.actionItems.clear();
       for (a in actionItems) {
-        def actionItem = ActionItem.get(e.asType(Long))
+        def actionItem = ActionItem.get(a.asType(Long))
         reportInstance.addToActionItems(actionItem);
       }
 
@@ -104,7 +107,7 @@ class ReportController {
       if (!reportInstance.hasErrors() && reportInstance.save(flush: true)) {
         render 1
       }
-      else {
+      else {       println reportInstance.errors
         render "${message(code: 'Could not update. A necessary value is missing.', args: [message(code: 'report.label', default: 'Report'), params.id])}"
       }
     }
