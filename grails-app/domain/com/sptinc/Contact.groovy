@@ -7,10 +7,11 @@ class Contact {
   Organization organization
   String email
   String phoneNumber
+  Report report
 
   //List reports
 
-  static belongsTo = [com.sptinc.Report]
+  static belongsTo = [report: com.sptinc.Report]
 
   static constraints = {
       firstName(blank: false)

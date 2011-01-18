@@ -64,6 +64,8 @@ class ContractController {
         }
       }
 
+      params.organization = Organization.get(params.organization.asType(Integer))
+
       contractInstance.properties = params
 
       if (!contractInstance.hasErrors() && contractInstance.save(flush: true)) {

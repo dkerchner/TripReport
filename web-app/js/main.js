@@ -80,13 +80,16 @@ var mainPanel = new Ext.Panel({
             tabPosition: 'top',
             layout: 'hbox',
             align: 'stretch',
+            padding: '5',
+            defaults:{margins:'0 0 5 0'},
             items: [
                 {
                     xtype:'button',
-                    text: 'Submit a Trip',
+                    text: 'Add a User',
                     flex: 1,
+                    iconCls:'add-user16',                      // reference to our css
                     handler: function() {
-                        displayFormWindow();
+                        displayUserCreateWindow();
                     }
                 } ,
                 {

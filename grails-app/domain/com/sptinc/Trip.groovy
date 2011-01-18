@@ -2,65 +2,68 @@ package com.sptinc
 
 class Trip {
 
-    Date startDate
-    Date endDate
-    String shortDescription
-    String purpose
-    Float estimatedCost
+	Date startDate
+	Date endDate
+	String shortDescription
+	String purpose
+	Float estimatedCost
 
-    //SortedSet contracts
-    //SortedSet events
-    //SortedSet locations
-    //SortedSet attendees
+	//SortedSet contracts
+	//SortedSet events
+	//SortedSet locations
+	//SortedSet attendees
 
-    Date dateCreated
-    Date lastUpdated
+	Date dateCreated
+	Date lastUpdated
 
-    static searchable = true
+	static searchable = true
 
-    static belongsTo = [com.sptinc.User, com.sptinc.Report]
+	static belongsTo = [
+		com.sptinc.User,
+		com.sptinc.Report
+	]
 
-    static hasMany = [contracts: Contract, events: Event, locations: Location]
+	static hasMany = [contracts: Contract, events: Event, locations: Location]
 
-    static constraints = {
-        startDate(blank: false)
-        endDate(blank: false)
-        shortDescription(blank: false, maxSize: 100)
-        purpose(blank: false, maxSize: 255)
-        estimatedCost(nullable:true)
-        //approvedBy(nullable: true)
-    }
+	static constraints = {
+		startDate(blank: false)
+		endDate(blank: false)
+		shortDescription(blank: false, maxSize: 100)
+		purpose(blank: false, maxSize: 255)
+		estimatedCost(nullable:true)
+		//approvedBy(nullable: true)
+	}
 
-    static mapping = {
-      contracts cascade: 'save-update'
-      events cascade: 'save-update'
-      locations cascade: 'save-update'
-      //attendees cascade: 'save-update'
-      //report cascade: 'save-update'
-    }
+	static mapping = {
+		contracts cascade: 'save-update'
+		events cascade: 'save-update'
+		locations cascade: 'save-update'
+		//attendees cascade: 'save-update'
+		//report cascade: 'save-update'
+	}
 
-  def compareTo = {obj ->
-      startDate.compareTo(obj.startDate)
-  }
+	def compareTo = {obj ->
+		startDate.compareTo(obj.startDate)
+	}
 
-  Set<User> getAttendees() {
-      UserTrip.findAllByTrip(this).collect { it.attendee } as Set
-  }
+	Set<User> getAttendees() {
+		UserTrip.findAllByTrip(this).collect { it.attendee } as Set
+	}
 
 
-   def beforeInsert() {
-       dateCreated = new Date()
-   }
+	def beforeInsert() {
+		dateCreated = new Date()
+	}
 
-   def beforeUpdate() {
-       lastUpdated = new Date()
-   }
+	def beforeUpdate() {
+		lastUpdated = new Date()
+	}
 
-   def list = {
-       [ "trips" : Trip.list() ]
-   }
+	def list = {
+		[ "trips" : Trip.list() ]
+	}
 
-   String toString() {
-       return shortDescription
-   }
+	String toString() {
+		return shortDescription
+	}
 }

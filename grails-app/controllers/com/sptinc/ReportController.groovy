@@ -38,7 +38,7 @@ class ReportController {
       def trip = r.getTrip()
       def author = r.getAuthor()
 
-      def report = [id: r.id, name: r.toString(), trip: trip.toString(), author: author.toString(), usefulness: r.usefulness, topics: r.topics, issues: r.issues, actionItems: actionItemsList, contacts: contactsList]
+      def report = [id: r.id, name: r.toString(), tripId: trip.id, trip: trip.toString(), authorId: author.id, author: author.toString(), usefulness: r.usefulness, topics: r.topics, issues: r.issues, actionItems: actionItemsList, contacts: contactsList]
       reports << report
     }
 
@@ -89,14 +89,19 @@ class ReportController {
 
       params.remove('actionItems')
       params.remove('contacts')
+      params.trip = Trip.get(params.trip.asType(Integer))
+      params.author = User.get(params.author.asType(Integer))
 
-      reportInstance.actionItems.clear();
-      for (a in actionItems) {
+	  
+      if(reportInstance.actionItems!=null){println 'allclear'
+		  reportInstance.actionItems.clear() }
+	  println reportInstance.actionItems 
+      for (a in actionItems) {println a
         def actionItem = ActionItem.get(a.asType(Long))
-        reportInstance.addToActionItems(actionItem);
+        reportInstance.addToActionItems(actionItem)
       }
 
-      reportInstance.contacts.clear();
+      if(reportInstance.contacts!=null){reportInstance.contacts.clear()}
       for (c in contacts) {
         def contact = Contact.get(c.asType(Long))
         reportInstance.addToContacts(contact);
@@ -151,7 +156,7 @@ class ReportController {
 
       def trip = reportInstance.getTrip()
       def author = reportInstance.getAuthor()
-      def report = [id: reportInstance.id, name: reportInstance.toString(), trip: trip.toString(), author: author.toString(), usefulness: reportInstance.usefulness, topics: reportInstance.topics, issues: reportInstance.issues, actionItems: actionItemsList, contacts: contactsList]
+      def report = [id: reportInstance.id, name: reportInstance.toString(), tripId: trip.id, trip: trip.toString(), authorId: author.id, author: author.toString(), usefulness: reportInstance.usefulness, topics: reportInstance.topics, issues: reportInstance.issues, actionItems: actionItemsList, contacts: contactsList]
 
       render report as JSON
     }

@@ -4,6 +4,8 @@ import grails.converters.JSON
 
 class ActionItemController {
 
+	def df = new java.text.SimpleDateFormat("MM/dd/yy")
+	
   static scaffold = ActionItem;
 
   static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
@@ -19,8 +21,16 @@ class ActionItemController {
 
   def listJSON = {
     def actionItems = []
-    for (ai in ActionItem.list(params)) {
-      def actionItem = [id: ai.id, name: ai.toString(), description: ai.description, report: ai.tripReport.toString(), dueDate: ai.dueDate]
+	def actionItemList
+	
+	if (params.report){
+		actionItemList = ActionItem.findAllByReport(Report.get(params.report.asType(Integer)), params)
+	} else {
+		actionItemList = ActionItem.list(params)
+	}
+	
+    for (ai in actionItemList) {
+      def actionItem = [id: ai.id, name: ai.toString(), description: ai.description, report: ai.report.toString(), reportId: ai.report.id, dueDate: ai.dueDate]
       actionItems << actionItem
     }
 
@@ -63,13 +73,18 @@ class ActionItemController {
           return
         }
       }
-
+	  actionItemInstance.setProperty('dueDate', df.parse(params.dueDate))
+	  params.remove('dueDate')
+	  
+	  params.report = Report.get(params.report.asType(Integer))
       actionItemInstance.properties = params
+	  println params
 
       if (!actionItemInstance.hasErrors() && actionItemInstance.save(flush: true)) {
         render 1
+		println 'yes'
       }
-      else {
+      else {println 'really'
         render "${message(code: 'Could not update. A necessary value is missing.', args: [message(code: 'actionItem.label', default: 'ActionItem'), params.id])}"
       }
     }
@@ -97,7 +112,7 @@ class ActionItemController {
     }
     else {
 
-      def actionItem = [id: actionItemInstance.id, name: actionItemInstance.toString(), description: actionItemInstance.description, report: actionItemInstance.tripReport.toString(), dueDate: actionItemInstance.dueDate]
+      def actionItem = [id: actionItemInstance.id, name: actionItemInstance.toString(), description: actionItemInstance.description, report: actionItemInstance.report.toString(), reportId: actionItemInstance.report.id, dueDate: actionItemInstance.dueDate]
 
       render actionItem as JSON
     }

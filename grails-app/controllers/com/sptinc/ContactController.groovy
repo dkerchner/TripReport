@@ -19,7 +19,16 @@ class ContactController {
 
   def listJSON = {
     def contacts = []
-    for (c in Contact.list(params)) {
+	def contactList
+	
+	if (params.report){
+		contactList = Contact.findAllByReport(Report.get(params.report.asType(Integer)), params)
+		//params.report = Report.get(params.report.asType(Integer))
+	} else {
+		contactList = Contact.list(params) 
+	}
+
+	for (c in contactList) {
       def contact = [id: c.id, name: c.toString(), organization: c.organization.toString(), email: c.email, phoneNumber: c.phoneNumber]
       contacts << contact
     }

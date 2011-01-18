@@ -40,7 +40,8 @@ var actionItemDS = new Ext.data.Store({
                 {name: 'id', type: 'int', mapping: 'id'},
                 {name: 'name', type: 'string', mapping: 'name'},
                 {name: 'description', type: 'string', mapping: 'description'},
-                {name: 'report', type: 'string', mapping: 'report'},
+                {name: 'reportName', type: 'string', mapping: 'report'},
+                {name: 'report', type: 'int', mapping: 'reportId'},
                 {name: 'dueDate', type: 'date', mapping: 'dueDate'}
             ]
             ),
@@ -85,8 +86,8 @@ var contractDS = new Ext.data.Store({
                 {name: 'id', type: 'int', mapping: 'id'},
                 {name: 'name', type: 'string', mapping: 'name'},
                 {name: 'contractNumber', type: 'string', mapping: 'contractNumber'},
-                {name: 'organization', type: 'string', mapping: 'organization'},
-                {name: 'organizationId', type: 'int', mapping: 'organizationId'},
+                {name: 'organizationName', type: 'string', mapping: 'organization'},
+                {name: 'organization', type: 'int', mapping: 'organizationId'},
                 //{name: 'manager', type: 'string', mapping: 'manager'},
                 {name: 'active', type: 'boolean', mapping: 'active'}
             ]
@@ -173,8 +174,10 @@ var reportDS = new Ext.data.Store({
                 {name: 'version', type: 'int', mapping: 'version'},
                 {name: 'id', type: 'int', mapping: 'id'},
                 {name: 'name', type: 'string', mapping: 'name'},
-                {name: 'trip', type: 'string', mapping: 'trip'},
-                {name: 'author', type: 'string', mapping: 'author'},
+                {name: 'trip', type: 'int', mapping: 'tripId'},
+                {name: 'tripName', type: 'string', mapping: 'trip'},
+                {name: 'author', type: 'int', mapping: 'authorId'},
+                {name: 'authorName', type: 'string', mapping: 'author'},
                 {name: 'usefulness', type: 'int', mapping: 'usefulness'},
                 {name: 'issues', type: 'string', mapping: 'issues'},
                 {name: 'topics', type: 'string', mapping: 'topics'},
@@ -249,8 +252,8 @@ var userDS = new Ext.data.JsonStore({
                 {name: 'name', type: 'string', mapping: 'fullName'},
                 {name: 'userName', type: 'string', mapping: 'userName'},
                 {name: 'email', type: 'string', mapping: 'email'},
-                {name: 'companyName', type: 'string', mapping: 'company'},
                 {name: 'company', type: 'int', mapping: 'companyId'},
+                {name: 'companyName', type: 'string', mapping: 'company'},
                 {name: 'contracts', type: 'array', mapping: 'contracts'},
                 {name: 'roles', type: 'array', mapping: 'roles'}
             ]
@@ -305,18 +308,23 @@ var attendeeListDS = new Ext.data.Store({
 
 var actionItemListDS = new Ext.data.Store({
     autoLoad: true,
-    url: 'actionItem/listJSON',
+    proxy: new Ext.data.HttpProxy({
+        url: 'actionItem/listJSON'}),
+    reader: new Ext.data.JsonReader({
         results: 'total',
         root:'items',
-        id:'id',
-        fields:             [
+        id:'id'
+    },
+             [
                 {name: 'version', type: 'int', mapping: 'version'},
                 {name: 'id', type: 'int', mapping: 'id'},
                 {name: 'name', type: 'string', mapping: 'name'},
                 {name: 'description', type: 'string', mapping: 'description'},
-                {name: 'report', type: 'string', mapping: 'report'},
+                {name: 'reportName', type: 'string', mapping: 'report'},
+                {name: 'report', type: 'string', mapping: 'reportId'},
                 {name: 'dueDate', type: 'date', mapping: 'dueDate'}
-            ],
+            ]
+            ),
     baseParams:     {
         now:        (new Date()).getTime()
     }
@@ -357,6 +365,7 @@ var contactListDS = new Ext.data.Store({
             [
                 {name: 'version', type: 'int', mapping: 'version'},
                 {name: 'id', type: 'int', mapping: 'id'},
+                {name: 'name', type: 'string', mapping: 'name'},
                 {name: 'firstName', type: 'string', mapping: 'firstName'},
                 {name: 'lastName', type: 'string', mapping: 'lastName'},
                 {name: 'organization', type: 'string', mapping: 'organization'},
@@ -455,7 +464,7 @@ var locationListDS = new Ext.data.Store({
 });
 
 var organizationListDS = new Ext.data.Store({
-    autoLoad: false,
+    autoLoad: true,
     proxy: new Ext.data.HttpProxy({
         url: 'organization/listJSON'}),
     reader: new Ext.data.JsonReader({
@@ -581,13 +590,11 @@ var userListDS = new Ext.data.Store({
                 {name: 'userName', type: 'string', mapping: 'userName'},
                 {name: 'email', type: 'string', mapping: 'email'},
                 {name: 'company', type: 'string', mapping: 'company'},
-                {name: 'contracts', type: 'array', mapping: 'contracts'}
+                {name: 'contracts', type: 'array', mapping: 'contracts'},
+                {name: 'roles', type: 'array', mapping: 'roles'}
             ]
             ),
     baseParams:     {
         now:        (new Date()).getTime()
-    },
-    writer: new Ext.data.JsonWriter({
-        encode:     true
-    })
+    }
 });

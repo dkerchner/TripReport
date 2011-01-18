@@ -5,7 +5,7 @@
  *
  * http://extjs.com/license
  */
-var mode;
+var contractMode;
 var ContractViewWindow;
 var ContractViewForm;
 var ContractEditWindow;
@@ -23,7 +23,7 @@ var contractcm = new Ext.grid.ColumnModel([
     }, hidden: true},
     {header: "Contract #", width: 100, dataIndex: 'contractNumber', sortable: true},
     {header: "Organization", width: 100, dataIndex: 'organization'},
-    {header: "Active", width: 115, dataIndex: 'approved', sortable: true, renderer: function(value, cell) {
+    {header: "Active", width: 115, dataIndex: 'active', sortable: true, renderer: function(value, cell) {
             if (value) {
                 value = 'Yes'
             } else {
@@ -87,7 +87,7 @@ var contractGrid = new Ext.grid.GridPanel({
 
 // display or bring forth the form
 function displayContractCreateWindow() {
-    mode = "Create";
+    contractMode = "Create";
     if (!ContractEditWindow.isVisible()) {
         ContractEditWindow.show();
         resetContractForm();
@@ -113,7 +113,7 @@ function displayContractViewWindow() {
 // display or bring forth the form
 function displayContractEditWindow() {
     if (contractGrid.selModel.getCount()) {
-        mode = "Edit";
+        contractMode = "Edit";
         var selections = contractGrid.selModel.getSelections();
         contractDS.on('load', contractDSEditOnLoad);
         contractDS.load({params: {'id': selections[0].json.id}});
@@ -230,7 +230,7 @@ function contractDSEditOnLoad() {
     var form = ContractEditForm.getForm();
 
     form.setValues(contractDS.getAt(0).data);
-    if (mode != "Create") {
+    if (contractMode != "Create") {
     }
 }
 
@@ -241,31 +241,19 @@ contractGrid.on('afteredit', saveTheContract);
 function saveTheContract() {
     var form = ContractEditForm.getForm();
     var params = form.getValues();
-    params['task'] = mode.toString();
+    params['task'] = contractMode.toString();
     if (isReportFormValid(form)) {
         Ext.Ajax.request({
             waitMsg: 'Please wait...',
             url: 'contract/saveJSON',
-            params: params/*{
-                //version: oGrid_event.record.data.version,
-                //form.getValues(),
-                task: mode.toString(),
-                id: form.findField('idField').getValue(),
-                trip:      form.findField('tripField').getValue(),
-                author:       form.findField('authorField').getValue(),
-                issues: form.findField('issuesField').getValue(),
-                topics:  form.findField('topicsField').getValue(),
-                usefulness:  form.findField('usefulnessField').getValue(),
-                actionItems: form.findField('actionItemsField').getValue(),
-                contacts: form.findField('contactsField').getValue()
-            }*/,
+            params: params,
             success: function(response) {
                 var result = eval(response.responseText);
                 switch (result) {
                     case 1:
                         contractListDS.commitChanges();
                         contractListDS.reload();
-                        handler: closeForm(ContractEditWindow.hide(), ContractEditForm.getForm())
+                        ContractEditWindow.hide();
                         break;
                     default:
                         Ext.MessageBox.alert('Error', response.responseText);
@@ -291,13 +279,6 @@ function resetContractForm() {
 // check if the form is valid
 function isReportFormValid(form) {
     return(formIsValid(form));
-}
-
-function closeForm(window, form) {
-    if (window) {
-        window.hide();
-        destroyFormFields(form.getForm());
-    }
 }
 
 ContractViewForm = new Ext.FormPanel({
@@ -333,7 +314,7 @@ ContractViewForm = new Ext.FormPanel({
         {
             text: 'Close',
             handler: function() {
-                    closeForm(ContractViewWindow, ContractViewForm);
+                ContractViewWindow.hide();
             }
         }
     ]
@@ -370,7 +351,7 @@ ContractEditForm = new Ext.FormPanel({
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [Ext.applyIf({id:'organizationFieldContract'}, organizationField)]
+                    items: [Ext.applyIf({id:'organizationFieldContract'}, organizationField), Ext.applyIf({id:'idFieldContract'}, idField)]
                 }
             ]
         }
@@ -385,7 +366,7 @@ ContractEditForm = new Ext.FormPanel({
             // because of the global vars, we can only instantiate one window... so let's just hide it.
 
             handler: function() {
-                closeForm(ContractEditWindow, ContractEditForm);
+                ContractEditWindow.hide();
             }
         }
     ]

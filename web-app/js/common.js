@@ -5,7 +5,34 @@
  * Time: 1:09 PM
  * To change this template use File | Settings | File Templates.
  */
-
+/*Ext.override(Ext.form.ComboBox, {
+    setValue : function(v){
+//begin patch
+        // Store not loaded yet? Set value when it *is* loaded.
+        // Defer the setValue call until after the next load.
+        if (this.store.getCount() == 0) {
+            this.store.on('load',
+                this.setValue.createDelegate(this, [v]), null, {single: true});
+            return;
+        }
+//end patch
+        var text = v;
+        if(this.valueField){   alert(v);
+            var r = this.findRecord(this.valueField, v);
+            if(r){
+                text = r.data[this.displayField];
+            }else if(this.valueNotFoundText !== undefined){
+                text = this.valueNotFoundText;
+            }
+        }
+        this.lastSelectionText = text;
+        if(this.hiddenField){//alert (v);
+            this.hiddenField.value = v;
+        }
+        Ext.form.ComboBox.superclass.setValue.call(this, text);
+        this.value = v;
+    }
+});*/
 
 // ExtJS common form elements
 var nameField = {
@@ -74,6 +101,17 @@ var shortDescriptionField = {
     maskRe: /([a-zA-Z0-9\s]+)$/
 };
 
+var descriptionField = {
+	    xtype: 'textarea',
+	    id: 'descriptionField',
+	    name: 'description',
+	    fieldLabel: 'Description',
+	    maxLength: 255,
+	    allowBlank: false,
+	    anchor : '95%',
+	    maskRe: /([a-zA-Z0-9\s]+)$/
+	};
+
 var purposeField = {
     xtype: 'textarea',
     id: 'purposeField',
@@ -104,6 +142,17 @@ var endDateField = {
     allowBlank: false,
     anchor:'95%'
 };
+
+var dueDateField = {
+	    xtype: 'datefield',
+	    id:'dueDateField',
+	    name: 'dueDate',
+	    fieldLabel: 'Due Date',
+	    format : 'm/d/Y',
+	    allowBlank: false,
+	    anchor:'95%'
+	};
+
 
 var eventsField = {
     xtype: 'multiselect',
@@ -165,59 +214,78 @@ var locationsField = {
 var tripField = {
     xtype: 'combo',
     id: 'tripField',
-    name: 'trip',
-    fieldLabel: 'Trip',
-    allowBlank: false,
+    anchor : '95%',
     store: tripListDS,
+    fieldLabel: 'Trip',
+    displayField:'name',
     valueField: 'id',
-    hiddenValue: 'id',
     hiddenName: 'trip',
-    displayField: 'name',
-    anchor : '95%'
+    allowBlank: false,
+    pageSize: 5,
+    minChars: 2,
+    submitValue: false,
+    mode: 'remote',
+    triggerAction: 'all',
+    emptyText: 'Select a trip...',
+    selectOnFocus: false
 };
 
 var companyField = {
     xtype: 'combo',
-    id: 'company_id',
-    name: 'company',
-    hiddenName: 'company',
-    fieldLabel: 'Company',
-    allowBlank: false,
+    id: 'companyField',
+    anchor : '95%',
     store: companyListDS,
+    fieldLabel: 'Company',
+    displayField:'name',
     valueField: 'id',
-    displayField: 'name',
-    hiddenValue: 'id',
-    anchor : '95%'
+    hiddenName: 'company',
+    allowBlank: false,
+    pageSize: 5,
+    minChars: 2,
+    submitValue: false,
+    mode: 'remote',
+    triggerAction: 'all',
+    emptyText: 'Select a company...',
+    selectOnFocus: false
 };
 
 var authorField = {
     xtype: 'combo',
     id: 'authorField',
-    name: 'author',
-    fieldLabel: 'Author',
-    allowBlank: false,
-    valueField: 'id',
-    displayField: "name",
-    hiddenValue: 'id',
-    hiddenName: 'author',
+    anchor : '95%',
     store: userListDS,
-    anchor : '95%'
+    fieldLabel: 'Author',
+    displayField:'name',
+    valueField: 'id',
+    hiddenName: 'author',
+    allowBlank: false,
+    pageSize: 5,
+    minChars: 2,
+    submitValue: false,
+    mode: 'remote',
+    triggerAction: 'all',
+    emptyText: 'Select an author...',
+    selectOnFocus: false
 };
 
 var organizationField = {
     xtype: 'combo',
     id: 'organizationField',
-    name: 'organization',
-    fieldLabel: 'Organization',
-    allowBlank: false,
-    valueField: 'id',
-    displayField: "name",
-    hiddenValue: 'id',
-    hiddenName: 'organization',
+    anchor : '95%',
     store: organizationListDS,
-    anchor : '95%'
+    fieldLabel: 'Organization',
+    displayField:'name',
+    valueField: 'id',
+    hiddenName: 'organization',
+    allowBlank: false,
+    pageSize: 5,
+    minChars: 2,
+    submitValue: false,
+    mode: 'remote',
+    triggerAction: 'all',
+    emptyText: 'Select an organization...',
+    selectOnFocus: false
 };
-
 
 var topicsField = {
     xtype: 'textarea',
@@ -297,7 +365,7 @@ var rolesField = {
 
 var actionItemsField = {
     xtype: 'multiselect',
-    fieldLabel: 'Action Items<br />(Required)',
+    fieldLabel: 'Action Items',
     id: 'actionItemsField',
     name: 'actionItems',
     displayField: 'name',
@@ -305,12 +373,21 @@ var actionItemsField = {
     valueField: 'id',
     anchor:'95%',
     store: actionItemListDS,
-    /*tbar:[{
-        text: 'clear',
+    tbar:[{
+        text: '',
+        iconCls:'add',                      // reference to our css
         handler: function(){
-
+        	displayActionItemCreateWindow()
         }
-    }], */
+    	}, {
+        	text: '',
+            iconCls:'remove',                      // reference to our css
+        	handler: function(){
+        		deleteActionItemsFromReport()
+        	}
+        }
+        
+    ], 
     ddReorder: true
 };
 
@@ -336,7 +413,7 @@ var userNameDisplayField = {
 var organizationDisplayField = {
     xtype: 'displayfield',
     id: 'organizationDisplayField',
-    name: 'organization',
+    name: 'organizationName',
     fieldLabel: '<b>Organization</b>',
     anchor:'95%'
 };
@@ -399,6 +476,16 @@ var endDateDisplayField = {
     anchor:'95%'
 };
 
+var dueDateDisplayField = {
+	    xtype: 'displayfield',
+	    id:'dueDateDisplayField',
+	    name: 'dueDate',
+	    format : 'm/d/Y',
+	    fieldLabel: '<b>Due Date</b>',
+	    anchor:'95%'
+	};
+
+
 var eventsDisplayField = {
     xtype: 'displayfield',
     id: 'eventsDisplayField',
@@ -439,7 +526,7 @@ var tripDisplayField = {
     xtype: 'displayfield',
     id: 'tripDisplayField',
     ref: 'tripDisplayField',
-    name: 'trip',
+    name: 'tripName',
     fieldLabel: '<b>Trip</b>',
     anchor:'95%'
 };
@@ -447,7 +534,7 @@ var tripDisplayField = {
 var authorDisplayField = {
     xtype: 'displayfield',
     id: 'authorDisplayField',
-    name: 'author',
+    name: 'authorName',
     ref: 'authorDisplayField',
     fieldLabel: '<b>Author</b>',
     anchor:'95%'

@@ -23,14 +23,21 @@ class UserController {
     def users = []
     for (u in User.list(params)) {
       def contractList = []
+	  def roleList = []
 
       def contracts = u.getContracts()
       for (c in contracts) {
         def contract = [id: c.id, name: c.toString()]
         contractList << contract
       }
+	  
+	  def roles = u.getAuthorities()
+	  for (r in roles) {
+		def role = [id: r.id, name: r.authority]
+		roleList << role
+	  }
 
-      def user = [id: u.id, name: u.toString(), userName: u.username, email: u.email, company: u.company.toString(), fullName: u.fullName, contracts: contractList]
+      def user = [id: u.id, name: u.toString(), userName: u.username, email: u.email, company: u.company.toString(), fullName: u.fullName, contracts: contractList, roles: roleList]
       users << user
     }
 
@@ -73,14 +80,22 @@ class UserController {
         }
       }
       def contracts = params.contracts.split('[,]')
+	  def roles = params.roles.split('[,]')
 
       params.remove('contracts')
+      params.company = Company.get(params.company.asType(Integer))
 
       userInstance.contracts.clear();
       for (c in contracts) {
         def contract = Contract.get(c.asType(Long))
         userInstance.addToContracts(contract);
       }
+	  
+	  userInstance.roles.clear();
+	  for (r in roles) {
+		def role = Role.get(c.asType(Long))
+		userInstance.addToRoles(role);
+	  }
 
       // The front end handles the comparison of password1 and password2
       if (params.password1 != null && !params.password1.equals('')) {

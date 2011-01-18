@@ -5,7 +5,7 @@
  *
  * http://extjs.com/license
  */
-var mode;
+var reportMode;
 
 
 var reportcm = new Ext.grid.ColumnModel([
@@ -83,7 +83,7 @@ var reportGrid = new Ext.grid.GridPanel({
 
 // display or bring forth the form
 function displayFormWindow() {
-    mode = "Create";
+    reportMode = "Create";
     if (!ReportEditWindow.isVisible()) {
         ReportEditWindow.show();
         resetForm(ReportEditForm.getForm());
@@ -109,7 +109,7 @@ function displayReportViewWindow() {
 // display or bring forth the form
 function displayReportEditWindow() {
     if (reportGrid.selModel.getCount()) {
-        mode = "Edit";
+        reportMode = "Edit";
         var selections = reportGrid.selModel.getSelections();
         reportDS.on('load', reportDSEditOnLoad);
         reportDS.load({params: {'id': selections[0].json.id}});
@@ -218,16 +218,22 @@ function onReportListingEditorGridDoubleClick(grid, rowIndex, e) {
 function reportDSOnLoad() {
     var form = ReportViewForm.getForm();
     form.setValues(reportDS.getAt(0).data);
+
     form.findField('contactsDisplayField').setValue(buildStringFromArray(reportDS.getAt(0).data.contacts, "name", "<br/>"));
     form.findField('actionItemsDisplayField').setValue(buildStringFromArray(reportDS.getAt(0).data.actionItems, "name", "<br/>"));
 }
 
 function reportDSEditOnLoad() {
     var form = ReportEditForm.getForm();
-    form.setValues(reportDS.getAt(0).data);
-    if (mode != "Create") {
+    if (reportMode != "Create") {
+        form.setValues(reportDS.getAt(0).data);
+        contactListDS.load({params: {'report': reportDS.getAt(0).data.id}});
+        actionItemListDS.load({params: {'report': reportDS.getAt(0).data.id}});
         form.findField('contactsField').setValue(buildStringFromArray(reportDS.getAt(0).data.contacts, "id", ','));
         form.findField('actionItemsField').setValue(buildStringFromArray(reportDS.getAt(0).data.actionItems, "id", ','));
+    } else {
+    	form.findField('contactsField').disable();
+    	form.findField('actionItemsField').disable();
     }
 }
 
@@ -238,23 +244,12 @@ reportGrid.on('afteredit', saveTheReport);
 function saveTheReport() {
     var form = ReportEditForm.getForm();
     var params = form.getValues();
-    params['task'] = mode.toString();
+    params['task'] = reportMode.toString();
     if (isReportFormValid(form)) {
         Ext.Ajax.request({
             waitMsg: 'Please wait...',
             url: 'report/saveJSON',
-            params: params/*{
-                //version: oGrid_event.record.data.version,
-                task: mode.toString(),
-                id: form.findField('idField').getValue(),
-                trip:      form.findField('tripField').getValue(),
-                author:       form.findField('authorField').getValue(),
-                issues: form.findField('issuesField').getValue(),
-                topics:  form.findField('topicsField').getValue(),
-                usefulness:  form.findField('usefulnessField').getValue(),
-                actionItems: form.findField('actionItemsField').getValue(),
-                contacts: form.findField('contactsField').getValue()
-            }*/,
+            params: params,
             success: function(response) {
                 var result = eval(response.responseText);
                 switch (result) {
@@ -354,7 +349,7 @@ var ReportEditForm = new Ext.FormPanel({
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [authorField, usefulnessField, issuesField, idField]
+                    items: [authorField, usefulnessField, issuesField, Ext.applyIf({id:'idFieldReport', name: 'id'}, idField)]
                 }
             ]
         }
@@ -379,7 +374,7 @@ var ReportEditWindow = new Ext.Window({
     title: 'Edit a Report',
     closable:false,
     width: 610,
-    height: 450,
+    height: 515,
     plain:false,
     layout: 'fit',
     items: ReportEditForm

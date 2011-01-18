@@ -24,7 +24,25 @@ class TripController {
 
   def listJSON = {
     def trips = []
-    for (t in Trip.list(params)) {
+	println params
+	
+	
+	def tripList
+	if (params.criteria != null && !params.criteria.equals("")) {
+		def crit = Trip.createCriteria()
+		if (params.events != null && !params.events.equals("")) {
+			def eventCriteria = params.events.split('[,]')
+			crit.inList("events", eventCriteria)
+		}
+		println crit.toString()
+		tripList = crit.list()
+	
+	
+	} else {
+		tripList = Trip.list(params)
+	}
+	
+    for (t in tripList) {
       def eventList = []
       def contractList = []
       def locationList = []

@@ -5,7 +5,7 @@
  *
  * http://extjs.com/license
  */
-var mode;
+var userMode;
 var UserViewWindow;
 var UserViewForm;
 var UserEditWindow;
@@ -22,9 +22,12 @@ var usercm = new Ext.grid.ColumnModel([
         return value;
     }, hidden: true},
     {header: "Name", width: 100, dataIndex: 'fullName', sortable: true},
-    {header: "Email", width: 120, dataIndex: 'email'},
+    {header: "Email", width: 200, dataIndex: 'email'},
     {header: "Company", width: 100, dataIndex: 'company'},
     {header: "Contracts", width: 115, dataIndex: 'contracts', sortable: true, renderer: function(value, cell) {
+        return buildStringFromArray(value, 'name', ', ');
+    }},
+    {header: "Roles", width: 115, dataIndex: 'roles', sortable: true, renderer: function(value, cell) {
         return buildStringFromArray(value, 'name', ', ');
     }}
 ]);
@@ -57,9 +60,9 @@ var userGrid = new Ext.grid.GridPanel({
         },
         '-',
         {
-            text: 'Submit',
-            tooltip: 'Submit a user',
-            iconCls:'add',                      // reference to our css
+            text: 'Add',
+            tooltip: 'Add a user',
+            iconCls:'add-user16',                      // reference to our css
             handler: displayUserCreateWindow
         },
         '-',
@@ -81,7 +84,7 @@ var userGrid = new Ext.grid.GridPanel({
 
 // display or bring forth the form
 function displayUserCreateWindow() {
-    mode = "Create";
+    userMode = "Create";
     if (!UserEditWindow.isVisible()) {
         UserEditWindow.show();
         resetUserForm();
@@ -107,7 +110,7 @@ function displayUserViewWindow() {
 // display or bring forth the form
 function displayUserEditWindow() {
     if (userGrid.selModel.getCount()) {
-        mode = "Edit";
+        userMode = "Edit";
         var selections = userGrid.selModel.getSelections();
         userDS.on('load', userDSEditOnLoad);
         userDS.load({params: {'id': selections[0].json.id}});
@@ -226,7 +229,7 @@ function userDSEditOnLoad() {
     var form = UserEditForm.getForm();
 
     form.setValues(userDS.getAt(0).data);
-    if (mode != "Create") {
+    if (userMode != "Create") {
         form.findField('rolesField').setValue(buildStringFromArray(userDS.getAt(0).data.roles, "id", ","));
         form.findField('contractsFieldUser').setValue(buildStringFromArray(userDS.getAt(0).data.contracts, "id", ","));
     }
@@ -239,31 +242,19 @@ userGrid.on('afteredit', saveTheUser);
 function saveTheUser() {
     var form = UserEditForm.getForm();
     var params = form.getValues();
-    params['task'] = mode.toString();
+    params['task'] = userMode.toString();
     if (isReportFormValid(form)) {
         Ext.Ajax.request({
             waitMsg: 'Please wait...',
             url: 'user/saveJSON',
-            params: params/*{
-                //version: oGrid_event.record.data.version,
-                //form.getValues(),
-                task: mode.toString(),
-                id: form.findField('idField').getValue(),
-                trip:      form.findField('tripField').getValue(),
-                author:       form.findField('authorField').getValue(),
-                issues: form.findField('issuesField').getValue(),
-                topics:  form.findField('topicsField').getValue(),
-                usefulness:  form.findField('usefulnessField').getValue(),
-                actionItems: form.findField('actionItemsField').getValue(),
-                contacts: form.findField('contactsField').getValue()
-            }*/,
+            params: params,
             success: function(response) {
                 var result = eval(response.responseText);
                 switch (result) {
                     case 1:
                         userListDS.commitChanges();
                         userListDS.reload();
-                        handler: closeForm(UserEditWindow.hide(), UserEditForm.getForm())
+                        UserEditWindow.hide();
                         break;
                     default:
                         Ext.MessageBox.alert('Error', response.responseText);
@@ -284,26 +275,11 @@ function saveTheUser() {
 function resetUserForm() {
     var form = UserEditForm.getForm();
     resetForm(form);
-    /*form.findField('nameField').setValue('');
-    form.findField('userNameField').setValue('');
-    form.findField('passwordField1').setValue('');
-    form.findField('passwordField2').setValue('');
-    form.findField('companyField').setValue('');
-    form.findField('emailField').setValue('');
-    form.findField('contractsField').setValue('');
-    form.findField('idField').setValue('');*/
 }
 
 // check if the form is valid
 function isReportFormValid(form) {
     return(formIsValid(form) && (form.findField('passwordField1').getValue()==form.findField('passwordField2').getValue()));
-}
-
-function closeForm(window, form) {
-    if (window) {
-        window.hide();
-        destroyFormFields(form.getForm());
-    }
 }
 
 UserViewForm = new Ext.FormPanel({
@@ -339,7 +315,7 @@ UserViewForm = new Ext.FormPanel({
         {
             text: 'Close',
             handler: function() {
-                    closeForm(UserViewWindow, UserViewForm);
+                UserViewWindow.hide();
             }
         }
     ]
@@ -376,7 +352,7 @@ UserEditForm = new Ext.FormPanel({
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [companyField, emailField, Ext.applyIf({id:'contractsFieldUser'}, contractsField), idField]
+                    items: [companyField, emailField, Ext.applyIf({id:'contractsFieldUser'}, contractsField), Ext.applyIf({id:'idFieldContract'}, idField)]
                 }
             ]
         }
@@ -391,7 +367,7 @@ UserEditForm = new Ext.FormPanel({
             // because of the global vars, we can only instantiate one window... so let's just hide it.
 
             handler: function() {
-                closeForm(UserEditWindow, UserEditForm);
+                UserEditWindow.hide();
             }
         }
     ]

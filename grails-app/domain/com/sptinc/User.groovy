@@ -31,7 +31,7 @@ class User {
 		password column: '`password`'
 	}
 
-	Set<Role> getAuthorities() {
+	Set<com.sptinc.Role> getAuthorities() {
 		UserRole.findAllByUser(this).collect { it.role } as Set
 	}
 

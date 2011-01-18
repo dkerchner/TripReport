@@ -5,7 +5,7 @@
  *
  * http://extjs.com/license
  */
-var mode;
+var tripMode;
 
 
 var tripcm = new Ext.grid.ColumnModel([
@@ -94,7 +94,7 @@ var tripGrid = new Ext.grid.GridPanel({
             text: 'Submit',
             tooltip: 'Submit a trip',
             iconCls:'add',                      // reference to our css
-            handler: displayFormWindow
+            handler: displayTripCreateWindow
         },
         '-',
         {
@@ -109,6 +109,30 @@ var tripGrid = new Ext.grid.GridPanel({
             tooltip: 'Delete the selected trip.',
             handler: confirmDeleteTrips,   // Confirm before deleting
             iconCls:'remove'
+        } , {
+            xtype: 'combo',
+            id: 'eventFilter',
+            anchor : '95%',
+            store: eventListDS,
+            fieldLabel: 'Event',
+            displayField:'name',
+            valueField: 'id',
+            hiddenName: 'event',
+            allowBlank: false,
+            pageSize: 5,
+            minChars: 2,
+            submitValue: false,
+            tripMode: 'remote',
+            triggerAction: 'all',
+            emptyText: 'Select an event...',
+            selectOnFocus: false, 
+            listeners: {
+                select: function(combo, record, index){
+                	
+                	filterTripsByEvent(this.getValue()); 
+                }
+                
+            }
         }/*,
          '-',
          { // Added in Tutorial 8
@@ -131,14 +155,14 @@ var tripGrid = new Ext.grid.GridPanel({
 function saveTheTrip() {
     var form = TripEditForm.getForm();
     var params = form.getValues();
-    params['task'] = mode.toString();
+    params['task'] = tripMode.toString();
     if (isTripFormValid(form)) {
         Ext.Ajax.request({
             waitMsg: 'Please wait...',
             url: 'trip/saveJSON',
             params: params/*{
                 //version: oGrid_event.record.data.version,
-                task: mode.toString(),
+                task: tripMode.toString(),
                 id: form.findField('idField').getValue(),
                 shortDescription:      form.findField('shortDescriptionField').getValue(),
                 purpose:       form.findField('purposeField').getValue(),
@@ -217,9 +241,14 @@ function isTripFormValid(form) {
     return(formIsValid(form));
 }
 
+function filterTripsByEvent(eventId) {
+	console.log(eventId);
+	tripListDS.reload({params: {events: eventId}});
+}
+
 // display or bring forth the form
-function displayFormWindow() {
-    mode = "Create";
+function displayTripCreateWindow() {
+    tripMode = "Create";
     if (!TripEditWindow.isVisible()) {
         TripEditWindow.show();
         resetForm(TripEditForm.getForm());
@@ -245,7 +274,7 @@ function displayTripViewWindow() {
 // display or bring forth the form
 function displayTripEditWindow() {
     if (tripGrid.selModel.getCount()) {
-        mode = "Edit";
+        tripMode = "Edit";
         var selections = tripGrid.selModel.getSelections();
         tripDS.on('load', tripDSEditOnLoad);
         tripDS.load({params: {'id': selections[0].json.id}});
@@ -372,7 +401,7 @@ function tripDSOnLoad() {
 function tripDSEditOnLoad() {
     var form = TripEditForm.getForm();
     form.setValues(tripDS.getAt(0).data);
-    if (mode != "Create") {
+    if (tripMode != "Create") {
         form.findField('eventsField').setValue(buildStringFromArray(tripDS.getAt(0).data.events, "id", ','));
         form.findField('contractsFieldTrip').setValue(buildStringFromArray(tripDS.getAt(0).data.contracts, "id", ','));
         form.findField('locationsField').setValue(buildStringFromArray(tripDS.getAt(0).data.locations, "id", ','));
@@ -452,7 +481,7 @@ var TripViewWindow = new Ext.Window({
     title: 'Trip Details',
     closable:true,
     width: 610,
-    height: 450,
+    height: 400,
     plain:false,
     layout: 'fit',
     items: TripViewForm
@@ -527,7 +556,7 @@ var TripEditForm = new Ext.FormPanel({
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [startDateField, endDateField, Ext.applyIf({id:'contractsFieldTrip'}, contractsField), idField]
+                    items: [startDateField, endDateField, Ext.applyIf({id:'contractsFieldTrip'}, contractsField), Ext.applyIf({id:'idFieldContract'}, idField)]
                 }
             ]
         }
@@ -552,7 +581,7 @@ var TripEditWindow = new Ext.Window({
     title: 'Edit a Trip',
     closable:false,
     width: 610,
-    height: 450,
+    height: 515,
     plain:false,
     layout: 'fit',
     items: TripEditForm

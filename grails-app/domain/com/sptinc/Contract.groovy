@@ -5,7 +5,7 @@ class Contract {
     String contractNumber
     Organization organization
     //User manager
-    boolean active
+    boolean active = true
 
     static hasMany = [trips: Trip]
 
@@ -14,7 +14,7 @@ class Contract {
     static constraints = {
         contractNumber(blank: false, unique: true, maxSize: 100)
         organization(blank: false)
-        active(default: true)
+        active()
     }
 
     int compareTo(obj) {

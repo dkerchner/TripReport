@@ -5,9 +5,9 @@ class ActionItem {
     String name
     String description
     Date dueDate
-    Report tripReport
+    //Report report
 
-    static belongsTo = [tripReport: Report]
+    static belongsTo = [report: Report]
 
     static constraints = {
         name(blank: false, unique: true, maxSize: 100)

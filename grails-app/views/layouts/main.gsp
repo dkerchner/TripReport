@@ -9,6 +9,7 @@
 
   <link rel="shortcut icon" href="${resource(dir: 'images', file: 'favicon.ico')}" type="image/x-icon"/>
   <link rel="stylesheet" type="text/css" href="${resource(dir: 'js/ext-3.3.1/resources/css', file: 'ext-all.css')}"/>
+  <link rel="stylesheet" type="text/css" href="resources/css/calendar.css" />
 
   <style type="text/css">
   html, body {
@@ -36,6 +37,13 @@
   .add {
     background-image:url(${resource(dir: 'images', file: 'add.gif')}) !important;
   }
+  .add-user {
+    background-image:url(${resource(dir: 'images', file: 'add-user.gif')}) !important;
+  }
+  .add-user16 {
+    background-image:url(${resource(dir: 'images', file: 'add-user16.gif')}) !important;
+  }
+
   .edit {
     background-image:url(${resource(dir: 'images', file: 'cog_edit.png')}) !important;
   }
@@ -83,7 +91,36 @@
   <g:javascript library="attendee"/>
   <g:javascript library="user"/>
   <g:javascript library="contract"/>
+  <g:javascript library="actionItem"/>
+  
 
+  <!--<g:javascript library="calendar/Ext.calendar"/>
+  <g:javascript library="calendar/templates/DayHeaderTemplate"/>
+  <g:javascript library="calendar/templates/DayBodyTemplate"/>
+  <g:javascript library="calendar/templates/DayViewTemplate"/>
+  <g:javascript library="calendar/templates/BoxLayoutTemplate"/>
+  <g:javascript library="calendar/templates/MonthViewTemplate"/>
+  <g:javascript library="calendar/dd/CalendarScrollManager"/>
+  <g:javascript library="calendar/dd/StatusProxy"/>
+  <g:javascript library="calendar/dd/CalendarDD"/>
+  <g:javascript library="calendar/dd/DayViewDD"/>
+  <g:javascript library="calendar/EventRecord"/>
+  <g:javascript library="calendar/views/MonthDayDetailView"/>
+  <g:javascript library="calendar/widgets/CalendarPicker"/>
+  <g:javascript library="calendar/WeekEventRenderer"/>
+  <g:javascript library="calendar/views/CalendarView"/>
+  <g:javascript library="calendar/views/MonthView"/>
+  <g:javascript library="calendar/views/DayHeaderView"/>
+  <g:javascript library="calendar/views/DayBodyView"/>
+  <g:javascript library="calendar/views/DayView"/>
+  <g:javascript library="calendar/views/WeekView"/>
+  <g:javascript library="calendar/widgets/DateRangeField"/>
+  <g:javascript library="calendar/widgets/ReminderField"/>
+  <g:javascript library="calendar/EventEditForm"/>
+  <g:javascript library="calendar/EventEditWindow"/>
+  <g:javascript library="calendar/CalendarPanel"/>
+
+  <g:javascript library="calendar"/>-->
 
 
   <sec:ifAllGranted roles="ROLE_ADMIN"><script type="text/javascript">admin_user = true; </script></sec:ifAllGranted>
@@ -108,7 +145,7 @@
 		border: true,
         layout: 'fit',
 		items: [
-			// from basic.js:
+			// from basic:
           new Ext.TabPanel({
               id: 'center-tab-panel',
               border: false, // already wrapped so don't add another border
@@ -192,14 +229,14 @@
                           replace('attendee-grid'
                           , 'Attendees');
                       }
-                  } , {
+                  } /*, {
                       xtype:'button',
-                      text: 'Contracts',
+                      text: 'Calendar',
                       handler: function(){
-                          replace('contract-grid'
-                          , 'Contracts');
+                          replace('calendar'
+                          , 'Calendar');
                       }
-                  }
+                  }*/
                 ]
               },
               {
