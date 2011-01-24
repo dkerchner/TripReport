@@ -1,5 +1,7 @@
 package com.sptinc
 
+import java.util.Set;
+
 import org.apache.commons.lang.builder.HashCodeBuilder
 
 class UserRole implements Serializable {
@@ -27,7 +29,7 @@ class UserRole implements Serializable {
 		find 'from UserRole where user.id=:userId and role.id=:roleId',
 			[userId: userId, roleId: roleId]
 	}
-
+	
 	static UserRole create(User user, com.sptinc.Role role, boolean flush = false) {
 		new UserRole(user: user, role: role).save(flush: flush, insert: true)
 	}
@@ -35,6 +37,13 @@ class UserRole implements Serializable {
 	static boolean remove(User user, com.sptinc.Role role, boolean flush = false) {
 		UserRole instance = UserRole.findByUserAndRole(user, role)
 		instance ? instance.delete(flush: flush) : false
+	}
+	
+	static boolean clearAll(User user, boolean flush = false) {
+		UserRole instances = UserRole.findByUser(user)
+		for (ur in instances) {
+			ur.delete(flush: flush)
+		}
 	}
 
 	static void removeAll(User user) {

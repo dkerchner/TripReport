@@ -37,7 +37,10 @@ class UserController {
 		roleList << role
 	  }
 
-      def user = [id: u.id, name: u.toString(), userName: u.username, email: u.email, company: u.company.toString(), fullName: u.fullName, contracts: contractList, roles: roleList]
+	  def co = u.getCompany()
+	  def company = [id: co.id, name: co.toString()]
+	  
+      def user = [id: u.id, name: u.toString(), userName: u.username, email: u.email, company: company, fullName: u.fullName, contracts: contractList, roles: roleList]
       users << user
     }
 
@@ -79,10 +82,11 @@ class UserController {
           return
         }
       }
-      def contracts = params.contracts.split('[,]')
-	  def roles = params.roles.split('[,]')
+      def contracts = !params.contracts.equals("") ? params.contracts.split('[,]') : []
+	  def roles = !params.roles.equals("") ? params.roles.split('[,]') : []
 
       params.remove('contracts')
+	  params.remove('roles')
       params.company = Company.get(params.company.asType(Integer))
 
       userInstance.contracts.clear();
@@ -91,10 +95,10 @@ class UserController {
         userInstance.addToContracts(contract);
       }
 	  
-	  userInstance.roles.clear();
+	  UserRole.clearAll(userInstance)
 	  for (r in roles) {
-		def role = Role.get(c.asType(Long))
-		userInstance.addToRoles(role);
+		  def role = Role.get(r.asType(Long))
+		  UserRole.create(userInstance, role)
 	  }
 
       // The front end handles the comparison of password1 and password2
@@ -106,15 +110,20 @@ class UserController {
       userInstance.properties = params
 
       if (!userInstance.hasErrors() && userInstance.save(flush: true)) {
-        render 1
+		  def result = [success: true, data: userInstance]
+		  render result as JSON
       }
       else {
-        println userInstance.errors
-        render "${message(code: 'Could not update. A necessary value is missing.', args: [message(code: 'user.label', default: 'User'), params.id])}"
+		  def result = [success: false, data: userInstance.errors]
+		  render result as JSON
+        //render "${message(code: 'Could not update. A necessary value is missing.', args: [message(code: 'user.label', default: 'User'), params.id])}"
       }
     }
     else {
-      render "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
+		def result = [success: false, data: "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"]
+		render result as JSON
+
+      //render "${message(code: 'default.not.found.message', args: [message(code: 'user.label', default: 'User'), params.id])}"
     }
   }
 
@@ -150,11 +159,12 @@ class UserController {
         roleList << role
       }
 
+	  def co = userInstance.getCompany()
+	  def company = [id: co.id, name: co.toString()]
 
-      def user = [id: userInstance.id, fullName: userInstance.fullName, name: userInstance.toString(), userName: userInstance.username, email: userInstance.email, company: userInstance.company.toString(), companyId: userInstance.company.id, contracts: contractList, roles: roleList]
-      def result = [success: true, data: user]
+      def user = [id: userInstance.id, fullName: userInstance.fullName, name: userInstance.toString(), userName: userInstance.username, email: userInstance.email, company: company, contracts: contractList, roles: roleList]
 
-      render result as JSON
+      render user as JSON
     }
   }
 

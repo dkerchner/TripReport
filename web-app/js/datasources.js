@@ -12,8 +12,6 @@ var attendeeDS = new Ext.data.Store({
                 {name: 'endDate', type: 'date', mapping: 'endDate'},
                 {name: 'purpose', type: 'string', mapping: 'purpose'},
                 {name: 'estimatedCost', type: 'float', mapping: 'estimatedCost'},
-                //{name: 'approved', type: 'boolean', mapping: 'approved'} ,
-                //{name: 'approvedBy', type: 'string', mapping: 'approvedBy'},
                 {name: 'events', type: 'array', mapping: 'events'},
                 {name: 'contracts', type: 'array', mapping: 'contracts'},
                 {name: 'attendee', type: 'string', mapping: 'attendee'},
@@ -112,15 +110,13 @@ var eventDS = new Ext.data.Store({
                 {name: 'startDate', type: 'date', mapping: 'startDate'},
                 {name: 'endDate', type: 'date', mapping: 'endDate'},
                 {name: 'description', type: 'string', mapping: 'description'},
-                {name: 'location', type: 'string', mapping: 'location.name'}
+                {name: 'location'},
+                {name: 'trips'}
             ]
             ),
     baseParams:     {
         now:        (new Date()).getTime()
-    },
-    writer: new Ext.data.JsonWriter({
-        encode:     true
-    })
+    }
 });
 
 var locationDS = new Ext.data.Store({
@@ -239,7 +235,33 @@ var tripDS = new Ext.data.Store({
     }) */
 });
 
-var userDS = new Ext.data.JsonStore({
+var userDS = new Ext.data.Store({
+    autoLoad: false,
+    proxy: new Ext.data.HttpProxy({
+        url: 'user/showJSON'}),
+    reader: new Ext.data.JsonReader({},
+            [
+             {name: 'version', type: 'int', mapping: 'version'},
+             {name: 'id', type: 'int', mapping: 'id'},
+             {name: 'displayName', type: 'string', mapping: 'name'},
+             {name: 'name', type: 'string', mapping: 'fullName'},
+             {name: 'userName', type: 'string', mapping: 'userName'},
+             {name: 'email', type: 'string', mapping: 'email'},
+             {name: 'company', type: 'int', mapping: 'company.id'},
+             {name: 'companyName', type: 'string', mapping: 'company.name'},
+             {name: 'contracts'},
+             {name: 'roles'}
+            ]
+            ),
+    baseParams:     {
+        now:        (new Date()).getTime()
+    }/*,
+    writer: new Ext.data.JsonWriter({
+        encode:     true
+    }) */
+});
+
+/*var userDS = new Ext.data.JsonStore({
     autoLoad: true,
         url: 'user/showJSON',
             idProperty: 'id',
@@ -252,20 +274,17 @@ var userDS = new Ext.data.JsonStore({
                 {name: 'name', type: 'string', mapping: 'fullName'},
                 {name: 'userName', type: 'string', mapping: 'userName'},
                 {name: 'email', type: 'string', mapping: 'email'},
-                {name: 'company', type: 'int', mapping: 'companyId'},
-                {name: 'companyName', type: 'string', mapping: 'company'},
-                {name: 'contracts', type: 'array', mapping: 'contracts'},
-                {name: 'roles', type: 'array', mapping: 'roles'}
+                {name: 'company'},
+                //{name: 'companyName', type: 'string', mapping: 'company'},
+                {name: 'contracts'},
+                {name: 'roles'}
             ]
 
        ,
     baseParams:     {
         now:        (new Date()).getTime()
     }
-    /*writer: new Ext.data.JsonWriter({
-        encode:     true
-    }) */
-});
+});*/
 
 // List data sources (more than one row)
 var attendeeListDS = new Ext.data.Store({
@@ -426,7 +445,8 @@ var eventListDS = new Ext.data.Store({
                 {name: 'startDate', type: 'date', mapping: 'startDate'},
                 {name: 'endDate', type: 'date', mapping: 'endDate'},
                 {name: 'description', type: 'string', mapping: 'description'},
-                {name: 'location', type: 'string', mapping: 'location.name'}
+                {name: 'location'},
+                {name: 'trips'}
             ]
             ),
     baseParams:     {
@@ -559,9 +579,9 @@ var tripListDS = new Ext.data.Store({
                 //{name: 'approved', type: 'boolean', mapping: 'approved'} ,
                 //{name: 'approvedBy', type: 'string', mapping: 'approvedBy'},
                 {name: 'events', type: 'array', mapping: 'events'},
-                {name: 'contracts', type: 'array', mapping: 'contracts'},
-                {name: 'attendees', type: 'array', mapping: 'attendees'},
-                {name: 'locations', type: 'array', mapping: 'locations'}
+                {name: 'contracts'},
+                {name: 'attendees'},
+                {name: 'locations'}
 
             ]
             ),
@@ -589,9 +609,9 @@ var userListDS = new Ext.data.Store({
                 {name: 'fullName', type: 'string', mapping: 'fullName'},
                 {name: 'userName', type: 'string', mapping: 'userName'},
                 {name: 'email', type: 'string', mapping: 'email'},
-                {name: 'company', type: 'string', mapping: 'company'},
-                {name: 'contracts', type: 'array', mapping: 'contracts'},
-                {name: 'roles', type: 'array', mapping: 'roles'}
+                {name: 'company'},
+                {name: 'contracts'},
+                {name: 'roles'}
             ]
             ),
     baseParams:     {

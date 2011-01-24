@@ -1,40 +1,6 @@
-/**
- * Created by IntelliJ IDEA.
- * User: dpkerch
- * Date: 12/22/10
- * Time: 1:09 PM
- * To change this template use File | Settings | File Templates.
- */
-/*Ext.override(Ext.form.ComboBox, {
-    setValue : function(v){
-//begin patch
-        // Store not loaded yet? Set value when it *is* loaded.
-        // Defer the setValue call until after the next load.
-        if (this.store.getCount() == 0) {
-            this.store.on('load',
-                this.setValue.createDelegate(this, [v]), null, {single: true});
-            return;
-        }
-//end patch
-        var text = v;
-        if(this.valueField){   alert(v);
-            var r = this.findRecord(this.valueField, v);
-            if(r){
-                text = r.data[this.displayField];
-            }else if(this.valueNotFoundText !== undefined){
-                text = this.valueNotFoundText;
-            }
-        }
-        this.lastSelectionText = text;
-        if(this.hiddenField){//alert (v);
-            this.hiddenField.value = v;
-        }
-        Ext.form.ComboBox.superclass.setValue.call(this, text);
-        this.value = v;
-    }
-});*/
-
 // ExtJS common form elements
+
+// Data entry form fields
 var nameField = {
     xtype: 'textfield',
     //ref: '../nameField',
@@ -86,7 +52,7 @@ var emailField = {
     name: 'email',
     fieldLabel: 'Email',
     maxLength: 100,
-    allowBlank: false,
+    allowBlank: true,
     anchor : '95%'
 };
 
@@ -102,15 +68,15 @@ var shortDescriptionField = {
 };
 
 var descriptionField = {
-	    xtype: 'textarea',
-	    id: 'descriptionField',
-	    name: 'description',
-	    fieldLabel: 'Description',
-	    maxLength: 255,
-	    allowBlank: false,
-	    anchor : '95%',
-	    maskRe: /([a-zA-Z0-9\s]+)$/
-	};
+    xtype: 'textarea',
+    id: 'descriptionField',
+    name: 'description',
+    fieldLabel: 'Description',
+    maxLength: 255,
+    allowBlank: false,
+    anchor : '95%',
+    maskRe: /([a-zA-Z0-9\s]+)$/
+};
 
 var purposeField = {
     xtype: 'textarea',
@@ -144,14 +110,14 @@ var endDateField = {
 };
 
 var dueDateField = {
-	    xtype: 'datefield',
-	    id:'dueDateField',
-	    name: 'dueDate',
-	    fieldLabel: 'Due Date',
-	    format : 'm/d/Y',
-	    allowBlank: false,
-	    anchor:'95%'
-	};
+    xtype: 'datefield',
+    id:'dueDateField',
+    name: 'dueDate',
+    fieldLabel: 'Due Date',
+    format : 'm/d/Y',
+    allowBlank: false,
+    anchor:'95%'
+};
 
 
 var eventsField = {
@@ -287,6 +253,26 @@ var organizationField = {
     selectOnFocus: false
 };
 
+var locationField = {
+    xtype: 'combo',
+    id: 'locationField',
+    anchor : '95%',
+    store: locationListDS,
+    fieldLabel: 'Location',
+    displayField:'name',
+    valueField: 'id',
+    hiddenName: 'location',
+    allowBlank: false,
+    pageSize: 5,
+    minChars: 2,
+    submitValue: false,
+    mode: 'remote',
+    triggerAction: 'all',
+    emptyText: 'Select a location...',
+    selectOnFocus: false
+};
+
+
 var topicsField = {
     xtype: 'textarea',
     id: 'topicsField',
@@ -391,7 +377,7 @@ var actionItemsField = {
     ddReorder: true
 };
 
-// Display fields
+// Display form fields
 
 var nameDisplayField = {
     xtype: 'displayfield',
@@ -417,6 +403,15 @@ var organizationDisplayField = {
     fieldLabel: '<b>Organization</b>',
     anchor:'95%'
 };
+
+var locationDisplayField = {
+    xtype: 'displayfield',
+    id: 'locationDisplayField',
+    name: 'location',
+    fieldLabel: '<b>Location</b>',
+    anchor:'95%'
+};
+
 
 var emailDisplayField = {
     xtype: 'displayfield',
@@ -450,6 +445,15 @@ var shortDescriptionDisplayField = {
     anchor:'95%'
 };
 
+var descriptionDisplayField = {
+    xtype: 'displayfield',
+    id: 'descriptionDisplayField',
+    name: 'description',
+    fieldLabel: '<b>Description</b>',
+    anchor:'95%'
+};
+
+
 var purposeDisplayField = {
     xtype: 'displayfield',
     id: 'purposeDisplayField',
@@ -477,13 +481,13 @@ var endDateDisplayField = {
 };
 
 var dueDateDisplayField = {
-	    xtype: 'displayfield',
-	    id:'dueDateDisplayField',
-	    name: 'dueDate',
-	    format : 'm/d/Y',
-	    fieldLabel: '<b>Due Date</b>',
-	    anchor:'95%'
-	};
+    xtype: 'displayfield',
+    id:'dueDateDisplayField',
+    name: 'dueDate',
+    format : 'm/d/Y',
+    fieldLabel: '<b>Due Date</b>',
+    anchor:'95%'
+};
 
 
 var eventsDisplayField = {
@@ -582,6 +586,16 @@ var actionItemsDisplayField = {
     anchor:'95%'
 };
 
+var tripsDisplayField = {
+    xtype: 'displayfield',
+    id: 'tripsDisplayField',
+    name: 'trips',
+    ref: 'tripsDisplayField',
+    fieldLabel: '<b>Trips</b>',
+    anchor:'95%'
+};
+
+
 var idField = {
     xtype: "hidden",
     id: 'idField',
@@ -597,19 +611,9 @@ var idField2 = {
 };
 
 
+/* Common functions used throughout the application */
 
-/*eventField = new Ext.form.ComboBox({
- id:'EventField',
- fieldLabel: 'Event',
- store: eventds,
- mode: 'local',
- displayField: 'name',
- allowBlank: false,
- valueField: 'id',
- anchor:'95%',
- triggerAction: 'all'
-}; */
-
+// Switches out Tab Panels in the center panel
 var replace = function(id, t) {
   var tabPanel = Ext.getCmp('center-tab-panel')
   var tab = tabPanel.items.find(function(i){return i.title === t;});
@@ -626,6 +630,7 @@ var replace = function(id, t) {
     //tab.dataStore.reload();
 }
 
+// Takes an array object and builds a string with the provided separator
 function buildStringFromArray(array, column, separator) {
     arrayString = "";
     for(var arr = array, len = arr.length, i = 0; i < len; i++){
@@ -635,19 +640,19 @@ function buildStringFromArray(array, column, separator) {
     return arrayString.substr(0,arrayString.lastIndexOf(separator));
 }
 
+// Used to get the given value from a JSON object
+function getValueFromObject(object, column) {
+    return object[column];
+}
+
+// Programatically resets all form fields of the given form
 function resetForm(form) {
     form.items.each(function(field){
         field.setValue('');
     });
 }
 
-function destroyFormFields(form) {
-    form.items.each(function(field){
-        field.reset();
-    });
-}
-
-
+// Programatically validates each form field of the given form
 function formIsValid(form) {
     form.items.each(function(field){
         if (!field.isValid()) {
@@ -657,6 +662,34 @@ function formIsValid(form) {
     return true;
 }
 
-
-
+// Boolean to check if user has admin privileges. Set in main.gsp
 var admin_user = false;
+
+/*Ext.override(Ext.form.ComboBox, {
+setValue : function(v){
+//begin patch
+    // Store not loaded yet? Set value when it *is* loaded.
+    // Defer the setValue call until after the next load.
+    if (this.store.getCount() == 0) {
+        this.store.on('load',
+            this.setValue.createDelegate(this, [v]), null, {single: true});
+        return;
+    }
+//end patch
+    var text = v;
+    if(this.valueField){   alert(v);
+        var r = this.findRecord(this.valueField, v);
+        if(r){
+            text = r.data[this.displayField];
+        }else if(this.valueNotFoundText !== undefined){
+            text = this.valueNotFoundText;
+        }
+    }
+    this.lastSelectionText = text;
+    if(this.hiddenField){//alert (v);
+        this.hiddenField.value = v;
+    }
+    Ext.form.ComboBox.superclass.setValue.call(this, text);
+    this.value = v;
+}
+});*/

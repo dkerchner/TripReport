@@ -7,6 +7,7 @@ class Contact {
   Organization organization
   String email
   String phoneNumber
+  String notes
   Report report
 
   //List reports
@@ -19,6 +20,7 @@ class Contact {
       email(email: true, blank: true)
       phoneNumber(nullable: true)
       organization(blank: false)
+	  notes(nullable: true)
   }
 
   int compareTo(obj) {

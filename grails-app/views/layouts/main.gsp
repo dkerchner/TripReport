@@ -92,6 +92,8 @@
   <g:javascript library="user"/>
   <g:javascript library="contract"/>
   <g:javascript library="actionItem"/>
+  <g:javascript library="event"/>
+  
   
 
   <!--<g:javascript library="calendar/Ext.calendar"/>
@@ -140,7 +142,7 @@
 		id: 'content-panel',
 		region: 'center', // this is what makes this panel into a region within the containing layout
 		//layout: 'card',
-		margins: '2 5 5 0',
+		//margins: '2 5 5 0',
 		activeItem: 0,
 		border: true,
         layout: 'fit',
@@ -181,6 +183,23 @@
             collapsible: true,
             title: '',
             margins: '0 0 0 0'
+          }, {
+              region: 'east',
+              title: 'Events',
+              collapsible: true,
+              split: true,
+              width: 225, // give east and west regions a width
+              minSize: 175,
+              maxSize: 400,
+              margins: '0 5 0 0',
+              layout: 'fit', // specify layout manager for items
+              items:            // this TabPanel is wrapped by another Panel so the title will be applied
+              new Ext.Panel({
+                  border: false, // already wrapped so don't add another border
+                  items: [
+                          eventListView
+                  ]
+              })
           }, {
             region: 'west',
             id: 'west-panel', // see Ext.getCmp() below
@@ -228,6 +247,13 @@
                       handler: function(){
                           replace('attendee-grid'
                           , 'Attendees');
+                      }
+                  } , {
+                      xtype:'button',
+                      text: 'Events',
+                      handler: function(){
+                          replace('event-grid'
+                          , 'Events');
                       }
                   } /*, {
                       xtype:'button',

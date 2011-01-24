@@ -7,6 +7,7 @@ class Event {
     Date startDate
     Date endDate
     Location location
+	String url
 
     static hasMany = [trips: Trip]
 
@@ -18,6 +19,7 @@ class Event {
         startDate(blank: false)
         endDate(blank: false)
         location(blank: false)
+		url(nullable: true, url: true)
     }
 
     int compareTo(obj) {

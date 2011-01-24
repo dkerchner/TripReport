@@ -23,7 +23,9 @@ var usercm = new Ext.grid.ColumnModel([
     }, hidden: true},
     {header: "Name", width: 100, dataIndex: 'fullName', sortable: true},
     {header: "Email", width: 200, dataIndex: 'email'},
-    {header: "Company", width: 100, dataIndex: 'company'},
+    {header: "Company", width: 100, dataIndex: 'company', sortable: true, renderer: function(value, cell) {
+        return getValueFromObject(value, 'name');
+    }},
     {header: "Contracts", width: 115, dataIndex: 'contracts', sortable: true, renderer: function(value, cell) {
         return buildStringFromArray(value, 'name', ', ');
     }},
@@ -141,7 +143,6 @@ UserListingContextMenu = new Ext.menu.Menu({
     id: 'UserListingEditorGridContextMenu',
     items: [
         { text: 'Modify this User', handler: modifyUserContextMenu },
-        { text: 'Attend this User', handler: confirmAttendUsers },
         { text: 'Delete this User', handler: deleteUserContextMenu }
     ]
 });
@@ -219,19 +220,19 @@ function onUserListingEditorGridDoubleClick(grid, rowIndex, e) {
 
 function userDSOnLoad() {
     var form = UserViewForm.getForm();
-
-    form.setValues(userDS.getAt(0).data);
-    form.findField('rolesDisplayField').setValue(buildStringFromArray(userDS.getAt(0).data.roles, "name", "<br/>"));
-    form.findField('contractsDisplayFieldUser').setValue(buildStringFromArray(userDS.getAt(0).data.contracts, "name", "<br/>"));
+    var values = userDS.getAt(0).data;
+    form.setValues(values);
+    form.findField('rolesDisplayField').setValue(buildStringFromArray(values.roles, "name", "<br/>"));
+    form.findField('contractsDisplayFieldUser').setValue(buildStringFromArray(values.contracts, "name", "<br/>"));
 }
 
 function userDSEditOnLoad() {
     var form = UserEditForm.getForm();
-
-    form.setValues(userDS.getAt(0).data);
+    var values = userDS.getAt(0).data;
+    form.setValues(values);
     if (userMode != "Create") {
-        form.findField('rolesField').setValue(buildStringFromArray(userDS.getAt(0).data.roles, "id", ","));
-        form.findField('contractsFieldUser').setValue(buildStringFromArray(userDS.getAt(0).data.contracts, "id", ","));
+        form.findField('rolesField').setValue(buildStringFromArray(values.roles, "id", ","));
+        form.findField('contractsFieldUser').setValue(buildStringFromArray(values.contracts, "id", ","));
     }
 }
 
@@ -248,20 +249,22 @@ function saveTheUser() {
             waitMsg: 'Please wait...',
             url: 'user/saveJSON',
             params: params,
-            success: function(response) {
-                var result = eval(response.responseText);
-                switch (result) {
-                    case 1:
-                        userListDS.commitChanges();
-                        userListDS.reload();
-                        UserEditWindow.hide();
-                        break;
+            	success: function ( result, request ) {
+                    var jsonData = Ext.util.JSON.decode(result.responseText);
+                    var resultMessage = jsonData.data;                
+                    switch (jsonData.success) {
+                    case true:
+	                    userListDS.commitChanges();
+	                    userListDS.reload();
+	                    UserEditWindow.hide();
+	                    Ext.MessageBox.alert('Success', 'Successfully saved ' + resultMessage.username);
+	                    break;
                     default:
-                        Ext.MessageBox.alert('Error', response.responseText);
-                        break;
-                }
+	                    Ext.MessageBox.alert('Error', buildStringFromArray(resultMessage.errors, "message", ","));
+                    	break;
+                    }
             },
-            failure: function(response) {
+            failure: function(result, request) {
                 var result = response.responseText;
                 Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
             }
@@ -336,7 +339,7 @@ UserEditForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
     width: 600,
-    //store: userDS,
+    store: userDS,
     items: [
         {
             layout:'column',
@@ -352,7 +355,7 @@ UserEditForm = new Ext.FormPanel({
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [companyField, emailField, Ext.applyIf({id:'contractsFieldUser'}, contractsField), Ext.applyIf({id:'idFieldContract'}, idField)]
+                    items: [Ext.applyIf({id:'companyFieldUser', name: 'company'}, companyField), emailField, Ext.applyIf({id:'contractsFieldUser'}, contractsField), Ext.applyIf({id:'idFieldContract'}, idField)]
                 }
             ]
         }
