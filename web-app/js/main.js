@@ -72,7 +72,7 @@ var mainPanel = new Ext.Panel({
 
                 }
             ]
-        }),
+        })/*,
         new Ext.Panel({
             title: 'Administration',
             id: 'admin-panel',
@@ -94,12 +94,13 @@ var mainPanel = new Ext.Panel({
                 } ,
                 {
                     xtype:'button',
-                    text: 'Submit a Report',
+                    text: 'Contracts',
                     flex: 1,
                     handler: function() {
-                        displayFormWindow();
+                        replace('contract-grid'
+                                , 'Contracts');
                     }
-                } ,
+                }/* ,
                 {
                     xtype:'button',
                     text: 'View Trips',
@@ -120,7 +121,7 @@ var mainPanel = new Ext.Panel({
 
                 }
             ]
-        })
+        })*/
 
     ]
 });

@@ -4,6 +4,8 @@ class Role {
 
 	String authority
 
+	static hasMany = [userRoles: UserRole]
+	
 	static mapping = {
 		cache true
 	}

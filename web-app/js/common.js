@@ -56,6 +56,16 @@ var emailField = {
     anchor : '95%'
 };
 
+var phoneNumberField = {
+    xtype: 'textfield',
+    id: 'phoneNumberField',
+    name: 'phoneNumber',
+    fieldLabel: 'Phone Number',
+    maxLength: 100,
+    allowBlank: true,
+    anchor : '95%'
+};
+
 var shortDescriptionField = {
     xtype: 'textfield',
     id: 'shortDescriptionField',
@@ -320,12 +330,21 @@ var contactsField = {
     valueField: 'id',
     anchor:'95%',
     store: contactListDS,
-    /*tbar:[{
-        text: 'clear',
+    tbar:[{
+        text: '',
+        iconCls:'add',                      // reference to our css
         handler: function(){
-
+        	displayContactCreateWindow()
         }
-    }], */
+    	}, {
+        	text: '',
+            iconCls:'remove',                      // reference to our css
+        	handler: function(){
+        		deleteContactsFromReport()
+        	}
+        }
+        
+    ], 
     ddReorder: true
 };
 
@@ -418,6 +437,14 @@ var emailDisplayField = {
     name: 'email',
     id: 'emailDisplayField',
     fieldLabel: '<b>Email</b>',
+    anchor:'95%'
+};
+
+var phoneNumberDisplayField = {
+    xtype: 'displayfield',
+    name: 'phoneNumber',
+    id: 'phoneNumberDisplayField',
+    fieldLabel: '<b>Phone Number</b>',
     anchor:'95%'
 };
 

@@ -59,11 +59,13 @@ var contactDS = new Ext.data.Store({
             [
                 {name: 'version', type: 'int', mapping: 'version'},
                 {name: 'id', type: 'int', mapping: 'id'},
+                {name: 'name', type:'string'},
                 {name: 'firstName', type: 'string', mapping: 'firstName'},
                 {name: 'lastName', type: 'string', mapping: 'lastName'},
                 {name: 'organization', type: 'string', mapping: 'organization'},
                 {name: 'email', type: 'string', mapping: 'email'},
-                {name: 'phoneNumber', type: 'string', mapping: 'phoneNumber'}
+                {name: 'phoneNumber', type: 'string', mapping: 'phoneNumber'},
+                {name: 'notes', type: 'string'}
             ]
             ),
     baseParams:     {

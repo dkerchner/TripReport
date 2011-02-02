@@ -66,14 +66,18 @@ class LocationController {
       locationInstance.properties = params
 
       if (!locationInstance.hasErrors() && locationInstance.save(flush: true)) {
-        render 1
+		  def result = [success: true, data: locationInstance]
+		  render result as JSON
       }
       else {
-        render "${message(code: 'Could not update. A necessary value is missing.', args: [message(code: 'location.label', default: 'Location'), params.id])}"
+		  def result = [success: false, data: locationInstance.errors]
+		  render result as JSON
       }
     }
     else {
-      render "${message(code: 'default.not.found.message', args: [message(code: 'location.label', default: 'Location'), params.id])}"
+		def errors = [errors: "${message(code: 'default.not.found.message', args: [message(code: 'location.label', default: 'Location'), params.id])}"]
+		def result = [success: false, data: errors]
+		render result as JSON
     }
   }
 

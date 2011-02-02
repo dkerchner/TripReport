@@ -250,21 +250,23 @@ function saveTheReport() {
             waitMsg: 'Please wait...',
             url: 'report/saveJSON',
             params: params,
-            success: function(response) {
-                var result = eval(response.responseText);
-                switch (result) {
-                    case 1:
-                        reportListDS.commitChanges();
-                        reportListDS.reload();
-                        ReportEditWindow.hide();
-                        break;
-                    default:
-                        Ext.MessageBox.alert('Error', response.responseText);
-                        break;
+            success: function ( result, request ) {
+                var jsonData = Ext.util.JSON.decode(result.responseText);
+                var resultMessage = jsonData.data;                
+                switch (jsonData.success) {
+                case true:
+                    reportListDS.commitChanges();
+                    reportListDS.reload();
+                    ReportEditWindow.hide();
+                    Ext.MessageBox.alert('Success', 'Successfully saved ' + resultMessage.name);
+                    break;
+                default:
+                    Ext.MessageBox.alert('Error', buildStringFromArray(resultMessage.errors, "message", ","));
+                	break;
                 }
             },
-            failure: function(response) {
-                var result = response.responseText;
+            failure: function(result, request) {
+                var jsonData = Ext.util.JSON.decode(result.responseText);
                 Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
             }
         });

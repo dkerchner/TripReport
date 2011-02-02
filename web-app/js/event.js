@@ -118,21 +118,23 @@ function saveTheEvent() {
             waitMsg: 'Please wait...',
             url: 'event/saveJSON',
             params: params,
-            success: function(response) {
-                var result = eval(response.responseText);
-                switch (result) {
-                    case 1:
-                        eventListDS.commitChanges();
-                        eventListDS.reload();
-                        EventEditWindow.hide();
-                        break;
-                    default:
-                        Ext.MessageBox.alert('Error', response.responseText);
-                        break;
+            success: function ( result, request ) {
+                var jsonData = Ext.util.JSON.decode(result.responseText);
+                var resultMessage = jsonData.data;                
+                switch (jsonData.success) {
+                case true:
+                    eventListDS.commitChanges();
+                    eventListDS.reload();
+                    EventEditWindow.hide();
+                    Ext.MessageBox.alert('Success', 'Successfully saved ' + resultMessage.name);
+                    break;
+                default:
+                    Ext.MessageBox.alert('Error', buildStringFromArray(resultMessage.errors, "message", ","));
+                	break;
                 }
             },
-            failure: function(response) {
-                var result = response.responseText;
+            failure: function(result, request) {
+                var jsonData = Ext.util.JSON.decode(result.responseText);
                 Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
             }
         });

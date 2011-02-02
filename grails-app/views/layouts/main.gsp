@@ -91,6 +91,7 @@
   <g:javascript library="attendee"/>
   <g:javascript library="user"/>
   <g:javascript library="contract"/>
+  <g:javascript library="contact"/>
   <g:javascript library="actionItem"/>
   <g:javascript library="event"/>
   
@@ -153,6 +154,7 @@
               border: false, // already wrapped so don't add another border
               activeTab: 0, // second tab initially active
               tabPosition: 'top',
+              autoDestroy: false,
               items: [
                       mainPanel
                   //tripGrid, reportGrid

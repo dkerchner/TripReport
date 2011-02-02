@@ -21,18 +21,13 @@ var contactcm = new Ext.grid.ColumnModel([
         cell.css = "readonlycell";
         return value;
     }, hidden: true},
-    {header: "Contact #", width: 100, dataIndex: 'contactNumber', sortable: true},
-    {header: "Organization", width: 100, dataIndex: 'organization'},
-    {header: "Active", width: 115, dataIndex: 'active', sortable: true, renderer: function(value, cell) {
-            if (value) {
-                value = 'Yes'
-            } else {
-                cell.css = "readonlycell";
-                value = 'No'
-            }
-            return value;
-        }
-    }
+    {header: "First Name", width: 100, dataIndex: 'firstName', sortable: true},
+    {header: "Last Name", width: 100, dataIndex: 'lastName', sortable: true},
+    {header: "Email", width: 200, dataIndex: 'email'},
+    {header: "Phone Number", width: 200, dataIndex: 'phoneNumber'},
+    {header: "Organization", width: 100, dataIndex: 'organization', sortable: true, renderer: function(value, cell) {
+        return getValueFromObject(value, 'name');
+    }},
 ]);
 
 contactcm.defaultSortable = true;
@@ -90,7 +85,9 @@ function displayContactCreateWindow() {
     contactMode = "Create";
     if (!ContactEditWindow.isVisible()) {
         ContactEditWindow.show();
+        var form = ContactEditForm.getForm();
         resetContactForm();
+        form.findField('reportIdContact').setValue(ReportEditForm.getForm().findField('idFieldReport').getValue());
     } else {
         ContactEditWindow.toFront();
     }
@@ -179,7 +176,7 @@ function deleteContacts(btn) {
         var selections = contactGrid.selModel.getSelections();
         Ext.Ajax.request({
             waitMsg: 'Please Wait',
-            url: 'http://localhost:8080/ContactContactSPT/contact/deleteJSON',
+            url: 'contact/deleteJSON',
             params: {
                 id:  selections[0].json.id
             },
@@ -247,21 +244,23 @@ function saveTheContact() {
             waitMsg: 'Please wait...',
             url: 'contact/saveJSON',
             params: params,
-            success: function(response) {
-                var result = eval(response.responseText);
-                switch (result) {
-                    case 1:
-                        contactListDS.commitChanges();
-                        contactListDS.reload();
-                        ContactEditWindow.hide();
-                        break;
-                    default:
-                        Ext.MessageBox.alert('Error', response.responseText);
-                        break;
+            success: function ( result, request ) {
+                var jsonData = Ext.util.JSON.decode(result.responseText);
+                var resultMessage = jsonData.data;                
+                switch (jsonData.success) {
+                case true:
+                	contactListDS.commitChanges();
+                	contactListDS.reload();
+                	ContactEditWindow.hide();
+                    Ext.MessageBox.alert('Success', 'Successfully saved ' + resultMessage.name);
+                    break;
+                default:
+                    Ext.MessageBox.alert('Error', buildStringFromArray(resultMessage.errors, "message", ","));
+                	break;
                 }
             },
-            failure: function(response) {
-                var result = response.responseText;
+            failure: function(result, request) {
+                var jsonData = Ext.util.JSON.decode(result.responseText);
                 Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
             }
         });
@@ -295,13 +294,13 @@ ContactViewForm = new Ext.FormPanel({
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [Ext.applyIf({id:'nameDisplayFieldContact', name:'contactNumber'}, nameDisplayField)]
+                    items: [Ext.applyIf({id:'firstNameDisplayFieldContact', name: 'firstName'}, nameDisplayField), Ext.applyIf({id:'lastNameDisplayFieldContact', name:'lastName'}, nameDisplayField), Ext.applyIf({id:'emailDisplayFieldContact'}, emailDisplayField), Ext.applyIf({id:'phoneNumberDisplayFieldContact'}, phoneNumberDisplayField)]
                 },
                 {
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [Ext.applyIf({id:'organizationDisplayFieldContact'}, organizationDisplayField)]
+                    items: [Ext.applyIf({id:'organizationDisplayFieldContact'}, organizationDisplayField), Ext.applyIf({id:'notesDisplayFieldContact', name: 'notes'}, descriptionDisplayField)]
                 }
             ]
         }
@@ -345,13 +344,13 @@ ContactEditForm = new Ext.FormPanel({
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [Ext.applyIf({id:'nameFieldContact', name:'contactNumber'}, nameField)]
+                    items: [Ext.applyIf({id:'firstNameFieldContact', name:'firstName'}, nameField), Ext.applyIf({id:'lastNameFieldContact', name:'lastName'}, nameField), Ext.applyIf({id:'emailFieldContact'}, emailField), Ext.applyIf({id:'phoneNumberFieldContact'}, phoneNumberField)]
                 },
                 {
                     columnWidth:0.5,
                     layout: 'form',
                     border:false,
-                    items: [Ext.applyIf({id:'organizationFieldContact'}, organizationField), Ext.applyIf({id:'idFieldContact'}, idField)]
+                    items: [Ext.applyIf({id:'organizationFieldContact'}, organizationField), Ext.applyIf({id:'notesFieldContact', name: 'notes'}, descriptionField), Ext.applyIf({id:'reportIdContact', name:'report'}, idField), Ext.applyIf({id:'idContact', name:'id'}, idField2)]
                 }
             ]
         }

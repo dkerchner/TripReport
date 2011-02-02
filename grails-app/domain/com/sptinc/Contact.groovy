@@ -8,11 +8,12 @@ class Contact {
   String email
   String phoneNumber
   String notes
-  Report report
+  //Report report
 
   //List reports
 
-  static belongsTo = [report: com.sptinc.Report]
+  static belongsTo = [report: Report]
+  static transients = ['name']
 
   static constraints = {
       firstName(blank: false)
@@ -29,6 +30,10 @@ class Contact {
 
   String toString() {
       return firstName + " " + lastName + " @ " + organization
+  }
+  
+  String getName() {
+	  return this.toString()
   }
 
 }

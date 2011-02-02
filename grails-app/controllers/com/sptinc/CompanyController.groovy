@@ -67,14 +67,18 @@ class CompanyController {
       companyInstance.properties = params
 
       if (!companyInstance.hasErrors() && companyInstance.save(flush: true)) {
-        render 1
+		  def result = [success: true, data: companyInstance]
+		  render result as JSON
       }
       else {
-        render "${message(code: 'Could not update. A necessary value is missing.', args: [message(code: 'company.label', default: 'Company'), params.id])}"
+		  def result = [success: false, data: companyInstance.errors]
+		  render result as JSON
       }
     }
     else {
-      render "${message(code: 'default.not.found.message', args: [message(code: 'company.label', default: 'Company'), params.id])}"
+		def errors = [errors: "${message(code: 'default.not.found.message', args: [message(code: 'company.label', default: 'Company'), params.id])}"]
+		def result = [success: false, data: errors]
+		render result as JSON
     }
   }
 

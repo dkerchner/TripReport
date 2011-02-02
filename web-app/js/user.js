@@ -11,7 +11,9 @@ var UserViewForm;
 var UserEditWindow;
 var UserEditForm;
 
+/* All components related to the management of User information. */
 
+// The column model for the DataGrid
 var usercm = new Ext.grid.ColumnModel([
     {header: 'version', readOnly: true, dataIndex: 'version', width: 40, renderer: function(value, cell) {
         cell.css = "readonlycell";
@@ -33,10 +35,9 @@ var usercm = new Ext.grid.ColumnModel([
         return buildStringFromArray(value, 'name', ', ');
     }}
 ]);
-
 usercm.defaultSortable = true;
 
-// create the grid
+// The data grid
 var userGrid = new Ext.grid.GridPanel({
     //title: 'Users',
     id: 'user-grid',
@@ -84,7 +85,7 @@ var userGrid = new Ext.grid.GridPanel({
     ]
 });
 
-// display or bring forth the form
+// Display the creation form
 function displayUserCreateWindow() {
     userMode = "Create";
     if (!UserEditWindow.isVisible()) {
@@ -95,11 +96,13 @@ function displayUserCreateWindow() {
     }
 }
 
-// display or bring forth the form
+// Display the view form
 function displayUserViewWindow() {
     if (userGrid.selModel.getCount()) {
         if (!UserViewWindow.isVisible()) {
+        	// Get the selected rows
             var selections = userGrid.selModel.getSelections();
+            // Then filter the data source with the selected ids
             userDS.on('load', userDSOnLoad);
             userDS.load({params: {'id': selections[0].json.id}});
             UserViewWindow.show();
@@ -109,7 +112,7 @@ function displayUserViewWindow() {
     }
 }
 
-// display or bring forth the form
+// Display the edit form
 function displayUserEditWindow() {
     if (userGrid.selModel.getCount()) {
         userMode = "Edit";
@@ -127,18 +130,21 @@ function displayUserEditWindow() {
     }
 }
 
+// The function called by the modify context menu
 function modifyUserContextMenu() {
     displayUserEditWindow();
 }
 
+// The function called by the delete context menu
 function deleteUserContextMenu() {
     confirmDeleteUsers();
 }
 
+// DataGrid event listeners
 userGrid.addListener('rowcontextmenu', onUserListingEditorGridContextMenu);
 userGrid.addListener('rowdblclick', onUserListingEditorGridDoubleClick);
 
-
+// The context menu construct
 UserListingContextMenu = new Ext.menu.Menu({
     id: 'UserListingEditorGridContextMenu',
     items: [
@@ -147,7 +153,7 @@ UserListingContextMenu = new Ext.menu.Menu({
     ]
 });
 
-// This was added in Tutorial 6
+// Confirm deletion, then call delete
 function confirmDeleteUsers() {
     if (userGrid.selModel.getCount() == 1) // only one president is selected here
     {
@@ -159,7 +165,7 @@ function confirmDeleteUsers() {
     }
 }
 
-// This was added in Tutorial 6
+// Confirm attend, then call attend
 function confirmAttendUsers() {
     if (userGrid.selModel.getCount() == 1) // only one president is selected here
     {
@@ -171,37 +177,39 @@ function confirmAttendUsers() {
     }
 }
 
-// This was added in Tutorial 6
+// Creates an Ajax request to delete the user
 function deleteUsers(btn) {
     if (btn == 'yes') {
         var selections = userGrid.selModel.getSelections();
         Ext.Ajax.request({
             waitMsg: 'Please Wait',
-            url: 'http://localhost:8080/UserUserSPT/user/deleteJSON',
+            url: 'user/deleteJSON',
             params: {
                 id:  selections[0].json.id
             },
-            success:
-            function(response) {
-                var result = eval(response.responseText);
-                switch (result) {
-                    case 1:  // Success : simply reload
-                        userListDS.reload();
-                        break;
-                    default:
-                        Ext.MessageBox.alert('Fail', 'This user cannot be deleted.');
-                        break;
+            success: function ( result, request ) {
+                var jsonData = Ext.util.JSON.decode(result.responseText);
+                var resultMessage = jsonData.data;                
+                switch (jsonData.success) {
+                case true:
+                    userListDS.commitChanges();
+                    userListDS.reload();
+                    Ext.MessageBox.alert('Success', 'Successfully deleted ' + resultMessage.name);
+                    break;
+                default:
+                    Ext.MessageBox.alert('Error', buildStringFromArray(resultMessage.errors, "message", ","));
+                	break;
                 }
             },
-            failure: function(response) {
+            failure: function(result, request) {
                 var result = response.responseText;
                 Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
-            }
+            }        
         });
     }
 }
 
-
+// Called by the context menu right click event
 function onUserListingEditorGridContextMenu(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -211,13 +219,14 @@ function onUserListingEditorGridContextMenu(grid, rowIndex, e) {
     UserListingContextMenu.showAt([coords[0], coords[1]]);
 }
 
+// Called by the DataGrid double click event
 function onUserListingEditorGridDoubleClick(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
-    //alert(grid.store.getAt(rowIndex).json.id);
     displayUserViewWindow();
 }
 
+// Called when the userDS is loaded for the view form
 function userDSOnLoad() {
     var form = UserViewForm.getForm();
     var values = userDS.getAt(0).data;
@@ -226,6 +235,7 @@ function userDSOnLoad() {
     form.findField('contractsDisplayFieldUser').setValue(buildStringFromArray(values.contracts, "name", "<br/>"));
 }
 
+// Called when the userDS is loaded for the edit form
 function userDSEditOnLoad() {
     var form = UserEditForm.getForm();
     var values = userDS.getAt(0).data;
@@ -236,10 +246,11 @@ function userDSEditOnLoad() {
     }
 }
 
+// Initial load of userListDS *Important*
 userListDS.load({params: {start: 0, limit: 15}});
-userGrid.on('afteredit', saveTheUser);
+//userGrid.on('afteredit', saveTheUser);
 
-// This saves the president after a cell has been edited
+// This saves the user using an Ajax request
 function saveTheUser() {
     var form = UserEditForm.getForm();
     var params = form.getValues();
@@ -249,23 +260,23 @@ function saveTheUser() {
             waitMsg: 'Please wait...',
             url: 'user/saveJSON',
             params: params,
-            	success: function ( result, request ) {
-                    var jsonData = Ext.util.JSON.decode(result.responseText);
-                    var resultMessage = jsonData.data;                
-                    switch (jsonData.success) {
-                    case true:
-	                    userListDS.commitChanges();
-	                    userListDS.reload();
-	                    UserEditWindow.hide();
-	                    Ext.MessageBox.alert('Success', 'Successfully saved ' + resultMessage.username);
-	                    break;
-                    default:
-	                    Ext.MessageBox.alert('Error', buildStringFromArray(resultMessage.errors, "message", ","));
-                    	break;
-                    }
+            success: function ( result, request ) {
+                var jsonData = Ext.util.JSON.decode(result.responseText);
+                var resultMessage = jsonData.data;                
+                switch (jsonData.success) {
+                case true:
+                    userListDS.commitChanges();
+                    userListDS.reload();
+                    UserEditWindow.hide();
+                    Ext.MessageBox.alert('Success', 'Successfully saved ' + resultMessage.name);
+                    break;
+                default:
+                    Ext.MessageBox.alert('Error', buildStringFromArray(resultMessage.errors, "message", ","));
+                	break;
+                }
             },
             failure: function(result, request) {
-                var result = response.responseText;
+                var jsonData = Ext.util.JSON.decode(result.responseText);
                 Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
             }
         });
@@ -274,17 +285,18 @@ function saveTheUser() {
     }
 }
 
-// reset the Form before opening it
+// Reset the Form before opening it
 function resetUserForm() {
     var form = UserEditForm.getForm();
     resetForm(form);
 }
 
-// check if the form is valid
+// Check if the form is valid
 function isReportFormValid(form) {
     return(formIsValid(form) && (form.findField('passwordField1').getValue()==form.findField('passwordField2').getValue()));
 }
 
+// The User view form construct
 UserViewForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -324,6 +336,7 @@ UserViewForm = new Ext.FormPanel({
     ]
 });
 
+// The window in which to display the User view form
 UserViewWindow = new Ext.Window({
     id: 'UserViewWindow',
     title: 'User Details',
@@ -335,6 +348,7 @@ UserViewWindow = new Ext.Window({
     items: UserViewForm
 });
 
+// The User edit form construct
 UserEditForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -376,6 +390,7 @@ UserEditForm = new Ext.FormPanel({
     ]
 });
 
+// The window in which to display the User edit form
 UserEditWindow = new Ext.Window({
     id: 'UserEditWindow',
     title: 'Edit a User',

@@ -79,14 +79,18 @@ class EventController {
 			eventInstance.properties = params
 
 			if (!eventInstance.hasErrors() && eventInstance.save(flush: true)) {
-				render 1
+				def result = [success: true, data: eventInstance]
+				render result as JSON
 			}
 			else {
-				render "${message(code: 'Could not update. A necessary value is missing.', args: [message(code: 'event.label', default: 'Event'), params.id])}"
+				def result = [success: false, data: eventInstance.errors]
+				render result as JSON
 			}
 		}
 		else {
-			render "${message(code: 'default.not.found.message', args: [message(code: 'event.label', default: 'Event'), params.id])}"
+			def errors = [errors: "${message(code: 'default.not.found.message', args: [message(code: 'event.label', default: 'Event'), params.id])}"]
+			def result = [success: false, data: errors]
+			render result as JSON
 		}
 	}
 

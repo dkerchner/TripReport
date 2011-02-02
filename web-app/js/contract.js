@@ -203,6 +203,35 @@ function deleteContracts(btn) {
     }
 }
 
+function deleteContactsFromReport() {
+	var contactId = ReportEditForm.getForm().findField('contactsField').getValue();
+	//alert(contactId);
+    Ext.Ajax.request({
+        waitMsg: 'Please Wait',
+        url: 'contact/deleteJSON',
+        params: {
+            id:  contactId
+        },
+        success:
+        function(response) {
+            var result = eval(response.responseText);
+            switch (result) {
+                case 1:  // Success : simply reload
+                    contactListDS.reload();
+                    break;
+                default:
+                    Ext.MessageBox.alert('Fail', 'This contact cannot be deleted.');
+                    break;
+            }
+        },
+        failure: function(response) {
+            var result = response.responseText;
+            Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
+        }
+    });
+}
+
+
 
 function onContractListingEditorGridContextMenu(grid, rowIndex, e) {
     e.stopEvent();
@@ -247,20 +276,22 @@ function saveTheContract() {
             waitMsg: 'Please wait...',
             url: 'contract/saveJSON',
             params: params,
-            success: function(response) {
-                var result = eval(response.responseText);
-                switch (result) {
-                    case 1:
-                        contractListDS.commitChanges();
-                        contractListDS.reload();
-                        ContractEditWindow.hide();
-                        break;
-                    default:
-                        Ext.MessageBox.alert('Error', response.responseText);
-                        break;
+            success: function ( result, request ) {
+                var jsonData = Ext.util.JSON.decode(result.responseText);
+                var resultMessage = jsonData.data;                
+                switch (jsonData.success) {
+                case true:
+                	contractListDS.commitChanges();
+                	contractListDS.reload();
+                	ContractEditWindow.hide();
+                    Ext.MessageBox.alert('Success', 'Successfully saved ' + resultMessage.name);
+                    break;
+                default:
+                    Ext.MessageBox.alert('Error', buildStringFromArray(resultMessage.errors, "message", ","));
+                	break;
                 }
             },
-            failure: function(response) {
+            failure: function(result, request) {
                 var result = response.responseText;
                 Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
             }

@@ -137,21 +137,23 @@ function saveTheActionItem() {
             waitMsg: 'Please wait...',
             url: 'actionItem/saveJSON',
             params: params,
-            success: function(response) {
-                var result = eval(response.responseText);
-                switch (result) {
-                    case 1:
-                        actionItemListDS.commitChanges();
-                        actionItemListDS.reload();
-                        ActionItemEditWindow.hide();
-                        break;
-                    default:
-                        Ext.MessageBox.alert('Error', response.responseText);
-                        break;
+            success: function ( result, request ) {
+                var jsonData = Ext.util.JSON.decode(result.responseText);
+                var resultMessage = jsonData.data;                
+                switch (jsonData.success) {
+                case true:
+                	actionItemListDS.commitChanges();
+                	actionItemListDS.reload();
+                	ActionItemEditWindow.hide();
+                    Ext.MessageBox.alert('Success', 'Successfully saved ' + resultMessage.name);
+                    break;
+                default:
+                    Ext.MessageBox.alert('Error', buildStringFromArray(resultMessage.errors, "message", ","));
+                	break;
                 }
             },
-            failure: function(response) {
-                var result = response.responseText;
+            failure: function(result, request) {
+                var jsonData = Ext.util.JSON.decode(result.responseText);
                 Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
             }
         });
@@ -172,7 +174,7 @@ function displayActionItemCreateWindow() {
     if (!ActionItemEditWindow.isVisible()) {
         ActionItemEditWindow.show();
         var form = ActionItemEditForm.getForm();
-        resetForm(form);alert(ReportEditForm.getForm().findField('idFieldReport').getValue());
+        resetForm(form);
         form.findField('reportIdAI').setValue(ReportEditForm.getForm().findField('idFieldReport').getValue());
     } else {
         ActionItemEditWindow.toFront();
@@ -266,7 +268,6 @@ function deleteActionItems(btn) {
     }
 }
 
-//This was added in Tutorial 6
 function deleteActionItemsFromReport() {
 	var actionItemId = ReportEditForm.getForm().findField('actionItemsField').getValue();
 	alert(actionItemId);

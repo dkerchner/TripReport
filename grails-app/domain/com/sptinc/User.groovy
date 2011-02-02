@@ -1,5 +1,6 @@
 package com.sptinc
 
+
 class User {
 
 	String username
@@ -17,8 +18,9 @@ class User {
 
 	//SortedSet contracts
 
-	static hasMany = [contracts: Contract]
+	static hasMany = [contracts: Contract, userRoles: UserRole]
     //static mappedBy = [managedContracts:"manager"]
+	static transients = ['name']
 
 	static constraints = {
 		username(blank: false, unique: true, maxSize: 10)
@@ -41,6 +43,10 @@ class User {
 
 	String toString() {
 	    return fullName + " @ " + company
+	}
+	
+	String getName() {
+		return this.toString()
 	}
 
 	def beforeInsert() {
