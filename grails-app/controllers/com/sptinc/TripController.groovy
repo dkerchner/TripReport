@@ -2,6 +2,11 @@ package com.sptinc
 
 import grails.converters.JSON
 
+/*
+* The controller for the Trip domain. *JSON functions are used to interact with AJAX requests. All other methods were
+* created by the grails create-controller script. A separate method was used for JSON requests rather than
+* using the withFormat method because the functionality is so different.
+*/
 class TripController {
 
   def df = new java.text.SimpleDateFormat("MM/dd/yy")
@@ -21,7 +26,10 @@ class TripController {
     params.max = Math.min(params.max ? params.int('max') : 10, 100)
     [tripInstanceList: Trip.list(params), tripInstanceTotal: Trip.count()]
   }
-
+  
+  /*
+  * Returns a collection of Trip objects in JSON based upon the given parameters.
+  */
   def listJSON = {
     def trips = []
 	println params
@@ -98,7 +106,10 @@ class TripController {
       render(view: "create", model: [tripInstance: tripInstance])
     }
   }
-
+  
+  /*
+   * Takes a Trip object in JSON and saves it. This method acts as both the create and update.
+   */
   def saveJSON = {
     def tripInstance
     if (params.task.equals("Create")) {
@@ -178,7 +189,10 @@ class TripController {
       [tripInstance: tripInstance]
     }
   }
-
+  
+  /*
+   * Takes an id and returns a Trip object in JSON.
+   */
   def showJSON = {
     def tripInstance = Trip.get(params.id)
     if (!tripInstance) {
@@ -240,7 +254,7 @@ class TripController {
         def version = params.version.toLong()
         if (tripInstance.version > version) {
 
-          tripInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'trip.label', default: 'Trip')] as Object[], "Another user has updated this Trip while you were editing")
+          tripInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'trip.label', default: 'Trip')] as Object[], "Another trip has updated this Trip while you were editing")
           render(view: "edit", model: [tripInstance: tripInstance])
           return
         }
@@ -278,22 +292,30 @@ class TripController {
       redirect(action: "list")
     }
   }
-
+  
+  /*
+  * Takes a Trip id, deletes, and returns a JSON result.
+  */
   def deleteJSON = {
-    def tripInstance = Trip.get(params.id)
-    if (tripInstance) {
-      try {
-        tripInstance.delete(flush: true)
-        render 1
-      }
-      catch (org.springframework.dao.DataIntegrityViolationException e) {
-        render "${message(code: 'default.not.deleted.message', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
-      }
-    }
-    else {
-      //flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
-      render "${message(code: 'default.not.found.message', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
-    }
+		def instance = Trip.get(params.id)
+		if (instance) {
+			try {	
+				def values = [id: instance.id, name: instance.getName()]
+				instance.delete(flush: true)
+				def result = [success: true, data: values]
+				render result as JSON
+			}
+			catch (org.springframework.dao.DataIntegrityViolationException e) {
+				def errors = [errors: "${message(code: 'default.not.deleted.message', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"]
+				def result = [success: false, data: errors]
+				render result as JSON
+			}
+		}
+		else {
+			def errors = [errors: "${message(code: 'default.not.found.message', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"]
+			def result = [success: false, data: errors]
+			render result as JSON
+		}
   }
 
 }

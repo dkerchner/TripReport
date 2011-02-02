@@ -1,5 +1,10 @@
 package com.sptinc
 
+/*
+* The controller for the UserRole domain. *JSON functions are used to interact with AJAX requests. All other methods were
+* created by the grails create-controller script. A separate method was used for JSON requests rather than
+* using the withFormat method because the functionality is so different.
+*/
 class UserRoleController {
 
   static scaffold = true;

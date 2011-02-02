@@ -8,9 +8,6 @@ class Report {
   String issues
   String topics
 
-  //List actionItems
-  //SortedSet contacts
-
   Date dateCreated
   Date lastUpdated
 

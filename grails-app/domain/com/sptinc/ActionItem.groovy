@@ -1,11 +1,13 @@
 package com.sptinc
 
+/* Records that can be thought of as To-Do list items for a report. 
+ * There is no task management functionality in the application, yet. 
+ * */
 class ActionItem {
 
     String name
     String description
     Date dueDate
-    //Report report
 
     static belongsTo = [report: Report]
 

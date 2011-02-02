@@ -1,7 +1,11 @@
 package com.sptinc
 
 import grails.converters.JSON
-
+/*
+* The controller for the Location domain. *JSON functions are used to interact with AJAX requests. All other methods were
+* created by the grails create-controller script. A separate method was used for JSON requests rather than
+* using the withFormat method because the functionality is so different.
+*/
 class LocationController {
 
   static scaffold = true;
@@ -16,7 +20,10 @@ class LocationController {
     params.max = Math.min(params.max ? params.int('max') : 10, 100)
     [locationInstanceList: Location.list(params), locationInstanceTotal: Location.count()]
   }
-
+  
+  /*
+  * Returns a collection of Location objects in JSON based upon the given parameters.
+  */
   def listJSON = {
     def locs = []
     for (l in Location.list(params)) {
@@ -44,7 +51,10 @@ class LocationController {
       render(view: "create", model: [locationInstance: locationInstance])
     }
   }
-
+  
+  /*
+   * Takes a Location object in JSON and saves it. This method acts as both the create and update.
+   */
   def saveJSON = {
     def locationInstance
     if (params.task.equals("Create")) {
@@ -91,7 +101,10 @@ class LocationController {
       [locationInstance: locationInstance]
     }
   }
-
+  
+  /*
+   * Takes an id and returns a Location object in JSON.
+   */
   def showJSON = {
     def locationInstance = Location.get(params.id)
     if (!locationInstance) {
@@ -123,7 +136,7 @@ class LocationController {
         def version = params.version.toLong()
         if (locationInstance.version > version) {
 
-          locationInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'location.label', default: 'Location')] as Object[], "Another user has updated this Location while you were editing")
+          locationInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [message(code: 'location.label', default: 'Location')] as Object[], "Another location has updated this Location while you were editing")
           render(view: "edit", model: [locationInstance: locationInstance])
           return
         }
@@ -161,22 +174,30 @@ class LocationController {
       redirect(action: "list")
     }
   }
-
+  
+  /*
+  * Takes a Location id, deletes, and returns a JSON result.
+  */
   def deleteJSON = {
-    def locationInstance = Location.get(params.id)
-    if (locationInstance) {
-      try {
-        locationInstance.delete(flush: true)
-        render 1
-      }
-      catch (org.springframework.dao.DataIntegrityViolationException e) {
-        render "${message(code: 'default.not.deleted.message', args: [message(code: 'location.label', default: 'Location'), params.id])}"
-      }
-    }
-    else {
-      //flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
-      render "${message(code: 'default.not.found.message', args: [message(code: 'location.label', default: 'Location'), params.id])}"
-    }
+		def instance = Location.get(params.id)
+		if (instance) {
+			try {	
+				def values = [id: instance.id, name: instance.getName()]
+				instance.delete(flush: true)
+				def result = [success: true, data: values]
+				render result as JSON
+			}
+			catch (org.springframework.dao.DataIntegrityViolationException e) {
+				def errors = [errors: "${message(code: 'default.not.deleted.message', args: [message(code: 'location.label', default: 'Location'), params.id])}"]
+				def result = [success: false, data: errors]
+				render result as JSON
+			}
+		}
+		else {
+			def errors = [errors: "${message(code: 'default.not.found.message', args: [message(code: 'location.label', default: 'Location'), params.id])}"]
+			def result = [success: false, data: errors]
+			render result as JSON
+		}
   }
 
 }

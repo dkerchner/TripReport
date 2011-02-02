@@ -2,6 +2,12 @@ package com.sptinc
 
 import grails.converters.JSON
 
+
+/*
+* The controller for the Contract domain. *JSON functions are used to interact with AJAX requests. All other methods were
+* created by the grails create-controller script. A separate method was used for JSON requests rather than
+* using the withFormat method because the functionality is so different.
+*/
 class ContractController {
 	static scaffold = true;
 
@@ -15,7 +21,10 @@ class ContractController {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		[contractInstanceList: Contract.list(params), contractInstanceTotal: Contract.count()]
 	}
-
+	
+	/*
+	* Returns a collection of Contract objects in JSON based upon the given parameters.
+	*/
 	def listJSON = {
 		def contracts = []
 		for (c in Contract.list(params)) {
@@ -44,7 +53,10 @@ class ContractController {
 			render(view: "create", model: [contractInstance: contractInstance])
 		}
 	}
-
+	
+	/*
+	 * Takes a Contract object in JSON and saves it. This method acts as both the create and update.
+	 */
 	def saveJSON = {
 		def contractInstance
 		println params
@@ -94,7 +106,10 @@ class ContractController {
 			[contractInstance: contractInstance]
 		}
 	}
-
+	
+	/*
+	 * Takes an id and returns a Contract object in JSON.
+	 */
 	def showJSON = {
 		def contractInstance = Contract.get(params.id)
 		if (!contractInstance) {
@@ -129,7 +144,7 @@ class ContractController {
 
 					contractInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [
 						message(code: 'contract.label', default: 'Contract')]
-					as Object[], "Another user has updated this Contract while you were editing")
+					as Object[], "Another contract has updated this Contract while you were editing")
 					render(view: "edit", model: [contractInstance: contractInstance])
 					return
 				}
@@ -167,21 +182,29 @@ class ContractController {
 			redirect(action: "list")
 		}
 	}
-
+	
+	/*
+	* Takes a Contract id, deletes, and returns a JSON result.
+	*/
 	def deleteJSON = {
-		def contractInstance = Contract.get(params.id)
-		if (contractInstance) {
-			try {
-				contractInstance.delete(flush: true)
-				render 1
+		def instance = Contract.get(params.id)
+		if (instance) {
+			try {	
+				def values = [id: instance.id, name: instance.getName()]
+				instance.delete(flush: true)
+				def result = [success: true, data: values]
+				render result as JSON
 			}
 			catch (org.springframework.dao.DataIntegrityViolationException e) {
-				render "${message(code: 'default.not.deleted.message', args: [message(code: 'contract.label', default: 'Contract'), params.id])}"
+				def errors = [errors: "${message(code: 'default.not.deleted.message', args: [message(code: 'contract.label', default: 'Contract'), params.id])}"]
+				def result = [success: false, data: errors]
+				render result as JSON
 			}
 		}
 		else {
-			//flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
-			render "${message(code: 'default.not.found.message', args: [message(code: 'contract.label', default: 'Contract'), params.id])}"
+			def errors = [errors: "${message(code: 'default.not.found.message', args: [message(code: 'contract.label', default: 'Contract'), params.id])}"]
+			def result = [success: false, data: errors]
+			render result as JSON
 		}
 	}
 }

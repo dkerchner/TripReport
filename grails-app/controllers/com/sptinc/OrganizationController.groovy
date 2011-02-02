@@ -2,6 +2,11 @@ package com.sptinc
 
 import grails.converters.JSON
 
+/*
+* The controller for the Organization domain. *JSON functions are used to interact with AJAX requests. All other methods were
+* created by the grails create-controller script. A separate method was used for JSON requests rather than
+* using the withFormat method because the functionality is so different.
+*/
 class OrganizationController {
 
 	static scaffold = true;
@@ -16,7 +21,10 @@ class OrganizationController {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		[organizationInstanceList: Organization.list(params), organizationInstanceTotal: Organization.count()]
 	}
-
+	
+	/*
+	* Returns a collection of Organization objects in JSON based upon the given parameters.
+	*/
 	def listJSON = {
 		def orgs = []
 		for (o in Organization.list(params)) {
@@ -45,7 +53,10 @@ class OrganizationController {
 			render(view: "create", model: [organizationInstance: organizationInstance])
 		}
 	}
-
+	
+	/*
+	 * Takes a Organization object in JSON and saves it. This method acts as both the create and update.
+	 */
 	def saveJSON = {
 		def organizationInstance
 		if (params.task.equals("Create")) {
@@ -93,7 +104,10 @@ class OrganizationController {
 			[organizationInstance: organizationInstance]
 		}
 	}
-
+	
+	/*
+	 * Takes an id and returns a Organization object in JSON.
+	 */
 	def showJSON = {
 		def orgInstance = Organization.get(params.id)
 		if (!orgInstance) {
@@ -128,7 +142,7 @@ class OrganizationController {
 
 					organizationInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [
 						message(code: 'organization.label', default: 'Organization')]
-					as Object[], "Another user has updated this Organization while you were editing")
+					as Object[], "Another organization has updated this Organization while you were editing")
 					render(view: "edit", model: [organizationInstance: organizationInstance])
 					return
 				}
@@ -166,20 +180,29 @@ class OrganizationController {
 			redirect(action: "list")
 		}
 	}
-
+	
+	/*
+	* Takes a Organization id, deletes, and returns a JSON result.
+	*/
 	def deleteJSON = {
-		def orgInstance = Organization.get(params.id)
-		if (orgInstance) {
-			try {
-				orgInstance.delete(flush: true)
-				render 1
+		def instance = Organization.get(params.id)
+		if (instance) {
+			try {	
+				def values = [id: instance.id, name: instance.getName()]
+				instance.delete(flush: true)
+				def result = [success: true, data: values]
+				render result as JSON
 			}
 			catch (org.springframework.dao.DataIntegrityViolationException e) {
-				render "${message(code: 'default.not.deleted.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
+				def errors = [errors: "${message(code: 'default.not.deleted.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"]
+				def result = [success: false, data: errors]
+				render result as JSON
 			}
 		}
 		else {
-			render "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"
+			def errors = [errors: "${message(code: 'default.not.found.message', args: [message(code: 'organization.label', default: 'Organization'), params.id])}"]
+			def result = [success: false, data: errors]
+			render result as JSON
 		}
 	}
 }

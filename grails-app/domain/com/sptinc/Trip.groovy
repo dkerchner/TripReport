@@ -24,7 +24,8 @@ class Trip {
 	]
 
 	static hasMany = [contracts: Contract, events: Event, locations: Location]
-
+	static transients = ['name']
+	
 	static constraints = {
 		startDate(blank: false)
 		endDate(blank: false)
@@ -65,5 +66,9 @@ class Trip {
 
 	String toString() {
 		return shortDescription
+	}
+	
+	String getName() {
+		return this.toString()
 	}
 }

@@ -1,12 +1,11 @@
 package com.sptinc
 
+/* Places associated with events. */
 class Location {
 
     String city
     String state
     String country
-
-    //SortedSet events
 
     static hasMany = [events: Event]
 

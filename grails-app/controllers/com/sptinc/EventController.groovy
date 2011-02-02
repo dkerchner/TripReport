@@ -1,7 +1,11 @@
 package com.sptinc
 
 import grails.converters.JSON
-
+/*
+* The controller for the Event domain. *JSON functions are used to interact with AJAX requests. All other methods were
+* created by the grails create-controller script. A separate method was used for JSON requests rather than
+* using the withFormat method because the functionality is so different.
+*/
 class EventController {
 
 	def df = new java.text.SimpleDateFormat("yy/MM/dd")
@@ -18,7 +22,10 @@ class EventController {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		[eventInstanceList: Event.list(params), eventInstanceTotal: Event.count()]
 	}
-
+	
+	/*
+	* Returns a collection of Event objects in JSON based upon the given parameters.
+	*/
 	def listJSON = {
 		def events = []
 		for (e in Event.list(params)) {
@@ -57,7 +64,10 @@ class EventController {
 			render(view: "create", model: [eventInstance: eventInstance])
 		}
 	}
-
+	
+	/*
+	 * Takes a Event object in JSON and saves it. This method acts as both the create and update.
+	 */
 	def saveJSON = {
 		def eventInstance
 		if (params.task.equals("Create")) {
@@ -105,7 +115,10 @@ class EventController {
 			[eventInstance: eventInstance]
 		}
 	}
-
+	
+	/*
+	 * Takes an id and returns a Event object in JSON.
+	 */
 	def showJSON = {
 		def eventInstance = Event.get(params.id)
 		if (!eventInstance) {
@@ -150,7 +163,7 @@ class EventController {
 
 					eventInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [
 						message(code: 'event.label', default: 'Event')]
-					as Object[], "Another user has updated this Event while you were editing")
+					as Object[], "Another event has updated this Event while you were editing")
 					render(view: "edit", model: [eventInstance: eventInstance])
 					return
 				}
@@ -188,21 +201,29 @@ class EventController {
 			redirect(action: "list")
 		}
 	}
-
+	
+	/*
+	* Takes a Event id, deletes, and returns a JSON result.
+	*/
 	def deleteJSON = {
-		def eventInstance = Event.get(params.id)
-		if (eventInstance) {
-			try {
-				eventInstance.delete(flush: true)
-				render 1
+		def instance = Event.get(params.id)
+		if (instance) {
+			try {	
+				def values = [id: instance.id, name: instance.getName()]
+				instance.delete(flush: true)
+				def result = [success: true, data: values]
+				render result as JSON
 			}
 			catch (org.springframework.dao.DataIntegrityViolationException e) {
-				render "${message(code: 'default.not.deleted.message', args: [message(code: 'event.label', default: 'Event'), params.id])}"
+				def errors = [errors: "${message(code: 'default.not.deleted.message', args: [message(code: 'event.label', default: 'Event'), params.id])}"]
+				def result = [success: false, data: errors]
+				render result as JSON
 			}
 		}
 		else {
-			//flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
-			render "${message(code: 'default.not.found.message', args: [message(code: 'event.label', default: 'Event'), params.id])}"
+			def errors = [errors: "${message(code: 'default.not.found.message', args: [message(code: 'event.label', default: 'Event'), params.id])}"]
+			def result = [success: false, data: errors]
+			render result as JSON
 		}
 	}
 }

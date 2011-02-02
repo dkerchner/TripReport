@@ -1,5 +1,6 @@
 package com.sptinc
 
+/* The actual event (conference, training, etc) that the users request to attend. */
 class Event {
 
     String name
@@ -11,7 +12,7 @@ class Event {
 
     static hasMany = [trips: Trip]
 
-    static belongsTo = com.sptinc.Trip
+    static belongsTo = Trip
 
     static constraints = {
         name(blank: false, unique: true, maxSize: 100)

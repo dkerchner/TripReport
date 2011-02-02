@@ -1,7 +1,11 @@
 package com.sptinc
 
 import grails.converters.JSON
-
+/*
+* The controller for the ActionItem domain. *JSON functions are used to interact with AJAX requests. All other methods were
+* created by the grails create-controller script. A separate method was used for JSON requests rather than
+* using the withFormat method because the functionality is so different.
+*/
 class ActionItemController {
 
 	def df = new java.text.SimpleDateFormat("MM/dd/yy")
@@ -10,15 +14,18 @@ class ActionItemController {
 
 	static allowedMethods = [save: "POST", update: "POST", delete: "POST"]
 
-	/*def index = {
+	def index = {
 	 redirect(action: "list", params: params)
-	 } */
+	 } 
 
 	def list = {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		[actionItemInstanceList: ActionItem.list(params), actionItemInstanceTotal: ActionItem.count()]
 	}
 
+	/*
+	* Returns a collection of ActionItem objects in JSON based upon the given parameters.
+	*/
 	def listJSON = {
 		def actionItems = []
 		def actionItemList
@@ -55,7 +62,10 @@ class ActionItemController {
 			render(view: "create", model: [actionItemInstance: actionItemInstance])
 		}
 	}
-
+	
+	/*
+	 * Takes a ActionItem object in JSON and saves it. This method acts as both the create and update.
+	 */
 	def saveJSON = {
 		def actionItemInstance
 		if (params.task.equals("Create")) {
@@ -78,7 +88,6 @@ class ActionItemController {
 
 			params.report = Report.get(params.report.asType(Integer))
 			actionItemInstance.properties = params
-			println params
 
 			if (!actionItemInstance.hasErrors() && actionItemInstance.save(flush: true)) {
 				def result = [success: true, data: actionItemInstance]
@@ -107,7 +116,10 @@ class ActionItemController {
 			[actionItemInstance: actionItemInstance]
 		}
 	}
-
+	
+	/*
+	 * Takes an id and returns a ActionItem object in JSON.
+	 */
 	def showJSON = {
 		def actionItemInstance = ActionItem.get(params.id)
 		if (!actionItemInstance) {
@@ -141,7 +153,7 @@ class ActionItemController {
 
 					actionItemInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [
 						message(code: 'actionItem.label', default: 'ActionItem')]
-					as Object[], "Another user has updated this ActionItem while you were editing")
+					as Object[], "Another actionItem has updated this ActionItem while you were editing")
 					render(view: "edit", model: [actionItemInstance: actionItemInstance])
 					return
 				}
@@ -179,21 +191,29 @@ class ActionItemController {
 			redirect(action: "list")
 		}
 	}
-
+	
+	/*
+	* Takes a ActionItem id, deletes, and returns a JSON result.
+	*/
 	def deleteJSON = {
-		def actionItemInstance = ActionItem.get(params.id)
-		if (actionItemInstance) {
-			try {
-				actionItemInstance.delete(flush: true)
-				render 1
+		def instance = ActionItem.get(params.id)
+		if (instance) {
+			try {	
+				def values = [id: instance.id, name: instance.getName()]
+				instance.delete(flush: true)
+				def result = [success: true, data: values]
+				render result as JSON
 			}
 			catch (org.springframework.dao.DataIntegrityViolationException e) {
-				render "${message(code: 'default.not.deleted.message', args: [message(code: 'role.label', default: 'ActionItem'), params.id])}"
+				def errors = [errors: "${message(code: 'default.not.deleted.message', args: [message(code: 'actionItem.label', default: 'ActionItem'), params.id])}"]
+				def result = [success: false, data: errors]
+				render result as JSON
 			}
 		}
 		else {
-			//flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
-			render "${message(code: 'default.not.found.message', args: [message(code: 'role.label', default: 'ActionItem'), params.id])}"
+			def errors = [errors: "${message(code: 'default.not.found.message', args: [message(code: 'actionItem.label', default: 'ActionItem'), params.id])}"]
+			def result = [success: false, data: errors]
+			render result as JSON
 		}
 	}
 }

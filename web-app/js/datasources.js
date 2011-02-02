@@ -51,6 +51,26 @@ var actionItemDS = new Ext.data.Store({
     })
 });
 
+var companyDS = new Ext.data.Store({
+    autoLoad: true,
+    proxy: new Ext.data.HttpProxy({
+        url: 'company/showJSON'}),
+    reader: new Ext.data.JsonReader({},
+            [
+             {name: 'version', type: 'int'},
+             {name: 'id', type: 'int'},
+             {name: 'name', type: 'string'},
+             {name: 'url', type: 'string'}
+            ]
+            ),
+    baseParams:     {
+        now:        (new Date()).getTime()
+    },
+    writer: new Ext.data.JsonWriter({
+        encode:     true
+    })
+});
+
 var contactDS = new Ext.data.Store({
     autoLoad: true,
     proxy: new Ext.data.HttpProxy({
@@ -351,7 +371,7 @@ var actionItemListDS = new Ext.data.Store({
     }
 });
 
-var companyListDS = new Ext.data.JsonStore({
+var companyListDS = new Ext.data.Store({
     autoLoad: true,
     proxy: new Ext.data.HttpProxy({
         url: 'company/listJSON'}),
@@ -361,10 +381,10 @@ var companyListDS = new Ext.data.JsonStore({
         id:'id'
     },
             [
-                {name: 'version', type: 'int'},
-                {name: 'id', type: 'int'},
-                {name: 'name', type: 'string'}/*,
-                {name: 'url', type: 'string'} */
+             {name: 'version', type: 'int'},
+             {name: 'id', type: 'int'},
+             {name: 'name', type: 'string'},
+             {name: 'url', type: 'string'}
             ]
             ),
     baseParams:     {

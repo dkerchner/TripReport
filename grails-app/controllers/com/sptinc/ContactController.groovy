@@ -2,6 +2,12 @@ package com.sptinc
 
 import grails.converters.JSON
 
+
+/*
+* The controller for the Contact domain. *JSON functions are used to interact with AJAX requests. All other methods were
+* created by the grails create-controller script. A separate method was used for JSON requests rather than
+* using the withFormat method because the functionality is so different.
+*/
 class ContactController {
 
 	static scaffold = true;
@@ -16,7 +22,10 @@ class ContactController {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		[contactInstanceList: Contact.list(params), contactInstanceTotal: Contact.count()]
 	}
-
+	
+	/*
+	* Returns a collection of Contact objects in JSON based upon the given parameters.
+	*/
 	def listJSON = {
 		def contacts = []
 		def contactList
@@ -53,7 +62,10 @@ class ContactController {
 			render(view: "create", model: [contactInstance: contactInstance])
 		}
 	}
-
+	
+	/*
+	 * Takes a Contact object in JSON and saves it. This method acts as both the create and update.
+	 */
 	def saveJSON = {
 		def contactInstance
 		if (params.task.equals("Create")) {
@@ -75,7 +87,6 @@ class ContactController {
 			params.organization = Organization.get(params.organization.asType(Integer))
 			params.report = Report.get(params.report.asType(Integer))
 			
-			println params
 			contactInstance.properties = params
 
 			if (!contactInstance.hasErrors() && contactInstance.save(flush: true)) {
@@ -104,7 +115,10 @@ class ContactController {
 			[contactInstance: contactInstance]
 		}
 	}
-
+	
+	/*
+	 * Takes an id and returns a Contact object in JSON.
+	 */
 	def showJSON = {
 		def contactInstance = Contact.get(params.id)
 		if (!contactInstance) {
@@ -138,7 +152,7 @@ class ContactController {
 
 					contactInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [
 						message(code: 'contact.label', default: 'Contact')]
-					as Object[], "Another user has updated this Contact while you were editing")
+					as Object[], "Another contact has updated this Contact while you were editing")
 					render(view: "edit", model: [contactInstance: contactInstance])
 					return
 				}
@@ -176,21 +190,29 @@ class ContactController {
 			redirect(action: "list")
 		}
 	}
-
+	
+	/*
+	* Takes a Contact id, deletes, and returns a JSON result.
+	*/
 	def deleteJSON = {
-		def contactInstance = Contact.get(params.id)
-		if (contactInstance) {
-			try {
-				contactInstance.delete(flush: true)
-				render 1
+		def instance = Contact.get(params.id)
+		if (instance) {
+			try {	
+				def values = [id: instance.id, name: instance.getName()]
+				instance.delete(flush: true)
+				def result = [success: true, data: values]
+				render result as JSON
 			}
 			catch (org.springframework.dao.DataIntegrityViolationException e) {
-				render "${message(code: 'default.not.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])}"
+				def errors = [errors: "${message(code: 'default.not.deleted.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])}"]
+				def result = [success: false, data: errors]
+				render result as JSON
 			}
 		}
 		else {
-			//flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
-			render "${message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])}"
+			def errors = [errors: "${message(code: 'default.not.found.message', args: [message(code: 'contact.label', default: 'Contact'), params.id])}"]
+			def result = [success: false, data: errors]
+			render result as JSON
 		}
 	}
 }

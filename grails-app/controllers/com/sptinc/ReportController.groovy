@@ -2,6 +2,11 @@ package com.sptinc
 
 import grails.converters.JSON
 
+/*
+* The controller for the Report domain. *JSON functions are used to interact with AJAX requests. All other methods were
+* created by the grails create-controller script. A separate method was used for JSON requests rather than
+* using the withFormat method because the functionality is so different.
+*/
 class ReportController {
 
 	static scaffold = true;
@@ -16,7 +21,10 @@ class ReportController {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		[reportInstanceList: Report.list(params), reportInstanceTotal: Report.count()]
 	}
-
+	
+	/*
+	* Returns a collection of Report objects in JSON based upon the given parameters.
+	*/
 	def listJSON = {
 		def reports = []
 		for (r in Report.list(params)) {
@@ -62,7 +70,10 @@ class ReportController {
 			render(view: "create", model: [reportInstance: reportInstance])
 		}
 	}
-
+	
+	/*
+	 * Takes a Report object in JSON and saves it. This method acts as both the create and update.
+	 */
 	def saveJSON = {
 		def reportInstance
 		if (params.task.equals("Create")) {
@@ -99,12 +110,10 @@ class ReportController {
 
 
 			if(reportInstance.actionItems!=null){
-				println 'allclear'
 				reportInstance.actionItems.clear()
 			}
-			println reportInstance.actionItems
+
 			for (a in actionItems) {
-				println a
 				def actionItem = ActionItem.get(a.asType(Long))
 				reportInstance.addToActionItems(actionItem)
 			}
@@ -146,7 +155,10 @@ class ReportController {
 			[reportInstance: reportInstance]
 		}
 	}
-
+	
+	/*
+	 * Takes an id and returns a Report object in JSON.
+	 */
 	def showJSON = {
 		def reportInstance = Report.get(params.id)
 		if (!reportInstance) {
@@ -196,7 +208,7 @@ class ReportController {
 
 					reportInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [
 						message(code: 'report.label', default: 'Report')]
-					as Object[], "Another user has updated this Report while you were editing")
+					as Object[], "Another report has updated this Report while you were editing")
 					render(view: "edit", model: [reportInstance: reportInstance])
 					return
 				}
@@ -234,20 +246,29 @@ class ReportController {
 			redirect(action: "list")
 		}
 	}
-
+	
+	/*
+	* Takes a Report id, deletes, and returns a JSON result.
+	*/
 	def deleteJSON = {
-		def reportInstance = Report.get(params.id)
-		if (reportInstance) {
-			try {
-				reportInstance.delete(flush: true)
-				render 1
+		def instance = Report.get(params.id)
+		if (instance) {
+			try {	
+				def values = [id: instance.id, name: instance.getName()]
+				instance.delete(flush: true)
+				def result = [success: true, data: values]
+				render result as JSON
 			}
 			catch (org.springframework.dao.DataIntegrityViolationException e) {
-				render "${message(code: 'default.not.deleted.message', args: [message(code: 'report.label', default: 'Report'), params.id])}"
+				def errors = [errors: "${message(code: 'default.not.deleted.message', args: [message(code: 'report.label', default: 'Report'), params.id])}"]
+				def result = [success: false, data: errors]
+				render result as JSON
 			}
 		}
 		else {
-			render "${message(code: 'default.not.found.message', args: [message(code: 'report.label', default: 'Report'), params.id])}"
+			def errors = [errors: "${message(code: 'default.not.found.message', args: [message(code: 'report.label', default: 'Report'), params.id])}"]
+			def result = [success: false, data: errors]
+			render result as JSON
 		}
 	}
 }

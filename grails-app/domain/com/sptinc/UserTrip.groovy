@@ -58,4 +58,12 @@ class UserTrip implements Serializable {
 		id composite: ['trip', 'attendee']
 		version false
 	}
+	
+	String toString() {
+		return trip.getName() + ' for ' + attendee.getName() 
+	}
+	
+	String getName() {
+		return this.toString()
+	}
 }

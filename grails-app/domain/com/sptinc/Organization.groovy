@@ -1,12 +1,11 @@
 package com.sptinc
 
+/* A generic class for Organizations (companies and agencies) associated with Contract and Contact. */
 class Organization {
 
     String name
     String url
-    //SortedSet contacts
-    //SortedSet contracts
-
+	
     static hasMany = [contacts: Contact, contracts: Contract]
 
     static constraints = {

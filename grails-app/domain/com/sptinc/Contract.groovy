@@ -1,10 +1,10 @@
 package com.sptinc
 
+/* Contracts linked to Trips or Users. For informational purposes only at the moment. */
 class Contract {
 
     String contractNumber
     Organization organization
-    //User manager
     boolean active = true
 
     static hasMany = [trips: Trip]

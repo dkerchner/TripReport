@@ -43,18 +43,7 @@ var tripcm = new Ext.grid.ColumnModel([
             maxLength: 100,
             maskRe: /([a-zA-Z0-9\s]+)$/
         })},
-    /*{header: "Approved", width: 115, dataIndex: 'approved', sortable: true, renderer: function(value, cell) {
-     if (value) {
-     cell.css = "approved";
-     value = 'Yes'
-     } else {
-     cell.css = "unapproved";
-     value = 'No'
-     }
-     return value;
-     }, editor: new Ext.form.Checkbox({
-     })},
-     {header: "Approved By", width: 115, dataIndex: 'approvedBy', sortable: true},   */
+    {header: "Estimated Cost", width: 100, dataIndex: 'estimatedCost', renderer: Ext.util.Format.usMoney(), sortable: true},
     {header: "Contracts", width: 115, dataIndex: 'contracts', sortable: true, renderer: function(value, cell) {
         return buildStringFromArray(value, 'name', ', ');
     }},

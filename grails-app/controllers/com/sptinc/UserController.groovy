@@ -2,6 +2,11 @@ package com.sptinc
 
 import grails.converters.JSON
 
+/* 
+ * The controller for the User domain. *JSON functions are used to interact with AJAX requests. All other methods were 
+ * created by the grails create-controller script. A separate method was used for JSON requests rather than
+ * using the withFormat method because the functionality is so different.
+ */
 class UserController {
 
 	static scaffold = true;
@@ -19,6 +24,9 @@ class UserController {
 		[userInstanceList: User.list(params), userInstanceTotal: User.count()]
 	}
 
+	/*
+	 * Returns a collection of User objects in JSON based upon the given parameters.
+	 */
 	def listJSON = {
 		def users = []
 		for (u in User.list(params)) {
@@ -65,6 +73,9 @@ class UserController {
 		}
 	}
 
+	/*
+	 * Takes a User object in JSON and saves it. This method acts as both the create and update.  
+	 */
 	def saveJSON = {
 		def userInstance
 		if (params.task.equals("Create")) {
@@ -84,34 +95,37 @@ class UserController {
 					return
 				}
 			}
+			/* Start a transaction here because the userroles need to be flushed, however if there is a validation error, the roles will be lost. 
+			 * Starting a transaction will allow a rollback in case of errors. 
+			 * */
 			User.withTransaction { status ->
 				def contracts = !params.contracts.equals("") ? params.contracts.split('[,]') : []
 				def roles = !params.roles.equals("") ? params.roles.split('[,]') : []
-	
+
 				params.remove('contracts')
 				params.remove('roles')
 				params.company = Company.get(params.company.asType(Integer))
-	
+
 				userInstance.contracts.clear();
 				for (c in contracts) {
 					def contract = Contract.get(c.asType(Long))
 					userInstance.addToContracts(contract);
 				}
-	
+
 				UserRole.clearAll(userInstance, true)
 				for (r in roles) {
 					def role = Role.get(r.asType(Long))
 					UserRole.create(userInstance, role)
 				}
-	
+
 				// The front end handles the comparison of password1 and password2
 				if (params.password1 != null && !params.password1.equals('')) {
 					def password = springSecurityService.encodePassword(params.password1);
 					userInstance.password = password
 				}
-	
+
 				userInstance.properties = params
-	
+
 				if (!userInstance.hasErrors() && userInstance.save(flush: true)) {
 					//userInstance.name = userInstance.username
 					def result = [success: true, data: userInstance]
@@ -142,6 +156,9 @@ class UserController {
 		}
 	}
 
+	/*
+	 * Takes an id and returns a User object in JSON.
+	 */
 	def showJSON = {
 		def userInstance = User.get(params.id)
 		if (!userInstance) {
@@ -232,11 +249,16 @@ class UserController {
 		}
 	}
 
+	/*
+	 * Takes a User id, deletes, and returns a JSON result.
+	 */
 	def deleteJSON = {
-		def userInstance = User.get(params.id)
-		if (userInstance) {
-			try {
-				def result = [success: true, data: userInstance]
+		def instance = User.get(params.id)
+		if (instance) {
+			try {	
+				def values = [id: instance.id, name: instance.getName()]
+				instance.delete(flush: true)
+				def result = [success: true, data: values]
 				render result as JSON
 			}
 			catch (org.springframework.dao.DataIntegrityViolationException e) {

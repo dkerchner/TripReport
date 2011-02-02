@@ -2,6 +2,11 @@ package com.sptinc
 
 import grails.converters.JSON
 
+/*
+* The controller for the Agency domain. *JSON functions are used to interact with AJAX requests. All other methods were
+* created by the grails create-controller script. A separate method was used for JSON requests rather than
+* using the withFormat method because the functionality is so different.
+*/
 class AgencyController {
 
 	static scaffold = true
@@ -16,7 +21,10 @@ class AgencyController {
 		params.max = Math.min(params.max ? params.int('max') : 10, 100)
 		[agencyInstanceList: Agency.list(params), agencyInstanceTotal: Agency.count()]
 	}
-
+	
+	/*
+	* Returns a collection of Agency objects in JSON based upon the given parameters.
+	*/
 	def listJSON = {
 		def agencies = []
 		for (a in Agency.list(params)) {
@@ -44,7 +52,10 @@ class AgencyController {
 			render(view: "create", model: [agencyInstance: agencyInstance])
 		}
 	}
-
+	
+	/*
+	 * Takes a Agency object in JSON and saves it. This method acts as both the create and update.
+	 */
 	def saveJSON = {
 		def agencyInstance
 		if (params.task.equals("Create")) {
@@ -92,7 +103,10 @@ class AgencyController {
 			[agencyInstance: agencyInstance]
 		}
 	}
-
+	
+	/*
+	 * Takes an id and returns a Agency object in JSON.
+	 */
 	def showJSON = {
 		def agencyInstance = Agency.get(params.id)
 		if (!agencyInstance) {
@@ -126,7 +140,7 @@ class AgencyController {
 
 					agencyInstance.errors.rejectValue("version", "default.optimistic.locking.failure", [
 						message(code: 'agency.label', default: 'Agency')]
-					as Object[], "Another user has updated this Agency while you were editing")
+					as Object[], "Another agency has updated this Agency while you were editing")
 					render(view: "edit", model: [agencyInstance: agencyInstance])
 					return
 				}
@@ -164,21 +178,29 @@ class AgencyController {
 			redirect(action: "list")
 		}
 	}
-
+	
+	/*
+	* Takes a Agency id, deletes, and returns a JSON result.
+	*/
 	def deleteJSON = {
-		def agencyInstance = Agency.get(params.id)
-		if (agencyInstance) {
-			try {
-				agencyInstance.delete(flush: true)
-				render 1
+		def instance = Agency.get(params.id)
+		if (instance) {
+			try {	
+				def values = [id: instance.id, name: instance.getName()]
+				instance.delete(flush: true)
+				def result = [success: true, data: values]
+				render result as JSON
 			}
 			catch (org.springframework.dao.DataIntegrityViolationException e) {
-				render "${message(code: 'default.not.deleted.message', args: [message(code: 'agency.label', default: 'Agency'), params.id])}"
+				def errors = [errors: "${message(code: 'default.not.deleted.message', args: [message(code: 'agency.label', default: 'Agency'), params.id])}"]
+				def result = [success: false, data: errors]
+				render result as JSON
 			}
 		}
 		else {
-			//flash.message = "${message(code: 'default.not.found.message', args: [message(code: 'trip.label', default: 'Trip'), params.id])}"
-			render "${message(code: 'default.not.found.message', args: [message(code: 'agency.label', default: 'Agency'), params.id])}"
+			def errors = [errors: "${message(code: 'default.not.found.message', args: [message(code: 'agency.label', default: 'Agency'), params.id])}"]
+			def result = [success: false, data: errors]
+			render result as JSON
 		}
 	}
 }
