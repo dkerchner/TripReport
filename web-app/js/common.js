@@ -1,6 +1,6 @@
 // ExtJS common form elements
 
-// Data entry form fields
+// Data entry form fields for the create and edit forms
 var nameField = {
     xtype: 'textfield',
     //ref: '../nameField',
@@ -396,8 +396,7 @@ var actionItemsField = {
     ddReorder: true
 };
 
-// Display form fields
-
+// Display form fields for the view forms
 var nameDisplayField = {
     xtype: 'displayfield',
     name: 'name',

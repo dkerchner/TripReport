@@ -174,6 +174,23 @@ class BootStrap {
 				break
 
 			case "production":
+				def userRole = com.sptinc.Role.findByAuthority('ROLE_USER') ?: new Role(authority: 'ROLE_USER').save(failOnError: true)
+				def adminRole = com.sptinc.Role.findByAuthority('ROLE_ADMIN') ?: new Role(authority: 'ROLE_ADMIN').save(failOnError: true)
+
+				def sptCompany = new Company(name: "SPT", url:"http://www.inc.spt.com").save(failOnError: true)
+				
+				def adminUser = com.sptinc.User.findByUsername('admin') ?: new User(
+					username: 'admin',
+					fullName: "The Admin",
+					password: springSecurityService.encodePassword('admin'),
+					email: "admin@admin.com",
+					enabled: true,
+					company: sptCompany).save(failOnError: true)
+				
+				if (!adminUser.authorities.contains(adminRole)) {
+					UserRole.create adminUser, adminRole
+				}
+	
 				break
 		}
 	}

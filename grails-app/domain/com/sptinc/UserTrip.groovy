@@ -6,15 +6,15 @@ class UserTrip implements Serializable {
 
 	User attendee
 	Trip trip
-    boolean approved = false
-    User approvedBy = null
+	boolean approved = false
+	User approvedBy = null
 
-  static constraints = {
-      attendee(nullable: false)
-      trip(nullable: false)
-      approvedBy(nullable: true)
-  }
-
+	static constraints = {
+		attendee(nullable: false)
+		trip(nullable: false)
+		approvedBy(nullable: true)
+	}
+	static transients = ['name']
 
 	boolean equals(other) {
 		if (!(other instanceof UserTrip)) {
@@ -22,7 +22,7 @@ class UserTrip implements Serializable {
 		}
 
 		other.attendee?.id == attendee?.id &&
-			other.trip?.id == trip?.id
+				other.trip?.id == trip?.id
 	}
 
 	int hashCode() {
@@ -34,7 +34,7 @@ class UserTrip implements Serializable {
 
 	static UserTrip get(long attendeeId, long tripId) {
 		find 'from UserTrip where attendee.id=:attendeeId and trip.id=:tripId',
-			[attendeeId: attendeeId, tripId: tripId]
+				[attendeeId: attendeeId, tripId: tripId]
 	}
 
 	static UserTrip create(User attendee, Trip trip, boolean failOnError = false, boolean flush = false) {
@@ -58,11 +58,11 @@ class UserTrip implements Serializable {
 		id composite: ['trip', 'attendee']
 		version false
 	}
-	
+
 	String toString() {
-		return trip.getName() + ' for ' + attendee.getName() 
+		return trip.getName() + ' for ' + attendee.getName()
 	}
-	
+
 	String getName() {
 		return this.toString()
 	}

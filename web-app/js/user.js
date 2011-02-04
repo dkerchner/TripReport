@@ -155,25 +155,13 @@ UserListingContextMenu = new Ext.menu.Menu({
 
 // Confirm deletion, then call delete
 function confirmDeleteUsers() {
-    if (userGrid.selModel.getCount() == 1) // only one president is selected here
+    if (userGrid.selModel.getCount() == 1)
     {
         Ext.MessageBox.confirm('Confirmation', 'You are about to delete a user. Continue?', deleteUsers);
     } else if (userGrid.selModel.getCount() > 1) {
         Ext.MessageBox.confirm('Confirmation', 'Delete those users?', deleteUsers);
     } else {
         Ext.MessageBox.alert('Uh oh...', 'You can\'t really delete something you haven\'t selected huh?');
-    }
-}
-
-// Confirm attend, then call attend
-function confirmAttendUsers() {
-    if (userGrid.selModel.getCount() == 1) // only one president is selected here
-    {
-        Ext.MessageBox.confirm('Confirmation', 'You are about to request your attendance on a user. Continue?', attendUsers);
-    } else if (userGrid.selModel.getCount() > 1) {
-        Ext.MessageBox.confirm('Confirmation', 'Attend those users?', attendUsers);
-    } else {
-        Ext.MessageBox.alert('Uh oh...', 'You can\'t really attend something you haven\'t selected huh?');
     }
 }
 

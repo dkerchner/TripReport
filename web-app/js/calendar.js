@@ -1,3 +1,5 @@
+/* For the calendar panel that has not been implemented yet. */
+
 var calendarList = {
     "calendars":[{
         "id":1,

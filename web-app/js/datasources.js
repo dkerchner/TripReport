@@ -1,4 +1,9 @@
-// create the Data Store
+/* This contains all of the data.Store objects for the application. These are in charge of making AJAX requests
+ * to the service layer to extract data. The columns in the JsonReader map to the columns of the JSON data returned
+ * by the service layer. 
+ */
+
+// data.Store objects for individual recors. Used mainly in view or edit commands
 var attendeeDS = new Ext.data.Store({
     autoLoad: false,
     proxy: new Ext.data.HttpProxy({
@@ -283,32 +288,7 @@ var userDS = new Ext.data.Store({
     }) */
 });
 
-/*var userDS = new Ext.data.JsonStore({
-    autoLoad: true,
-        url: 'user/showJSON',
-            idProperty: 'id',
-            root: 'data' ,
-        successProperty: 'success',
-        fields:             [
-                {name: 'version', type: 'int', mapping: 'version'},
-                {name: 'id', type: 'int', mapping: 'id'},
-                {name: 'displayName', type: 'string', mapping: 'name'},
-                {name: 'name', type: 'string', mapping: 'fullName'},
-                {name: 'userName', type: 'string', mapping: 'userName'},
-                {name: 'email', type: 'string', mapping: 'email'},
-                {name: 'company'},
-                //{name: 'companyName', type: 'string', mapping: 'company'},
-                {name: 'contracts'},
-                {name: 'roles'}
-            ]
-
-       ,
-    baseParams:     {
-        now:        (new Date()).getTime()
-    }
-});*/
-
-// List data sources (more than one row)
+// List data sources (more than one row). These are mainly used by the data grids and comboboxes. 
 var attendeeListDS = new Ext.data.Store({
     autoLoad: true,
     proxy: new Ext.data.HttpProxy({

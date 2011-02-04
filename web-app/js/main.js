@@ -5,6 +5,8 @@
  * Time: 3:32 PM
  * To change this template use File | Settings | File Templates.
  */
+
+/* The initial tab that is displayed in the Tab Panel. It has buttons that link to common functions. */
 var mainPanel = new Ext.Panel({
     id: 'main-panel',
     //layout: 'card',

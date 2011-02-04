@@ -7,7 +7,9 @@
  */
 var reportMode;
 
+/* All components related to the management of User information. */
 
+// The column model for the DataGrid
 var reportcm = new Ext.grid.ColumnModel([
     {header: 'version', readOnly: true, dataIndex: 'version', width: 40, renderer: function(value, cell) {
         cell.css = "readonlycell";
@@ -30,10 +32,9 @@ var reportcm = new Ext.grid.ColumnModel([
         return buildStringFromArray(value, 'name', ', ');
     }}
 ]);
-
 reportcm.defaultSortable = true;
 
-// create the grid
+//The data grid
 var reportGrid = new Ext.grid.GridPanel({
     //title: 'Reports',
     id: 'report-grid',
@@ -81,7 +82,7 @@ var reportGrid = new Ext.grid.GridPanel({
     ]
 });
 
-// display or bring forth the form
+//Display the creation form
 function displayFormWindow() {
     reportMode = "Create";
     if (!ReportEditWindow.isVisible()) {
@@ -92,7 +93,7 @@ function displayFormWindow() {
     }
 }
 
-// display or bring forth the form
+//Display the view form
 function displayReportViewWindow() {
     if (reportGrid.selModel.getCount()) {
         var selections = reportGrid.selModel.getSelections();
@@ -106,7 +107,7 @@ function displayReportViewWindow() {
     }
 }
 
-// display or bring forth the form
+//Display the edit form
 function displayReportEditWindow() {
     if (reportGrid.selModel.getCount()) {
         reportMode = "Edit";
@@ -124,18 +125,21 @@ function displayReportEditWindow() {
     }
 }
 
+//The function called by the modify context menu
 function modifyReportContextMenu() {
     displayReportEditWindow();
 }
 
+//The function called by the delete context menu
 function deleteReportContextMenu() {
     confirmDeleteReports();
 }
 
+//DataGrid event listeners
 reportGrid.addListener('rowcontextmenu', onReportListingEditorGridContextMenu);
 reportGrid.addListener('rowdblclick', onReportListingEditorGridDoubleClick);
 
-
+// The context menu construct
 ReportListingContextMenu = new Ext.menu.Menu({
     id: 'ReportListingEditorGridContextMenu',
     items: [
@@ -145,7 +149,7 @@ ReportListingContextMenu = new Ext.menu.Menu({
     ]
 });
 
-// This was added in Tutorial 6
+//Confirm deletion, then call delete
 function confirmDeleteReports() {
     if (reportGrid.selModel.getCount() == 1) // only one president is selected here
     {
@@ -157,7 +161,7 @@ function confirmDeleteReports() {
     }
 }
 
-// This was added in Tutorial 6
+//Confirm attend, then call attend
 function confirmAttendReports() {
     if (reportGrid.selModel.getCount() == 1) // only one president is selected here
     {
@@ -169,7 +173,7 @@ function confirmAttendReports() {
     }
 }
 
-// This was added in Tutorial 6
+//Creates an Ajax request to delete the report
 function deleteReports(btn) {
     if (btn == 'yes') {
         var selections = reportGrid.selModel.getSelections();
@@ -179,26 +183,29 @@ function deleteReports(btn) {
             params: {
                 id:  selections[0].json.id
             },
-            success:
-            function(response) {
-                var result = eval(response.responseText);
-                switch (result) {
-                    case 1:  // Success : simply reload
-                        reportListDS.reload();
-                        break;
-                    default:
-                        Ext.MessageBox.alert('Fail', 'This report cannot be deleted.');
-                        break;
+            success: function ( result, request ) {
+                var jsonData = Ext.util.JSON.decode(result.responseText);
+                var resultMessage = jsonData.data;                
+                switch (jsonData.success) {
+                case true:
+                	reportListDS.commitChanges();
+                	reportListDS.reload();
+                    Ext.MessageBox.alert('Success', 'Successfully deleted ' + resultMessage.name);
+                    break;
+                default:
+                    Ext.MessageBox.alert('Error', buildStringFromArray(resultMessage.errors, "message", ","));
+                	break;
                 }
             },
-            failure: function(response) {
+            failure: function(result, request) {
                 var result = response.responseText;
                 Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
-            }
+            }        
         });
     }
 }
 
+//Called by the context menu right click event
 function onReportListingEditorGridContextMenu(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -208,6 +215,7 @@ function onReportListingEditorGridContextMenu(grid, rowIndex, e) {
     ReportListingContextMenu.showAt([coords[0], coords[1]]);
 }
 
+//Called by the DataGrid double click event
 function onReportListingEditorGridDoubleClick(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -215,6 +223,7 @@ function onReportListingEditorGridDoubleClick(grid, rowIndex, e) {
     displayReportViewWindow();
 }
 
+//Called when the reportDS is loaded for the view form
 function reportDSOnLoad() {
     var form = ReportViewForm.getForm();
     form.setValues(reportDS.getAt(0).data);
@@ -223,6 +232,7 @@ function reportDSOnLoad() {
     form.findField('actionItemsDisplayField').setValue(buildStringFromArray(reportDS.getAt(0).data.actionItems, "name", "<br/>"));
 }
 
+//Called when the reportDS is loaded for the edit form
 function reportDSEditOnLoad() {
     var form = ReportEditForm.getForm();
     if (reportMode != "Create") {
@@ -231,16 +241,16 @@ function reportDSEditOnLoad() {
         actionItemListDS.load({params: {'report': reportDS.getAt(0).data.id}});
         form.findField('contactsField').setValue(buildStringFromArray(reportDS.getAt(0).data.contacts, "id", ','));
         form.findField('actionItemsField').setValue(buildStringFromArray(reportDS.getAt(0).data.actionItems, "id", ','));
-    } else {
+    } else { // Since there is no report record, we cannot create associated records
     	form.findField('contactsField').disable();
     	form.findField('actionItemsField').disable();
     }
 }
 
+//Initial load of reportListDS *Important*
 reportListDS.load({params: {start: 0, limit: 15}});
-reportGrid.on('afteredit', saveTheReport);
 
-// This saves the president after a cell has been edited
+//This saves the user using an Ajax request
 function saveTheReport() {
     var form = ReportEditForm.getForm();
     var params = form.getValues();
@@ -276,11 +286,12 @@ function saveTheReport() {
 
 }
 
-// check if the form is valid
+//Check if the form is valid
 function isReportFormValid(form) {
     return(formIsValid(form));
 }
 
+//The Report view form construct
 var ReportViewForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -321,6 +332,7 @@ var ReportViewForm = new Ext.FormPanel({
     ]
 });
 
+//The window in which to display the Report view form
 var ReportViewWindow = new Ext.Window({
     id: 'ReportViewWindow',
     title: 'Report Details',
@@ -332,6 +344,7 @@ var ReportViewWindow = new Ext.Window({
     items: ReportViewForm
 });
 
+//The Report edit form construct
 var ReportEditForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -371,6 +384,7 @@ var ReportEditForm = new Ext.FormPanel({
     ]
 });
 
+//The window in which to display the Report edit form
 var ReportEditWindow = new Ext.Window({
     id: 'ReportEditWindow',
     title: 'Edit a Report',

@@ -7,7 +7,9 @@
  */
 var tripMode;
 
+/* All components related to the management of User information. */
 
+//The column model for the DataGrid
 var tripcm = new Ext.grid.ColumnModel([
     {header: 'version', readOnly: true, dataIndex: 'version', width: 40, renderer: function(value, cell) {
         cell.css = "readonlycell";
@@ -51,10 +53,9 @@ var tripcm = new Ext.grid.ColumnModel([
         return buildStringFromArray(value, 'name', ', ');
     }}
 ]);
-
 tripcm.defaultSortable = true;
 
-// create the grid
+//The data grid
 var tripGrid = new Ext.grid.GridPanel({
     //title: 'Trips',
     id: 'trip-grid',
@@ -122,111 +123,11 @@ var tripGrid = new Ext.grid.GridPanel({
                 }
                 
             }
-        }/*,
-         '-',
-         { // Added in Tutorial 8
-         text: 'Search',
-         tooltip: 'Advanced Search',
-         handler: startAdvancedSearch,
-         iconCls:'search'
-         },
-         '-',
-         new Ext.app.SearchField({
-         store: tripListDS,
-         params: {start: 0, limit: 15},
-         width: 120
-         }) */
+        }
     ]
 });
 
-
-// This saves the president after a cell has been edited
-function saveTheTrip() {
-    var form = TripEditForm.getForm();
-    var params = form.getValues();
-    params['task'] = tripMode.toString();
-    if (isTripFormValid(form)) {
-        Ext.Ajax.request({
-            waitMsg: 'Please wait...',
-            url: 'trip/saveJSON',
-            params: params,
-            success: function ( result, request ) {
-                var jsonData = Ext.util.JSON.decode(result.responseText);
-                var resultMessage = jsonData.data;                
-                switch (jsonData.success) {
-                case true:
-                    tripListDS.commitChanges();
-                    tripListDS.reload();
-                    TripEditWindow.hide();
-                    Ext.MessageBox.alert('Success', 'Successfully saved ' + resultMessage.name);
-                    break;
-                default:
-                    Ext.MessageBox.alert('Error', buildStringFromArray(resultMessage.errors, "message", ","));
-                	break;
-                }
-            },
-            failure: function(result, request) {
-                var jsonData = Ext.util.JSON.decode(result.responseText);
-                Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
-            }
-        });
-    } else {
-        Ext.MessageBox.alert('Warning', 'Your Form is not valid!');
-    }
-
-}
-
-// this creates a new president
-/*function createTheTrip() {
-    if (isTripFormValid()) {
-        Ext.Ajax.request({
-            waitMsg: 'Please wait...',
-            url: 'trip/saveJSON',
-            params: {
-                task: "CREATETRIP",
-                shortDescription:      shortDescriptionField.getValue(),
-                purpose:       purposeField.getValue(),
-                startDate: startDateField.getValue().format('m/d/Y'),
-                endDate:  endDateField.getValue().format('m/d/Y'),
-                events: TripEditForm.getForm().findField('eventsField').getValue(),
-                locations: TripEditForm.getForm().findField('locationsField').getValue(),
-                contracts: TripEditForm.getForm().findField('contractsField').getValue()
-            },
-            success: function(response) {
-                var result = eval(response.responseText);
-                alert(response);
-                switch (result) {
-                    case 1:
-                        Ext.MessageBox.alert('Creation OK', 'The trip was created successfully.');
-                        tripListDS.reload();
-                        TripCreateWindow.hide();
-                        break;
-                    default:
-                        Ext.MessageBox.alert('Warning', 'Could not create the trip.');
-                        break;
-                }
-            },
-            failure: function(response) {
-                var result = response.responseText;
-                Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
-            }
-        });
-    } else {
-        Ext.MessageBox.alert('Warning', 'Your Form is not valid!');
-    }
-}*/
-
-// check if the form is valid
-function isTripFormValid(form) {
-    return(formIsValid(form));
-}
-
-function filterTripsByEvent(eventId) {
-	console.log(eventId);
-	tripListDS.reload({params: {events: eventId}});
-}
-
-// display or bring forth the form
+//Display the creation form
 function displayTripCreateWindow() {
     tripMode = "Create";
     if (!TripEditWindow.isVisible()) {
@@ -237,7 +138,7 @@ function displayTripCreateWindow() {
     }
 }
 
-// display or bring forth the form
+//Display the view form
 function displayTripViewWindow() {
     if (tripGrid.selModel.getCount()) {
         var selections = tripGrid.selModel.getSelections();
@@ -251,7 +152,7 @@ function displayTripViewWindow() {
     }
 }
 
-// display or bring forth the form
+//Display the edit form
 function displayTripEditWindow() {
     if (tripGrid.selModel.getCount()) {
         tripMode = "Edit";
@@ -268,10 +169,9 @@ function displayTripEditWindow() {
     }
 }
 
-
-// This was added in Tutorial 6
+//Confirm deletion, then call delete
 function confirmDeleteTrips() {
-    if (tripGrid.selModel.getCount() == 1) // only one president is selected here
+    if (tripGrid.selModel.getCount() == 1)
     {
         Ext.MessageBox.confirm('Confirmation', 'You are about to delete a trip. Continue?', deleteTrips);
     } else if (tripGrid.selModel.getCount() > 1) {
@@ -281,9 +181,9 @@ function confirmDeleteTrips() {
     }
 }
 
-// This was added in Tutorial 6
+//Confirm attend, then call attend
 function confirmAttendTrips() {
-    if (tripGrid.selModel.getCount() == 1) // only one president is selected here
+    if (tripGrid.selModel.getCount() == 1)
     {
         Ext.MessageBox.confirm('Confirmation', 'You are about to request your attendance on a trip. Continue?', attendTrips);
     } else if (tripGrid.selModel.getCount() > 1) {
@@ -293,7 +193,7 @@ function confirmAttendTrips() {
     }
 }
 
-// This was added in Tutorial 6
+//Creates an Ajax request to delete the trip
 function deleteTrips(btn) {
     if (btn == 'yes') {
         var selections = tripGrid.selModel.getSelections();
@@ -303,26 +203,29 @@ function deleteTrips(btn) {
             params: {
                 id:  selections[0].json.id
             },
-            success:
-            function(response) {
-                var result = eval(response.responseText);
-                switch (result) {
-                    case 1:  // Success : simply reload
-                        tripListDS.reload();
-                        break;
-                    default:
-                        Ext.MessageBox.alert('Fail', 'This trip cannot be deleted.');
-                        break;
+            success: function ( result, request ) {
+                var jsonData = Ext.util.JSON.decode(result.responseText);
+                var resultMessage = jsonData.data;                
+                switch (jsonData.success) {
+                case true:
+                	tripListDS.commitChanges();
+                	tripListDS.reload();
+                    Ext.MessageBox.alert('Success', 'Successfully deleted ' + resultMessage.name);
+                    break;
+                default:
+                    Ext.MessageBox.alert('Error', buildStringFromArray(resultMessage.errors, "message", ","));
+                	break;
                 }
             },
-            failure: function(response) {
+            failure: function(result, request) {
                 var result = response.responseText;
                 Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
-            }
+            }        
         });
     }
 }
 
+//Creates an Ajax request to attend the trip for the user
 function attendTrips(btn) {
     if (btn == 'yes') {
         var selections = tripGrid.selModel.getSelections();
@@ -353,6 +256,7 @@ function attendTrips(btn) {
     }
 }
 
+//Called by the context menu right click event
 function onTripListingEditorGridContextMenu(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -362,6 +266,7 @@ function onTripListingEditorGridContextMenu(grid, rowIndex, e) {
     TripListingContextMenu.showAt([coords[0], coords[1]]);
 }
 
+//Called by the DataGrid double click event
 function onTripListingEditorGridDoubleClick(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -369,6 +274,7 @@ function onTripListingEditorGridDoubleClick(grid, rowIndex, e) {
     displayTripViewWindow();
 }
 
+//Called when the tripDS is loaded for the view form
 function tripDSOnLoad() {
     var form = TripViewForm.getForm();
     form.setValues(tripDS.getAt(0).data);
@@ -378,6 +284,7 @@ function tripDSOnLoad() {
 
 }
 
+//Called when the tripDS is loaded for the edit form
 function tripDSEditOnLoad() {
     var form = TripEditForm.getForm();
     form.setValues(tripDS.getAt(0).data);
@@ -388,19 +295,68 @@ function tripDSEditOnLoad() {
     }
 }
 
+//This saves the trip using an Ajax request
+function saveTheTrip() {
+  var form = TripEditForm.getForm();
+  var params = form.getValues();
+  params['task'] = tripMode.toString();
+  if (isTripFormValid(form)) {
+      Ext.Ajax.request({
+          waitMsg: 'Please wait...',
+          url: 'trip/saveJSON',
+          params: params,
+          success: function ( result, request ) {
+              var jsonData = Ext.util.JSON.decode(result.responseText);
+              var resultMessage = jsonData.data;                
+              switch (jsonData.success) {
+              case true:
+                  tripListDS.commitChanges();
+                  tripListDS.reload();
+                  TripEditWindow.hide();
+                  Ext.MessageBox.alert('Success', 'Successfully saved ' + resultMessage.name);
+                  break;
+              default:
+                  Ext.MessageBox.alert('Error', buildStringFromArray(resultMessage.errors, "message", ","));
+              	break;
+              }
+          },
+          failure: function(result, request) {
+              var jsonData = Ext.util.JSON.decode(result.responseText);
+              Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
+          }
+      });
+  } else {
+      Ext.MessageBox.alert('Warning', 'Your Form is not valid!');
+  }
 
+}
+
+// Check if the form is valid
+function isTripFormValid(form) {
+    return(formIsValid(form));
+}
+
+// Filters the data in the data grid by a specific Event
+function filterTripsByEvent(eventId) {
+	console.log(eventId);
+	tripListDS.reload({params: {events: eventId}});
+}
+
+//The function called by the modify context menu
 function modifyTripContextMenu() {
     displayTripEditWindow();
 }
 
+//The function called by the delete context menu
 function deleteTripContextMenu() {
     confirmDeleteTrips();
 }
 
+//DataGrid event listeners
 tripGrid.addListener('rowcontextmenu', onTripListingEditorGridContextMenu);
 tripGrid.addListener('rowdblclick', onTripListingEditorGridDoubleClick);
 
-
+//The context menu construct
 TripListingContextMenu = new Ext.menu.Menu({
     id: 'TripListingEditorGridContextMenu',
     items: [
@@ -410,9 +366,11 @@ TripListingContextMenu = new Ext.menu.Menu({
     ]
 });
 
+//Initial load of tripListDS *Important*
 tripListDS.load({params: {start: 0, limit: 15}});
 //tripGrid.on('afteredit', saveTheTrip);
 
+//The Trip view form construct
 var TripViewForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -456,6 +414,7 @@ var TripViewForm = new Ext.FormPanel({
     ]
 });
 
+//The window in which to display the Trip view form
 var TripViewWindow = new Ext.Window({
     id: 'TripViewWindow',
     title: 'Trip Details',
@@ -467,56 +426,7 @@ var TripViewWindow = new Ext.Window({
     items: TripViewForm
 });
 
-/*var TripCreateForm = new Ext.FormPanel({
-    labelAlign: 'top',
-    bodyStyle:'padding:5px',
-    width: 600,
-    items: [
-        {
-            layout:'column',
-            border:false,
-            items:[
-                {
-                    columnWidth:0.5,
-                    layout: 'form',
-                    border:false,
-                    items: [shortDescriptionField, purposeField, eventsField, locationsField]
-                },
-                {
-                    columnWidth:0.5,
-                    layout: 'form',
-                    border:false,
-                    items: [startDateField, endDateField, contractsField, idField]
-                }
-            ]
-        }
-    ],
-    buttons: [
-        {
-            text: 'Save and Close',
-            handler: saveTheTrip
-        },
-        {
-            text: 'Cancel',
-            handler: function() {
-                // because of the global vars, we can only instantiate one window... so let's just hide it.
-                TripCreateWindow.hide();
-            }
-        }
-    ]
-});
-
-var TripCreateWindow = new Ext.Window({
-    id: 'TripCreateWindow',
-    title: 'Submitting a New Trip',
-    closable:true,
-    width: 610,
-    height: 450,
-    plain:false,
-    layout: 'fit',
-    items: TripCreateForm
-}); */
-
+//The User edit form construct
 var TripEditForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -556,6 +466,7 @@ var TripEditForm = new Ext.FormPanel({
     ]
 });
 
+//The window in which to display the User edit form
 var TripEditWindow = new Ext.Window({
     id: 'TripEditWindow',
     title: 'Edit a Trip',

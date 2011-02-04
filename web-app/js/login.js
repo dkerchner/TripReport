@@ -1,4 +1,6 @@
- Ext.onReady(function(){
+/* An ExtJS login screen. Currently not used.*/
+
+Ext.onReady(function(){
     Ext.QuickTips.init();
 
 	// Create a variable to hold our EXT Form Panel.

@@ -7,7 +7,9 @@
  */
 var eventMode;
 
+/* All components related to the management of User information. */
 
+//The column model for the DataGrid
 var eventcm = new Ext.grid.ColumnModel([
     {header: 'version', readOnly: true, dataIndex: 'version', width: 40, renderer: function(value, cell) {
         cell.css = "readonlycell";
@@ -39,9 +41,9 @@ var eventcm = new Ext.grid.ColumnModel([
         return buildStringFromArray(value, 'name', ', ');
     }}
 ]);
-
 eventcm.defaultSortable = true;
 
+//The event list that appears on the 'east' side of the layout
 var eventListView = new Ext.list.ListView({
     store: eventListDS,
     multiSelect: false,
@@ -60,7 +62,7 @@ var eventListView = new Ext.list.ListView({
     }]
 });
 
-// create the grid
+//The data grid
 var eventGrid = new Ext.grid.GridPanel({
     //title: 'Events',
     id: 'event-grid',
@@ -108,12 +110,12 @@ var eventGrid = new Ext.grid.GridPanel({
     ]
 });
 
-// This saves the president after a cell has been edited
+//Display the creation form
 function saveTheEvent() {
     var form = EventEditForm.getForm();
     var params = form.getValues();
     params['task'] = eventMode.toString();
-    if (isEventFormValid(form)) {
+    if (formIsValid(form)) {
         Ext.Ajax.request({
             waitMsg: 'Please wait...',
             url: 'event/saveJSON',
@@ -144,17 +146,7 @@ function saveTheEvent() {
 
 }
 
-// check if the form is valid
-function isEventFormValid(form) {
-    return(formIsValid(form));
-}
-
-function filterEventsByEvent(eventId) {
-	console.log(eventId);
-	eventListDS.reload({params: {events: eventId}});
-}
-
-// display or bring forth the form
+//Display the view form
 function displayEventCreateWindow() {
     eventMode = "Create";
     if (!EventEditWindow.isVisible()) {
@@ -165,7 +157,7 @@ function displayEventCreateWindow() {
     }
 }
 
-// display or bring forth the form
+//Display the edit form
 function displayEventViewWindow() {
     if (eventGrid.selModel.getCount()) {
         var selections = eventGrid.selModel.getSelections();
@@ -179,7 +171,7 @@ function displayEventViewWindow() {
     }
 }
 
-//display or bring forth the form
+// The panel displayed when double clicking on an item in the event list on the 'east' side of the layout
 function displayEventViewPanel(rowIndex) {
     //var selections = eventListView.getSelectedRecords();
     eventDS.on('load', eventDSViewOnLoad());
@@ -187,7 +179,7 @@ function displayEventViewPanel(rowIndex) {
     replace('eventViewPanel', 'Event');
 }
 
-// display or bring forth the form
+//Display the edit form
 function displayEventEditWindow() {
     if (eventGrid.selModel.getCount()) {
         eventMode = "Edit";
@@ -204,8 +196,7 @@ function displayEventEditWindow() {
     }
 }
 
-
-// This was added in Tutorial 6
+//Confirm deletion, then call delete
 function confirmDeleteEvents() {
     if (eventGrid.selModel.getCount() == 1) // only one president is selected here
     {
@@ -217,19 +208,7 @@ function confirmDeleteEvents() {
     }
 }
 
-// This was added in Tutorial 6
-function confirmAttendEvents() {
-    if (eventGrid.selModel.getCount() == 1) // only one president is selected here
-    {
-        Ext.MessageBox.confirm('Confirmation', 'You are about to request your attendance on a event. Continue?', attendEvents);
-    } else if (eventGrid.selModel.getCount() > 1) {
-        Ext.MessageBox.confirm('Confirmation', 'Attend those events?', attendEvents);
-    } else {
-        Ext.MessageBox.alert('Uh oh...', 'You can\'t really attend something you haven\'t selected huh?');
-    }
-}
-
-// This was added in Tutorial 6
+//Creates an Ajax request to delete the event
 function deleteEvents(btn) {
     if (btn == 'yes') {
         var selections = eventGrid.selModel.getSelections();
@@ -259,36 +238,7 @@ function deleteEvents(btn) {
     }
 }
 
-function attendEvents(btn) {
-    if (btn == 'yes') {
-        var selections = eventGrid.selModel.getSelections();
-        Ext.Ajax.request({
-            waitMsg: 'Please Wait',
-            url: 'userEvent/attendJSON',
-            params: {
-                id:selections[0].json.id
-            },
-            success:
-            function(response) {
-                var result = eval(response.responseText);
-                switch (result) {
-                    case 1:  // Success : simply reload
-                        Ext.MessageBox.alert('Success', 'You have successfully requested approval to attend this event!');
-                        eventListDS.reload();
-                        break;
-                    default:
-                        Ext.MessageBox.alert('Fail', 'You have already requested to attend this event.');
-                        break;
-                }
-            },
-            failure: function(response) {
-                var result = response.responseText;
-                Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
-            }
-        });
-    }
-}
-
+//Called by the context menu right click event
 function onEventListingEditorGridContextMenu(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -298,6 +248,7 @@ function onEventListingEditorGridContextMenu(grid, rowIndex, e) {
     EventListingContextMenu.showAt([coords[0], coords[1]]);
 }
 
+//Called by the DataGrid double click event
 function onEventListingEditorGridDoubleClick(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -305,6 +256,7 @@ function onEventListingEditorGridDoubleClick(grid, rowIndex, e) {
     displayEventViewWindow();
 }
 
+//Called by the ListView double click event
 function onEventListViewGridDoubleClick(grid, rowIndex, e) {alert('hi');
     //e.stopEvent();
     //var coords = e.getXY();
@@ -312,38 +264,43 @@ function onEventListViewGridDoubleClick(grid, rowIndex, e) {alert('hi');
     displayEventViewPanel(rowIndex);
 }
 
-
+//Called when the eventDS is loaded for the view form
 function eventDSOnLoad() {
     var form = EventViewForm.getForm();
     form.setValues(eventDS.getAt(0).data);
     form.findField('tripsDisplayFieldEvent').setValue(buildStringFromArray(eventDS.getAt(0).data.trips, "name", "<br/>"));
 }
 
+//Called when the eventDS is loaded for the event view panel
 function eventDSViewOnLoad() {
     var form = EventViewPanel.getForm();
     form.setValues(eventDS.getAt(0).data);
     form.findField('tripsDisplayFieldEvent').setValue(buildStringFromArray(eventDS.getAt(0).data.trips, "name", "<br/>"));
 }
 
+//Called when the eventDS is loaded for the edit form
 function eventDSEditOnLoad() {
     var form = EventEditForm.getForm();
     form.setValues(eventDS.getAt(0).data);
 }
 
-
+//The function called by the modify context menu
 function modifyEventContextMenu() {
     displayEventEditWindow();
 }
 
+//The function called by the delete context menu
 function deleteEventContextMenu() {
     confirmDeleteEvents();
 }
 
+//DataGrid event listeners
 eventGrid.addListener('rowcontextmenu', onEventListingEditorGridContextMenu);
 eventGrid.addListener('rowdblclick', onEventListingEditorGridDoubleClick);
+//ListView event listener
 eventListView.addListener('dblclick', onEventListViewGridDoubleClick);
 
-
+//The context menu construct
 EventListingContextMenu = new Ext.menu.Menu({
     id: 'EventListingEditorGridContextMenu',
     items: [
@@ -353,9 +310,11 @@ EventListingContextMenu = new Ext.menu.Menu({
     ]
 });
 
+//Initial load of eventListDS *Important*
 eventListDS.load({params: {start: 0, limit: 15}});
 //eventGrid.on('afteredit', saveTheEvent);
 
+//The Event view form construct
 var EventViewForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -392,6 +351,7 @@ var EventViewForm = new Ext.FormPanel({
     ]
 });
 
+//The window in which to display the Event view form
 var EventViewWindow = new Ext.Window({
     id: 'EventViewWindow',
     title: 'Event Details',
@@ -403,6 +363,7 @@ var EventViewWindow = new Ext.Window({
     items: EventViewForm
 });
 
+//The Event edit form construct
 var EventEditForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -442,6 +403,7 @@ var EventEditForm = new Ext.FormPanel({
     ]
 });
 
+//The window in which to display the Event edit form
 var EventEditWindow = new Ext.Window({
     id: 'EventEditWindow',
     title: 'Edit a Event',
@@ -453,6 +415,7 @@ var EventEditWindow = new Ext.Window({
     items: EventEditForm
 });
 
+//The panel in which to display the Event
 var EventViewPanel = new Ext.FormPanel({
 	id: 'eventViewPanel',
     labelAlign: 'top',
@@ -472,15 +435,6 @@ var EventViewPanel = new Ext.FormPanel({
                     Ext.applyIf({id:'tripsDisplayFieldEvent'}, tripsDisplayField), 
                     Ext.applyIf({id:'idFieldEvent'}, idField)
                     ]
-        }
-    ],
-    buttons: [
-        {
-            text: 'Close',
-            handler: function() {
-                // because of the global vars, we can only instantiate one window... so let's just hide it.
-                EventViewWindow.hide();
-            }
         }
     ]
 });

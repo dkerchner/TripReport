@@ -2,7 +2,7 @@ package com.sptinc
 
 import grails.test.*
 
-class TripControllerTests extends ControllerUnitTestCase {
+class TripControllerTests extends GrailsUnitTestCase {
     protected void setUp() {
         super.setUp()
     }
