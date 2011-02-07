@@ -4,11 +4,12 @@ package com.sptinc
 class Contract {
 
     String contractNumber
-    Organization organization
+    Organization organization // A Contract is associated with a company or agency 
     boolean active = true
 
     static hasMany = [trips: Trip]
 
+	// Contracts are associated with Trips and Users
     static belongsTo = [Trip, User]
 
     static constraints = {

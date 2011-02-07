@@ -8,6 +8,9 @@
 var aiMode;
 
 
+/* All components related to the management of Action Item information. */
+
+// The column model for the DataGrid
 var actionItemcm = new Ext.grid.ColumnModel([
     {header: 'version', readOnly: true, dataIndex: 'version', width: 40, renderer: function(value, cell) {
         cell.css = "readonlycell";
@@ -17,55 +20,17 @@ var actionItemcm = new Ext.grid.ColumnModel([
         cell.css = "readonlycell";
         return value;
     }, hidden: true},
-    {header: "Name", width: 100, dataIndex: 'name', sortable: true,
-        editor: new Ext.form.TextField({
-            allowBlank: false,
-            maxLength: 100,
-            maskRe: /([a-zA-Z0-9\s]+)$/
-        })},
-    {header: "Events", width: 115, dataIndex: 'events', sortable: true, renderer: function(value, cell) {
-        return buildStringFromArray(value, 'name', ', ');
-    }},
-    {header: "Locations", width: 115, dataIndex: 'locations', sortable: true, renderer: function(value, cell) {
-        return buildStringFromArray(value, 'name', ', ');
-    }},
-    {header: "Start Date", width: 115, dataIndex: 'startDate', renderer: Ext.util.Format.dateRenderer('m/d/Y'), sortable: true,
+    {header: "Name", width: 100, dataIndex: 'name', sortable: true},
+    {header: "Report", width: 100, dataIndex: 'reportName', sortable: true},
+    {header: "Description", width: 100, dataIndex: 'description', sortable: true},
+    {header: "Due Date", width: 115, dataIndex: 'dueDate', renderer: Ext.util.Format.dateRenderer('m/d/Y'), sortable: true,
         editor: new Ext.form.DateField({
             format: 'm/d/Y'
-        })},
-    {header: "End Date", width: 115, dataIndex: 'endDate', renderer: Ext.util.Format.dateRenderer('m/d/Y'), sortable: true,
-        editor: new Ext.form.DateField({
-            format: 'm/d/Y'
-        })},
-    {header: "Purpose", width: 255, dataIndex: 'purpose', sortable: true,
-        editor: new Ext.form.TextField({
-            allowBlank: false,
-            maxLength: 100,
-            maskRe: /([a-zA-Z0-9\s]+)$/
-        })},
-    /*{header: "Approved", width: 115, dataIndex: 'approved', sortable: true, renderer: function(value, cell) {
-     if (value) {
-     cell.css = "approved";
-     value = 'Yes'
-     } else {
-     cell.css = "unapproved";
-     value = 'No'
-     }
-     return value;
-     }, editor: new Ext.form.Checkbox({
-     })},
-     {header: "Approved By", width: 115, dataIndex: 'approvedBy', sortable: true},   */
-    {header: "Contracts", width: 115, dataIndex: 'contracts', sortable: true, renderer: function(value, cell) {
-        return buildStringFromArray(value, 'name', ', ');
-    }},
-    {header: "Attendees", width: 115, dataIndex: 'attendees', sortable: true, renderer: function(value, cell) {
-        return buildStringFromArray(value, 'name', ', ');
-    }}
+        })}
 ]);
-
 actionItemcm.defaultSortable = true;
 
-// create the grid
+//The data grid
 var actionItemGrid = new Ext.grid.GridPanel({
     //title: 'ActionItems',
     id: 'actionItem-grid',
@@ -109,25 +74,12 @@ var actionItemGrid = new Ext.grid.GridPanel({
             tooltip: 'Delete the selected actionItem.',
             handler: confirmDeleteActionItems,   // Confirm before deleting
             iconCls:'remove'
-        } /*,
-         '-',
-         { // Added in Tutorial 8
-         text: 'Search',
-         tooltip: 'Advanced Search',
-         handler: startAdvancedSearch,
-         iconCls:'search'
-         },
-         '-',
-         new Ext.app.SearchField({
-         store: actionItemListDS,
-         params: {start: 0, limit: 15},
-         width: 120
-         }) */
+        } 
     ]
 });
 
 
-// This saves the president after a cell has been edited
+//This saves the action item using an Ajax request
 function saveTheActionItem() {
     var form = ActionItemEditForm.getForm();
     var params = form.getValues();
@@ -163,12 +115,12 @@ function saveTheActionItem() {
 
 }
 
-// check if the form is valid
+// Check if the form is valid
 function isActionItemFormValid(form) {
     return(formIsValid(form));
 }
 
-// display or bring forth the form
+//Display the creation form
 function displayActionItemCreateWindow() {
     aiMode = "Create";
     if (!ActionItemEditWindow.isVisible()) {
@@ -181,7 +133,7 @@ function displayActionItemCreateWindow() {
     }
 }
 
-// display or bring forth the form
+//Display the view form
 function displayActionItemViewWindow() {
     if (actionItemGrid.selModel.getCount()) {
         var selections = actionItemGrid.selModel.getSelections();
@@ -195,7 +147,7 @@ function displayActionItemViewWindow() {
     }
 }
 
-// display or bring forth the form
+//Display the edit form
 function displayActionItemEditWindow() {
     if (actionItemGrid.selModel.getCount()) {
         aiMode = "Edit";
@@ -212,8 +164,7 @@ function displayActionItemEditWindow() {
     }
 }
 
-
-// This was added in Tutorial 6
+//Confirm deletion, then call delete
 function confirmDeleteActionItems() {
     if (actionItemGrid.selModel.getCount() == 1) // only one president is selected here
     {
@@ -225,20 +176,7 @@ function confirmDeleteActionItems() {
     }
 }
 
-
-// This was added in Tutorial 6
-function confirmAttendActionItems() {
-    if (actionItemGrid.selModel.getCount() == 1) // only one president is selected here
-    {
-        Ext.MessageBox.confirm('Confirmation', 'You are about to request your attendance on a actionItem. Continue?', attendActionItems);
-    } else if (actionItemGrid.selModel.getCount() > 1) {
-        Ext.MessageBox.confirm('Confirmation', 'Attend those actionItems?', attendActionItems);
-    } else {
-        Ext.MessageBox.alert('Uh oh...', 'You can\'t really attend something you haven\'t selected huh?');
-    }
-}
-
-// This was added in Tutorial 6
+//Creates an Ajax request to delete the action item
 function deleteActionItems(btn) {
     if (btn == 'yes') {
         var selections = actionItemGrid.selModel.getSelections();
@@ -268,6 +206,7 @@ function deleteActionItems(btn) {
     }
 }
 
+//Creates an Ajax request to delete the action item from a specific report (called from report edit screen). 
 function deleteActionItemsFromReport() {
 	var actionItemId = ReportEditForm.getForm().findField('actionItemsField').getValue();
 	alert(actionItemId);
@@ -296,8 +235,7 @@ function deleteActionItemsFromReport() {
     });
 }
 
-
-
+//Called by the context menu right click event
 function onActionItemListingEditorGridContextMenu(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -307,6 +245,7 @@ function onActionItemListingEditorGridContextMenu(grid, rowIndex, e) {
     ActionItemListingContextMenu.showAt([coords[0], coords[1]]);
 }
 
+//Called by the DataGrid double click event
 function onActionItemListingEditorGridDoubleClick(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -314,11 +253,13 @@ function onActionItemListingEditorGridDoubleClick(grid, rowIndex, e) {
     displayActionItemViewWindow();
 }
 
+//Called when the actionItemDS is loaded for the view form
 function actionItemDSOnLoad() {
     var form = ActionItemViewForm.getForm();
     form.setValues(actionItemDS.getAt(0).data);
 }
 
+//Called when the actionItemDS is loaded for the edit form
 function actionItemDSEditOnLoad() {
     var form = ActionItemEditForm.getForm();
     form.setValues(actionItemDS.getAt(0).data);
@@ -328,31 +269,34 @@ function actionItemDSEditOnLoad() {
     }
 }
 
-
+//The function called by the modify context menu
 function modifyActionItemContextMenu() {
     displayActionItemEditWindow();
 }
 
+//The function called by the delete context menu
 function deleteActionItemContextMenu() {
     confirmDeleteActionItems();
 }
 
+//DataGrid event listeners
 actionItemGrid.addListener('rowcontextmenu', onActionItemListingEditorGridContextMenu);
 actionItemGrid.addListener('rowdblclick', onActionItemListingEditorGridDoubleClick);
 
-
+//The context menu construct
 ActionItemListingContextMenu = new Ext.menu.Menu({
     id: 'ActionItemListingEditorGridContextMenu',
     items: [
         { text: 'Modify this ActionItem', handler: modifyActionItemContextMenu },
-        { text: 'Attend this ActionItem', handler: confirmAttendActionItems },
         { text: 'Delete this ActionItem', handler: deleteActionItemContextMenu }
     ]
 });
 
+//Initial load of actionItemListDS *Important*
 actionItemListDS.load({params: {start: 0, limit: 15}});
 //actionItemGrid.on('afteredit', saveTheActionItem);
 
+//The ActionItem view form construct
 var ActionItemViewForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -372,13 +316,6 @@ var ActionItemViewForm = new Ext.FormPanel({
         }
     ],
     buttons: [
-        /*{
-             id: 'approveButton',
-             text: 'Approve',
-             handler: confirmApproveActionItems,
-             class: 'approved',
-             iconCls: 'approve'
-         },*/
         {
             text: 'Close',
             handler: function() {
@@ -389,6 +326,7 @@ var ActionItemViewForm = new Ext.FormPanel({
     ]
 });
 
+//The window in which to display the ActionItem view form
 var ActionItemViewWindow = new Ext.Window({
     id: 'ActionItemViewWindow',
     title: 'ActionItem Details',
@@ -400,6 +338,7 @@ var ActionItemViewWindow = new Ext.Window({
     items: ActionItemViewForm
 });
 
+//The ActionItem edit form construct
 var ActionItemEditForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -432,6 +371,7 @@ var ActionItemEditForm = new Ext.FormPanel({
     ]
 });
 
+//The window in which to display the ActionItem edit form
 var ActionItemEditWindow = new Ext.Window({
     id: 'ActionItemEditWindow',
     title: 'Edit an ActionItem',

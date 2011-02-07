@@ -7,9 +7,10 @@ class Event {
     String description
     Date startDate
     Date endDate
-    Location location
+    Location location // The location of the Event
 	String url
 
+	// Events have many trips
     static hasMany = [trips: Trip]
 
     static belongsTo = Trip

@@ -334,13 +334,13 @@ var contactsField = {
         text: '',
         iconCls:'add',                      // reference to our css
         handler: function(){
-        	displayContactCreateWindow()
+        	displayContactCreateWindow() // Calls create in contact.js
         }
     	}, {
         	text: '',
             iconCls:'remove',                      // reference to our css
         	handler: function(){
-        		deleteContactsFromReport()
+        		deleteContactsFromReport() // Calls delete in contact.js
         	}
         }
         
@@ -382,13 +382,13 @@ var actionItemsField = {
         text: '',
         iconCls:'add',                      // reference to our css
         handler: function(){
-        	displayActionItemCreateWindow()
+        	displayActionItemCreateWindow() // Calls create in actionItem.js
         }
     	}, {
         	text: '',
             iconCls:'remove',                      // reference to our css
         	handler: function(){
-        		deleteActionItemsFromReport()
+        		deleteActionItemsFromReport() // Calls delete in actionItem.js
         	}
         }
         

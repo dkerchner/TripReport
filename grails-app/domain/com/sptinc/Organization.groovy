@@ -4,13 +4,14 @@ package com.sptinc
 class Organization {
 
     String name
-    String url
+    String url // Organization's website
 	
+	// Organizations have many Contacts and Contracts
     static hasMany = [contacts: Contact, contracts: Contract]
 
     static constraints = {
         name(blank: false, unique: true)
-        url(url: true)
+        url(url: true) // Validate as a url
     }
 
     int compareTo(obj) {

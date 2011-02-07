@@ -11,7 +11,9 @@ var ContractViewForm;
 var ContractEditWindow;
 var ContractEditForm;
 
+/* All components related to the management of Contract information. */
 
+//The column model for the DataGrid
 var contractcm = new Ext.grid.ColumnModel([
     {header: 'version', readOnly: true, dataIndex: 'version', width: 40, renderer: function(value, cell) {
         cell.css = "readonlycell";
@@ -34,10 +36,9 @@ var contractcm = new Ext.grid.ColumnModel([
         }
     }
 ]);
-
 contractcm.defaultSortable = true;
 
-// create the grid
+//The data grid
 var contractGrid = new Ext.grid.GridPanel({
     //title: 'Contracts',
     id: 'contract-grid',
@@ -85,7 +86,7 @@ var contractGrid = new Ext.grid.GridPanel({
     ]
 });
 
-// display or bring forth the form
+//Display the creation form
 function displayContractCreateWindow() {
     contractMode = "Create";
     if (!ContractEditWindow.isVisible()) {
@@ -96,7 +97,7 @@ function displayContractCreateWindow() {
     }
 }
 
-// display or bring forth the form
+//Display the view form
 function displayContractViewWindow() {
     if (contractGrid.selModel.getCount()) {
         if (!ContractViewWindow.isVisible()) {
@@ -110,7 +111,7 @@ function displayContractViewWindow() {
     }
 }
 
-// display or bring forth the form
+//Display the edit form
 function displayContractEditWindow() {
     if (contractGrid.selModel.getCount()) {
         contractMode = "Edit";
@@ -128,28 +129,30 @@ function displayContractEditWindow() {
     }
 }
 
+//The function called by the modify context menu
 function modifyContractContextMenu() {
     displayContractEditWindow();
 }
 
+//The function called by the delete context menu
 function deleteContractContextMenu() {
     confirmDeleteContracts();
 }
 
+//DataGrid event listeners
 contractGrid.addListener('rowcontextmenu', onContractListingEditorGridContextMenu);
 contractGrid.addListener('rowdblclick', onContractListingEditorGridDoubleClick);
 
-
+//The context menu construct
 ContractListingContextMenu = new Ext.menu.Menu({
     id: 'ContractListingEditorGridContextMenu',
     items: [
         { text: 'Modify this Contract', handler: modifyContractContextMenu },
-        { text: 'Attend this Contract', handler: confirmAttendContracts },
         { text: 'Delete this Contract', handler: deleteContractContextMenu }
     ]
 });
 
-// This was added in Tutorial 6
+//Confirm deletion, then call delete
 function confirmDeleteContracts() {
     if (contractGrid.selModel.getCount() == 1) // only one president is selected here
     {
@@ -161,19 +164,7 @@ function confirmDeleteContracts() {
     }
 }
 
-// This was added in Tutorial 6
-function confirmAttendContracts() {
-    if (contractGrid.selModel.getCount() == 1) // only one president is selected here
-    {
-        Ext.MessageBox.confirm('Confirmation', 'You are about to request your attendance on a contract. Continue?', attendContracts);
-    } else if (contractGrid.selModel.getCount() > 1) {
-        Ext.MessageBox.confirm('Confirmation', 'Attend those contracts?', attendContracts);
-    } else {
-        Ext.MessageBox.alert('Uh oh...', 'You can\'t really attend something you haven\'t selected huh?');
-    }
-}
-
-// This was added in Tutorial 6
+//Creates an Ajax request to delete the contract
 function deleteContracts(btn) {
     if (btn == 'yes') {
         var selections = contractGrid.selModel.getSelections();
@@ -203,36 +194,7 @@ function deleteContracts(btn) {
     }
 }
 
-function deleteContactsFromReport() {
-	var contactId = ReportEditForm.getForm().findField('contactsField').getValue();
-	//alert(contactId);
-    Ext.Ajax.request({
-        waitMsg: 'Please Wait',
-        url: 'contact/deleteJSON',
-        params: {
-            id:  contactId
-        },
-        success:
-        function(response) {
-            var result = eval(response.responseText);
-            switch (result) {
-                case 1:  // Success : simply reload
-                    contactListDS.reload();
-                    break;
-                default:
-                    Ext.MessageBox.alert('Fail', 'This contact cannot be deleted.');
-                    break;
-            }
-        },
-        failure: function(response) {
-            var result = response.responseText;
-            Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
-        }
-    });
-}
-
-
-
+//Called by the context menu right click event
 function onContractListingEditorGridContextMenu(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -242,6 +204,7 @@ function onContractListingEditorGridContextMenu(grid, rowIndex, e) {
     ContractListingContextMenu.showAt([coords[0], coords[1]]);
 }
 
+//Called by the DataGrid double click event
 function onContractListingEditorGridDoubleClick(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -249,24 +212,25 @@ function onContractListingEditorGridDoubleClick(grid, rowIndex, e) {
     displayContractViewWindow();
 }
 
+//Called when the contractDS is loaded for the view form
 function contractDSOnLoad() {
     var form = ContractViewForm.getForm();
 
     form.setValues(contractDS.getAt(0).data);
 }
 
+//Called when the contractDS is loaded for the edit form
 function contractDSEditOnLoad() {
     var form = ContractEditForm.getForm();
 
     form.setValues(contractDS.getAt(0).data);
-    if (contractMode != "Create") {
-    }
 }
 
+//Initial load of contractListDS *Important*
 contractListDS.load({params: {start: 0, limit: 15}});
 contractGrid.on('afteredit', saveTheContract);
 
-// This saves the president after a cell has been edited
+//This saves the contract using an Ajax request
 function saveTheContract() {
     var form = ContractEditForm.getForm();
     var params = form.getValues();
@@ -301,17 +265,18 @@ function saveTheContract() {
     }
 }
 
-// reset the Form before opening it
+//Reset the Form before opening it
 function resetContractForm() {
     var form = ContractEditForm.getForm();
     resetForm(form);
 }
 
-// check if the form is valid
+//Check if the form is valid
 function isReportFormValid(form) {
     return(formIsValid(form));
 }
 
+//The Contract view form construct
 ContractViewForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -351,6 +316,7 @@ ContractViewForm = new Ext.FormPanel({
     ]
 });
 
+//The window in which to display the Contract view form
 ContractViewWindow = new Ext.Window({
     id: 'ContractViewWindow',
     title: 'Contract Details',
@@ -362,6 +328,7 @@ ContractViewWindow = new Ext.Window({
     items: ContractViewForm
 });
 
+//The Contract edit form construct
 ContractEditForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -403,6 +370,7 @@ ContractEditForm = new Ext.FormPanel({
     ]
 });
 
+//The window in which to display the Contract edit form
 ContractEditWindow = new Ext.Window({
     id: 'ContractEditWindow',
     title: 'Edit a Contract',

@@ -7,6 +7,7 @@ class Location {
     String state
     String country
 
+	// A Location can have more than one event
     static hasMany = [events: Event]
 
     static constraints = {

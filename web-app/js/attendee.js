@@ -6,9 +6,12 @@
  * http://extjs.com/license
  */
 
+/* All components related to the management of UserTrip information. 
+ * This shows the users that have requested to take a trip and whether 
+ * or not that trip is approved for that user. 
+ */
 
-
-
+// The column model for the DataGrid
 var attendeecm = new Ext.grid.ColumnModel([
     {header: 'version', readOnly: true, dataIndex: 'version', width: 40, renderer: function(value, cell) {
         cell.css = "readonlycell";
@@ -70,10 +73,9 @@ var attendeecm = new Ext.grid.ColumnModel([
         return buildStringFromArray(value, 'name', ', ');
     }}
 ]);
-
 attendeecm.defaultSortable = true;
 
-// create the grid
+//The data grid
 var attendeeGrid = new Ext.grid.GridPanel({
     title: 'Attendees',
     id: 'attendee-grid',
@@ -94,7 +96,7 @@ var attendeeGrid = new Ext.grid.GridPanel({
     ]
 });
 
-// display or bring forth the form
+//Display the creation form
 function displayAttendeeViewWindow() {
     if (attendeeGrid.selModel.getCount()) {
         var selections = attendeeGrid.selModel.getSelections();
@@ -108,7 +110,7 @@ function displayAttendeeViewWindow() {
     }
 }
 
-// This was added in Tutorial 6
+//Display the view form
 function confirmApproveTrips() {
     if (attendeeGrid.selModel.getCount() == 1) // only one president is selected here
     {
@@ -120,7 +122,7 @@ function confirmApproveTrips() {
     }
 }
 
-// This was added in Tutorial 6
+//Creates an Ajax request to approve the trip for the user
 function approveTrips(btn) {
     if (btn == 'yes') {
         var selections = attendeeGrid.selModel.getSelections();
@@ -152,6 +154,7 @@ function approveTrips(btn) {
     }
 }
 
+//Called by the context menu right click event
 function onAttendeeListingEditorGridContextMenu(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -161,6 +164,7 @@ function onAttendeeListingEditorGridContextMenu(grid, rowIndex, e) {
     AttendeeListingContextMenu.showAt([coords[0], coords[1]]);
 }
 
+//Called by the DataGrid double click event
 function onAttendeeListingEditorGridDoubleClick(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -168,11 +172,11 @@ function onAttendeeListingEditorGridDoubleClick(grid, rowIndex, e) {
     displayAttendeeViewWindow();
 }
 
-
+//DataGrid event listeners
 attendeeGrid.addListener('rowcontextmenu', onAttendeeListingEditorGridContextMenu);
 attendeeGrid.addListener('rowdblclick', onAttendeeListingEditorGridDoubleClick);
 
-
+//The context menu construct
 AttendeeListingContextMenu = new Ext.menu.Menu({
     id: 'AttendeeListingEditorGridContextMenu',
     items: [
@@ -180,26 +184,22 @@ AttendeeListingContextMenu = new Ext.menu.Menu({
     ]
 });
 
+//Initial load of attendeeListDS *Important*
 attendeeListDS.load({params: {start: 0, limit: 15}});
 //attendeeGrid.on('afteredit', saveTheTrip);
 
+//Called when the attendeeDS is loaded for the view form
 function attendeeDSOnLoad() {
     var form = AttendeeViewForm.getForm();
     form.setValues(attendeeDS.getAt(0).data);
-    /*form.findField('shortDescriptionDisplayField').setValue(attendeeDS.getAt(0).data.name);
-    form.findField('purposeDisplayField').setValue(attendeeDS.getAt(0).data.purpose);
-    form.findField('startDateDisplayField').setValue(attendeeDS.getAt(0).data.startDate.format('m/d/Y'));
-    form.findField('endDateDisplayField').setValue(attendeeDS.getAt(0).data.endDate.format('m/d/Y'));
-    form.findField('attendeeDisplayField').setValue(attendeeDS.getAt(0).data.attendee);*/
-    //form.findField('idField').setValue(attendeeDS.getAt(0).data.tripId);
-    //form.findField('idField2').setValue(attendeeDS.getAt(0).data.attendeeId);
     form.findField('eventsDisplayFieldAttendee').setValue(buildStringFromArray(attendeeDS.getAt(0).data.events, "name", "<br/>"));
     form.findField('contractsDisplayFieldAttendee').setValue(buildStringFromArray(attendeeDS.getAt(0).data.contracts, "name", "<br/>"));
     form.findField('locationsDisplayFieldAttendee').setValue(buildStringFromArray(attendeeDS.getAt(0).data.locations, "name", "<br/>"));
+    // Only allow approving if the user is a manager. Utilizes a global flag set the gsp tags. 
     if (admin_user){form.findField('approveButton').disabled = false; }
 }
 
-
+//The Attendee view form construct
 var AttendeeViewForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -243,6 +243,7 @@ var AttendeeViewForm = new Ext.FormPanel({
     ]
 });
 
+//The window in which to display the Attendee edit form
 var AttendeeViewWindow = new Ext.Window({
     id: 'AttendeeViewWindow',
     title: 'Trip Details',

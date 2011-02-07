@@ -11,7 +11,10 @@ var ContactViewForm;
 var ContactEditWindow;
 var ContactEditForm;
 
+/* All components related to the management of Contact information. */
 
+
+// The column model for the DataGrid
 var contactcm = new Ext.grid.ColumnModel([
     {header: 'version', readOnly: true, dataIndex: 'version', width: 40, renderer: function(value, cell) {
         cell.css = "readonlycell";
@@ -29,10 +32,9 @@ var contactcm = new Ext.grid.ColumnModel([
         return getValueFromObject(value, 'name');
     }},
 ]);
-
 contactcm.defaultSortable = true;
 
-// create the grid
+//The data grid
 var contactGrid = new Ext.grid.GridPanel({
     //title: 'Contacts',
     id: 'contact-grid',
@@ -80,7 +82,7 @@ var contactGrid = new Ext.grid.GridPanel({
     ]
 });
 
-// display or bring forth the form
+//Display the creation form
 function displayContactCreateWindow() {
     contactMode = "Create";
     if (!ContactEditWindow.isVisible()) {
@@ -93,7 +95,7 @@ function displayContactCreateWindow() {
     }
 }
 
-// display or bring forth the form
+//Display the view form
 function displayContactViewWindow() {
     if (contactGrid.selModel.getCount()) {
         if (!ContactViewWindow.isVisible()) {
@@ -107,7 +109,7 @@ function displayContactViewWindow() {
     }
 }
 
-// display or bring forth the form
+//Display the edit form
 function displayContactEditWindow() {
     if (contactGrid.selModel.getCount()) {
         contactMode = "Edit";
@@ -125,28 +127,30 @@ function displayContactEditWindow() {
     }
 }
 
+//The function called by the modify context menu
 function modifyContactContextMenu() {
     displayContactEditWindow();
 }
 
+//The function called by the delete context menu
 function deleteContactContextMenu() {
     confirmDeleteContacts();
 }
 
+//DataGrid event listeners
 contactGrid.addListener('rowcontextmenu', onContactListingEditorGridContextMenu);
 contactGrid.addListener('rowdblclick', onContactListingEditorGridDoubleClick);
 
-
+//The context menu construct
 ContactListingContextMenu = new Ext.menu.Menu({
     id: 'ContactListingEditorGridContextMenu',
     items: [
         { text: 'Modify this Contact', handler: modifyContactContextMenu },
-        { text: 'Attend this Contact', handler: confirmAttendContacts },
         { text: 'Delete this Contact', handler: deleteContactContextMenu }
     ]
 });
 
-// This was added in Tutorial 6
+//Confirm deletion, then call delete
 function confirmDeleteContacts() {
     if (contactGrid.selModel.getCount() == 1) // only one president is selected here
     {
@@ -158,19 +162,7 @@ function confirmDeleteContacts() {
     }
 }
 
-// This was added in Tutorial 6
-function confirmAttendContacts() {
-    if (contactGrid.selModel.getCount() == 1) // only one president is selected here
-    {
-        Ext.MessageBox.confirm('Confirmation', 'You are about to request your attendance on a contact. Continue?', attendContacts);
-    } else if (contactGrid.selModel.getCount() > 1) {
-        Ext.MessageBox.confirm('Confirmation', 'Attend those contacts?', attendContacts);
-    } else {
-        Ext.MessageBox.alert('Uh oh...', 'You can\'t really attend something you haven\'t selected huh?');
-    }
-}
-
-// This was added in Tutorial 6
+//Creates an Ajax request to delete the contact
 function deleteContacts(btn) {
     if (btn == 'yes') {
         var selections = contactGrid.selModel.getSelections();
@@ -200,7 +192,36 @@ function deleteContacts(btn) {
     }
 }
 
+//Creates an Ajax request to delete the contact from a specific report (called from report edit screen). 
+function deleteContactsFromReport() {
+	var contactId = ReportEditForm.getForm().findField('contactsField').getValue();
+	//alert(contactId);
+    Ext.Ajax.request({
+        waitMsg: 'Please Wait',
+        url: 'contact/deleteJSON',
+        params: {
+            id:  contactId
+        },
+        success:
+        function(response) {
+            var result = eval(response.responseText);
+            switch (result) {
+                case 1:  // Success : simply reload
+                    contactListDS.reload();
+                    break;
+                default:
+                    Ext.MessageBox.alert('Fail', 'This contact cannot be deleted.');
+                    break;
+            }
+        },
+        failure: function(response) {
+            var result = response.responseText;
+            Ext.MessageBox.alert('error', 'could not connect to the database. retry later');
+        }
+    });
+}
 
+//Called by the context menu right click event
 function onContactListingEditorGridContextMenu(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -210,6 +231,7 @@ function onContactListingEditorGridContextMenu(grid, rowIndex, e) {
     ContactListingContextMenu.showAt([coords[0], coords[1]]);
 }
 
+//Called by the DataGrid double click event
 function onContactListingEditorGridDoubleClick(grid, rowIndex, e) {
     e.stopEvent();
     var coords = e.getXY();
@@ -217,12 +239,14 @@ function onContactListingEditorGridDoubleClick(grid, rowIndex, e) {
     displayContactViewWindow();
 }
 
+//Called when the contactDS is loaded for the view form
 function contactDSOnLoad() {
     var form = ContactViewForm.getForm();
 
     form.setValues(contactDS.getAt(0).data);
 }
 
+//Called when the contactDS is loaded for the edit form
 function contactDSEditOnLoad() {
     var form = ContactEditForm.getForm();
 
@@ -231,10 +255,11 @@ function contactDSEditOnLoad() {
     }
 }
 
+//Initial load of contactListDS *Important*
 contactListDS.load({params: {start: 0, limit: 15}});
 contactGrid.on('afteredit', saveTheContact);
 
-// This saves the president after a cell has been edited
+//This saves the contact using an Ajax request
 function saveTheContact() {
     var form = ContactEditForm.getForm();
     var params = form.getValues();
@@ -269,17 +294,18 @@ function saveTheContact() {
     }
 }
 
-// reset the Form before opening it
+//Reset the Form before opening it
 function resetContactForm() {
     var form = ContactEditForm.getForm();
     resetForm(form);
 }
 
-// check if the form is valid
+//Check if the form is valid
 function isReportFormValid(form) {
     return(formIsValid(form));
 }
 
+//The Contact view form construct
 ContactViewForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -319,6 +345,7 @@ ContactViewForm = new Ext.FormPanel({
     ]
 });
 
+//The window in which to display the Contact view form
 ContactViewWindow = new Ext.Window({
     id: 'ContactViewWindow',
     title: 'Contact Details',
@@ -330,6 +357,7 @@ ContactViewWindow = new Ext.Window({
     items: ContactViewForm
 });
 
+//The Contact edit form construct
 ContactEditForm = new Ext.FormPanel({
     labelAlign: 'top',
     bodyStyle:'padding:5px',
@@ -371,6 +399,7 @@ ContactEditForm = new Ext.FormPanel({
     ]
 });
 
+//The window in which to display the Contact edit form
 ContactEditWindow = new Ext.Window({
     id: 'ContactEditWindow',
     title: 'Edit a Contact',

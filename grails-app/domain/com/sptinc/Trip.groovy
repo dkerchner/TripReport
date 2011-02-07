@@ -1,5 +1,6 @@
 package com.sptinc
 
+/* A Trip is created by a User to show that they would like to attend Events. */ 
 class Trip {
 
 	Date startDate
@@ -7,11 +8,6 @@ class Trip {
 	String shortDescription
 	String purpose
 	Float estimatedCost
-
-	//SortedSet contracts
-	//SortedSet events
-	//SortedSet locations
-	//SortedSet attendees
 
 	Date dateCreated
 	Date lastUpdated
@@ -23,7 +19,11 @@ class Trip {
 		com.sptinc.Report
 	]
 
+	// Each Trip can be assigned to many Events
+	// Each Trip can be assigned many Contracts
+	// Each User can be assigned many Locations (is this necessary?)
 	static hasMany = [contracts: Contract, events: Event, locations: Location]
+	// These values are not persisted
 	static transients = ['name']
 	
 	static constraints = {
@@ -35,18 +35,18 @@ class Trip {
 		//approvedBy(nullable: true)
 	}
 
+	// Cascade mappings
 	static mapping = {
 		contracts cascade: 'save-update'
 		events cascade: 'save-update'
 		locations cascade: 'save-update'
-		//attendees cascade: 'save-update'
-		//report cascade: 'save-update'
 	}
 
 	def compareTo = {obj ->
 		startDate.compareTo(obj.startDate)
 	}
 
+	// Get all of the Users attending this trip
 	Set<User> getAttendees() {
 		UserTrip.findAllByTrip(this).collect { it.attendee } as Set
 	}

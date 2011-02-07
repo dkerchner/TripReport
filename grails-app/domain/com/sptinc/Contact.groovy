@@ -5,12 +5,14 @@ class Contact {
 
   String firstName
   String lastName
-  Organization organization
+  Organization organization // A Contact is associated with a company or agency 
   String email
   String phoneNumber
   String notes
 
-  static belongsTo = [report: Report]
+  // Associated with a report
+  static belongsTo = [report: Report] 
+  // These values are not persisted
   static transients = ['name']
 
   static constraints = {
